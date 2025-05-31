@@ -1,0 +1,34 @@
+import path from "path";
+import { fileURLToPath } from "url";
+
+// With the move to TSUP as a build tool, this keeps path routes in other files (installers, loaders, etc) in check more easily.
+// Path is in relation to a single index.js file inside ./dist
+const __filename = fileURLToPath(import.meta.url);
+const distPath = path.dirname(__filename);
+export const PKG_ROOT = path.join(distPath, "../");
+
+export const TITLE_TEXT = `
+  ______ _____  ______       _______ ______ 
+ / _____|  __ \\|  ____|   /\\|__   __|  ____|
+| |     | |__) | |__     /  \\  | |  | |__   
+| |     |  _  /|  __|   / /\\ \\ | |  |  __|  
+| |_____| | \\ \\| |____ / ____ \\| |  | |____ 
+ \\______|_|  \\_|______/_/    \\_|_|  |______|
+
+ ______ _      ______ _____ _______ _____   ____  _   _ 
+|  ____| |    |  ____/ ____|__   __|  __ \\ / __ \\| \\ | |
+| |__  | |    | |__ | |       | |  | |__) | |  | |  \\| |
+|  __| | |    |  __|| |       | |  |  _  /| |  | | . \` |
+| |____| |____| |___| |____   | |  | | \\ \\| |__| | |\\  |
+|______|______|______\\_____|  |_|  |_|  \\_\\\\____/|_| \\_|
+
+ ______ ____  _    _ _   _ _____       _______ _____ ____  _   _ 
+|  ____/ __ \\| |  | | \\ | |  __ \\   /\\|__   __|_   _/ __ \\| \\ | |
+| |__ | |  | | |  | |  \\| | |  | | /  \\  | |    | || |  | |  \\| |
+|  __|| |  | | |  | | . \` | |  | |/ /\\ \\ | |    | || |  | | . \` |
+| |   | |__| | |__| | |\\  | |__| / ____ \\| |   _| || |__| | |\\  |
+|_|    \\____/ \\____/|_| \\_|_____/_/    \\_|_|  |_____\\____/|_| \\_|
+`;
+
+export const DEFAULT_APP_NAME = "my-electron-foundation";
+export const CREATE_ELECTRON_FOUNDATION = "create-electron-foundation";
