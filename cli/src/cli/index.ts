@@ -95,7 +95,8 @@ export const runUserPromptCli = async (): Promise<CLIResults> => {
       installDependencies: group.installDependencies,
       packages: {
         router: [group.router as RouterPackages],
-        styles: group.useTailwind ? ["tailwind"] : [], 
+        // styles: group.useTailwind ? ["tailwind"] : [], 
+        styles: ["tailwind"], 
       }
     }
 
