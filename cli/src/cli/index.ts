@@ -62,11 +62,11 @@ export const runUserPromptCli = async (): Promise<CLIResults> => {
             ],
             initialValue: "tanstack-router",
           }),
-        useTailwind: () =>
-          p.confirm({
-            message: "Will you be using Tailwind CSS for styling?",
-            initialValue: true,
-          }),
+        // useTailwind: () =>
+        //   p.confirm({
+        //     message: "Will you be using Tailwind CSS for styling?",
+        //     initialValue: true,
+        //   }),
         initializeGit: () =>
           p.confirm({
             message:
