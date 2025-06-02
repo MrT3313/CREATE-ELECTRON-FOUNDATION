@@ -9,7 +9,6 @@ const userServiceLogger = log.scope('db/services/user')
 
 export class userServices {
   static async getUserById(id: number) {
-    userServiceLogger.info(`[GET] Getting user by id: ${id}`)
     try {
       const info = await db.select().from(users).where(eq(users.id, id))
       if(!info || info.length === 0){
@@ -22,7 +21,6 @@ export class userServices {
   }
 
   static async updateUserById(id: number, data: any) {
-    userServiceLogger.info(`[PUT] Updating user by id: ${id} with data: ${JSON.stringify(data)}`)
     try {
       const result = db.transaction(() => {
         return db.update(users)
@@ -42,7 +40,6 @@ export class userServices {
   }
   
   static async insertUser(data: any) {
-    userServiceLogger.info(`[POST] Inserting user with data: ${JSON.stringify(data)}`)
     try {
       // Prepare the data with timestamps
       const now = new Date();
@@ -69,7 +66,6 @@ export class userServices {
   }
 
   static async getUserList() {
-    userServiceLogger.info(`[GET] Getting user list`)
     try {
       const list = await db.select().from(users)
       return response.ok({data: list || []})
@@ -79,7 +75,6 @@ export class userServices {
   }
 
   static async deleteUserById(id: number) {
-    userServiceLogger.info(`[DELETE] Deleting user by id: ${id}`)
     try {
       const result = db.transaction(() => {
         return db.delete(users)

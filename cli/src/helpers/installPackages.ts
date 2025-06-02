@@ -2,9 +2,6 @@
 import chalk from "chalk";
 import ora from "ora";
 
-// UTILS
-import { logger } from "../utils/logger.js";
-
 // TYPES
 import type { PkgInstallerMap } from "../types/Packages.js";
 import type { InstallerOptions } from "../types/Installers.js";

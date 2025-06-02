@@ -1,9 +1,12 @@
-import * as p from "@clack/prompts";
 import { setTimeout } from "node:timers/promises";
 import color from "picocolors";
-import { logger } from "../utils/logger.js";
+
+// TERMINAL
 import ora from "ora";
 import chalk from "chalk";
+
+// TERMINAL > user prompting
+import * as p from "@clack/prompts";
 
 // CONSTS
 import { DEFAULT_APP_NAME } from "../consts.js";

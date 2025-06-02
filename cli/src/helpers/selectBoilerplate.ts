@@ -16,25 +16,18 @@ export const selectBoilerplate = (config: CLIResults) => {
 
   try {
     if (config.packages.router.includes("tanstack-router")) {
-      logger.debug(`Copying Tanstack Router template from: ${path.join(srcDir, "tanstackRouter")}`);
-      logger.debug(`To: ${path.join(config.projectDir, "src")}`);
-
       for (let i = 0; i < config.packages.styles.length; i++) {
         const style = config.packages.styles[i];
 
         switch(style) {
           case "tailwind":
             // copy tanstack router "routes" directory (with tailwind) into the scaffolded src/ directory
-            logger.debug(`Copying Tanstack Router template with Tailwind from: ${path.join(srcDir, "tanstackRouter", "with-tailwind")}`);
-            logger.debug(`To: ${path.join(config.projectDir, "src")}`);
             fs.copySync(
               path.join(srcDir, "tanstackRouter", "with-tailwind"),
               path.join(config.projectDir, "src")
             );
   
             // copy the vite.config.ts file into the scaffolded project
-            logger.debug(`Copying Vite config with Tailwind from: ${path.join(srcDir, "config", "vite-config-tailwind.ts")}`);
-            logger.debug(`To: ${path.join(config.projectDir, "vite.config.ts")}`);
             fs.copySync(
               path.join(srcDir, "config", "vite-config-tailwind.ts"),
               path.join(config.projectDir, "vite-config-tailwind.ts")
@@ -46,8 +39,6 @@ export const selectBoilerplate = (config: CLIResults) => {
             );
   
             // copy the tailwind.config.ts file into the scaffolded project
-            logger.debug(`Copying Tailwind config from: ${path.join(srcDir, "config", "tailwind.config.ts")}`);
-            logger.debug(`To: ${path.join(config.projectDir, "tailwind.config.ts")}`);
             fs.copySync(
               path.join(srcDir, "config", "tailwind.config.ts"),
               path.join(config.projectDir, "tailwind.config.ts")
@@ -71,7 +62,7 @@ export const selectBoilerplate = (config: CLIResults) => {
         }
       }
     } else {
-      logger.error("🚨🚨 React Router is not supported yet");
+      logger.error("🚨🚨 Currently there are not alternatives to Tanstack Router. React Router is coming soon!");
       process.exit(1);
     }
   } catch (e) {

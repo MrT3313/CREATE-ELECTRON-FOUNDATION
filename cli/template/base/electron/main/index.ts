@@ -192,7 +192,6 @@ ipcMain.handle('open-win', (_, arg) => {
 })
 
 ipcMain.handle('launch-counter-utility', async () => {
-  mainLogger.info(`Received request to launch counter utility process.`)
   try {
     launchCounterUtilityProcess()
     return { success: true, message: 'Counter utility process launched.' }
@@ -203,10 +202,7 @@ ipcMain.handle('launch-counter-utility', async () => {
 
 function launchCounterUtilityProcess() {
   const utilityCounterPath = path.join(__dirname, 'utilityCounter.js')
-  mainLogger.info(`Launching counter utility process from: ${utilityCounterPath}`)
-
   const execArguments = process.env.VSCODE_DEBUG === 'true' ? ['--inspect-brk=9230'] : [];
-  mainLogger.info(`Utility process execArgv: ${JSON.stringify(execArguments)}`);
 
   const child = utilityProcess.fork(utilityCounterPath, [], {
     stdio: 'pipe', // Keep as pipe to allow message passing, but stdout/stderr listeners will be removed
@@ -228,9 +224,6 @@ function launchCounterUtilityProcess() {
   })
 
   child.on('message', (message) => {
-    mainLogger.info('WE GOT A MESSAGE FROM THE CHILD UTILITY PROCESS?', message)
-    mainLogger.info('FUCK I AM NOW HERE - 1')
-
     if (message.type === 'count') {
      mainLogger.info(
         { utilityId: message.utilityId },
@@ -252,14 +245,11 @@ function launchCounterUtilityProcess() {
   child.on('exit', (code) => {
     if (code !== 0) {
       mainLogger.error(`Counter utility process exited with code ${code}`);
-    } else {
-      mainLogger.info(`Counter utility process exited successfully.`);
     }
   })
 }
 
 ipcMain.handle('launch-rng-utility', async () => {
-  mainLogger.info(`Received request to launch RNG utility process.`)
   try {
     launchRngUtilityProcess()
     return { success: true, message: 'RNG utility process launched.' }
@@ -271,10 +261,7 @@ ipcMain.handle('launch-rng-utility', async () => {
 
 function launchRngUtilityProcess() {
   const utilityRngPath = path.join(__dirname, 'utilityRng.js')
-  mainLogger.info(`Launching RNG utility process from: ${utilityRngPath}`)
-
   const execArguments = process.env.VSCODE_DEBUG === 'true' ? ['--inspect-brk=9230'] : [];
-  mainLogger.info(`RNG Utility process execArgv: ${JSON.stringify(execArguments)}`);
 
   const child = utilityProcess.fork(utilityRngPath, [], {
     stdio: 'pipe', // Keep as pipe to allow message passing, but stdout/stderr listeners will be removed
@@ -313,8 +300,6 @@ function launchRngUtilityProcess() {
   child.on('exit', (code) => {
     if (code !== 0) {
       mainLogger.error(`RNG utility process exited with code ${code}`);
-    } else {
-      mainLogger.info(`RNG utility process exited successfully.`);
     }
   })
 }

@@ -1,9 +1,10 @@
+// TERMINAL
 import chalk from "chalk";
+import ora from "ora";
 import { execa } from "execa";
-import ora, { type Ora } from "ora";
 
+// TYPES
 import type { PackageManager } from "../types/Packages.js";
-import { logger } from "../utils/logger.js";
 
 const runInstallCommand = async (
   pkgManager: PackageManager,
@@ -32,8 +33,6 @@ export const installDependencies = async ({
   projectDir: string;
   pkgManager?: PackageManager;
 }) => {
-  logger.info("Installing dependencies...");
-
   const installSpinner = await runInstallCommand(pkgManager, projectDir);
 
   // If the spinner was used to show the progress, use succeed method on it

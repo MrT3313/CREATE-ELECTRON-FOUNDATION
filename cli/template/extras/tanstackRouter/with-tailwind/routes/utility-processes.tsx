@@ -10,7 +10,6 @@ export const Route = createFileRoute('/utility-processes')({
 })
 
 export function Settings() {
-  utilityProcessLogger.info('Rendering Utility Processes')
   const [error, setError] = useState<string | null>(null)
   const [isCounterRunning, setIsCounterRunning] = useState<boolean>(false)
   const [isRngRunning, setIsRngRunning] = useState<boolean>(false)

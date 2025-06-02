@@ -10,7 +10,6 @@ export const Route = createFileRoute('/')({
 })
 
 export function Index() {
-  homepageLogger.info('Rendering Homepage')
   // HOOKS
   const router = useRouter()
   const { data: usersResponse, isLoading, error: fetchError } = useGetResource({
