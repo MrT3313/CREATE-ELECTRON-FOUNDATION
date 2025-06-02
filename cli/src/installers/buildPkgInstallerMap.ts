@@ -1,0 +1,43 @@
+import ora from "ora";
+import chalk from "chalk";
+
+// INSTALLERS
+import { tailwindInstaller } from "./tailwind.js";
+import { tanstackRouterInstaller } from "./tanstackRouter.js";
+import { reactRouterInstaller } from "./reactRouter.js";
+
+// UTILS
+import { logger } from "../utils/logger.js";
+
+// TYPES
+import type { AvailablePackages, PkgInstallerMap } from "../types/Packages.js";
+
+export const buildPkgInstallerMap = (
+  projectName: string,
+  packages: AvailablePackages[],
+  // databaseProvider: DatabaseProvider
+  debug: boolean = false
+): PkgInstallerMap => {
+  const spinner = ora("Building Pkg Installer Map...").start();
+
+  const map: PkgInstallerMap = {
+    "tanstack-router": {
+      inUse: packages.includes("tanstack-router"),
+      installer: tanstackRouterInstaller,
+    },
+    "react-router": {
+      inUse: packages.includes("react-router"),
+      installer: reactRouterInstaller,
+    },
+    tailwind: {
+      inUse: packages.includes("tailwind"),
+      installer: tailwindInstaller,
+    },
+  };
+
+  if (debug) {
+    logger.debug("🧯🧯 PkgInstallerMap", JSON.stringify(map, null, 2));
+  }
+  spinner.succeed(`${projectName} ${chalk.green("pkgInstallerMap built")} successfully`);
+  return map;
+};

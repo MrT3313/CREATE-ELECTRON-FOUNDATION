@@ -1,0 +1,38 @@
+import path from "path";
+import fs from 'fs'
+
+// TERMINAL
+import ora from 'ora'
+import chalk from 'chalk'
+
+// UTILS
+import { logger } from "../utils/logger.js";
+import { PKG_ROOT } from "../consts.js";
+
+// TYPES
+import type { CLIResults } from "../types/CLI.js";
+
+export const scaffoldProject = (config: CLIResults, debug=false): void => {
+  /**
+   * copy as much of the base boilerplate for electron
+   * that is unaffected by the user's choices
+   */  
+  const scaffoldSpinner = ora(`Scaffolding in: ${config.projectDir}...`).start();
+
+  const srcDir = path.join(PKG_ROOT, "template/base");
+
+  if (fs.existsSync(config.projectDir)) {
+    logger.error(`Directory ${config.projectDir} already exists`);
+    process.exit(1);
+  }
+  
+  fs.cpSync(srcDir, config.projectDir, { recursive: true });
+  fs.renameSync(
+    path.join(config.projectDir, "_gitignore"),
+    path.join(config.projectDir, ".gitignore")
+  );
+
+  scaffoldSpinner.succeed(
+    `${config.projectName} ${chalk.green("scaffolded")} successfully!`
+  );
+}

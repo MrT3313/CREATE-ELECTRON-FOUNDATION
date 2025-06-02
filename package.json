@@ -1,15 +1,25 @@
 {
+  "name": "create-electron-foundation",
+  "type": "module",
+  "version": "0.0.0.1",
+  "description": "A CLI tool to scaffold Electron projects",
+  "main": "cli/dist/index.js",
+  "bin": {
+    "create-electron-foundation": "cli/dist/index.js"
+  },
+  "scripts": {
+    "build": "npm run build -w @create-electron-foundation/cli",
+    "start": "node cli/dist/index.js"
+  },
   "devDependencies": {
     "@types/node": "^22.15.27",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@clack/prompts": "^0.11.0",
-    "chalk": "^5.4.1",
-    "commander": "^14.0.0",
-    "execa": "^9.6.0",
-    "fs-extra": "^11.3.0",
-    "ora": "^8.2.0"
-  }
+    "@create-electron-foundation/cli": "workspace:*"
+  },
+  "workspaces": [
+    "cli"
+  ]
 }
