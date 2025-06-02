@@ -63,7 +63,11 @@ const main = async () => {
   if (config.projectName) {
     // Using quotes around config.projectName to handle potential spaces or special characters,
     // though typically project names avoid these.
-    const command = `cd "${config.projectName}" && make kac && ${ide} .`;
+    let command = `cd "${config.projectName}"`;
+    if (config.initializeGit) command += ` && git init && git add . && git commit -m "Initial Scaffolding : create-electron-foundation"`;
+    if (config.installDependencies) command += ` && npm i`;
+    if (ide) command += ` && ${ide} .`;
+    
     const spinner = ora(`Executing: ${command}`).start();
     
     try {

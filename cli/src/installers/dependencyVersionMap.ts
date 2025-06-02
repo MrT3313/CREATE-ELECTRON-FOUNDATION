@@ -6,14 +6,18 @@ export const dependencyVersionMap = {
   // TailwindCSS
   "tailwindcss": "^4.1.7",
   "@tailwindcss/vite": "^4.1.7",
+  
+  // React Router
+  "react-router": "^7.6.1",
 
+  // Tanstack
+  // Tanstack > query
   "@tanstack/react-query": "^5.79.0",
-  "@tanstack/react-router": "^1.120.11",
-
   "@tanstack/react-query-devtools": "^5.79.0",
+  // Tanstack > router
+  "@tanstack/react-router": "^1.120.11",
   "@tanstack/react-router-devtools": "^1.120.11",
   "@tanstack/router-cli": "^1.120.11",
-  "@tanstack/router-devtools": "^1.120.11",
-  "@tanstack/router-plugin": "^1.120.11",
+  "@tanstack/router-plugin": "^1.120.11"
 } as const;
 export type AvailableDependencies = keyof typeof dependencyVersionMap;
