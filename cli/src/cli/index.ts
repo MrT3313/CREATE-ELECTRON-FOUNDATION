@@ -12,6 +12,7 @@ import * as p from "@clack/prompts";
 import { DEFAULT_APP_NAME } from "../consts.js";
 // TYPES
 import type { CLIDefaults, CLIResults } from "../types/CLI.js";
+import type { RouterPackages } from "../types/Packages.js";
 
 const defaultConfig: CLIDefaults = {
   initializeGit: false,
@@ -46,28 +47,38 @@ export const runUserPromptCli = async (): Promise<CLIResults> => {
                 return "Project name can only contain lowercase letters, numbers, underscores, hyphens, and periods.";
             },
           }),
-          useTanstackRouter: () =>
-            p.confirm({
-              message: "Will you be using Tanstack Router for navigation?",
-              initialValue: true,
-            }),
-          useTailwind: () =>
-            p.confirm({
-              message: "Will you be using Tailwind CSS for styling?",
-              initialValue: true,
-            }),
-          initializeGit: () =>
-            p.confirm({
-              message:
-              "Should we initialize a Git repository and stage the changes?",
-              initialValue: true,
-            }),
-          installDependencies: () =>
-            p.confirm({
-              message:
-                "Should we install dependencies after scaffolding?",
-              initialValue: true,
-            }),
+        router: () =>
+          p.select({
+            message: "Which router would you like to use?",
+            options: [
+              {
+                value: "tanstack-router",
+                label: "Tanstack Router",
+              },
+              {
+                value: "react-router", 
+                label: "React Router",
+              }
+            ],
+            initialValue: "tanstack-router",
+          }),
+        useTailwind: () =>
+          p.confirm({
+            message: "Will you be using Tailwind CSS for styling?",
+            initialValue: true,
+          }),
+        initializeGit: () =>
+          p.confirm({
+            message:
+            "Should we initialize a Git repository and stage the changes?",
+            initialValue: true,
+          }),
+        installDependencies: () =>
+          p.confirm({
+            message:
+              "Should we install dependencies after scaffolding?",
+            initialValue: true,
+          }),
       },
       {
         onCancel: () => {
@@ -83,9 +94,7 @@ export const runUserPromptCli = async (): Promise<CLIResults> => {
       ...defaultConfig,
       installDependencies: group.installDependencies,
       packages: {
-        router: group.useTanstackRouter ? ["tanstack-router"] : ["react-router"],
-        // styles: group.useTailwind ? ["tailwind", "@tailwindcss/vite"] : ["css"], // keep all logic based off the single "tailwind" value
-        // styles: group.useTailwind ? ["tailwind"] : ["css"], // css is the default we dont need a separate installer to keep the default the same
+        router: [group.router as RouterPackages],
         styles: group.useTailwind ? ["tailwind"] : [], 
       }
     }

@@ -16,8 +16,9 @@ export const addPackageDependency = (opts: {
   dependencies: AvailableDependencies[];
   devMode: boolean;
   projectDir: string;
+  debug?: boolean;
 }) => {
-  const { dependencies, devMode, projectDir} = opts;
+  const { dependencies, devMode, projectDir, debug = false } = opts;
 
   const pkgJson = fs.readJSONSync(
     path.join(projectDir, "package.json")
@@ -41,4 +42,9 @@ export const addPackageDependency = (opts: {
   const finalPkgJson = fs.readJSONSync(
     path.join(projectDir, "package.json")
   ) as PackageJson;
+
+  if (debug) logger.info(`Added ${dependencies.length} dependencies to package.json`);
+  if (debug) logger.info(`${dependencies.join(", ")}`);
+
+  if (debug) logger.info(`Final package.json: ${JSON.stringify(finalPkgJson, null, 2)}`);
 };
