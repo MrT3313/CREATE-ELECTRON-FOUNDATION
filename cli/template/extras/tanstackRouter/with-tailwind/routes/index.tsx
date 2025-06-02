@@ -15,8 +15,6 @@ export function Index() {
   const { data: usersResponse, isLoading, error: fetchError } = useGetResource({
     enabled: true,
   })
-  console.log('FUCK FUCK ', usersResponse)
-
   // STATE
   const [error, setError] = useState<string | null>(null)
 
