@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite'
-import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 import react from '@vitejs/plugin-react'
 import electron from 'vite-plugin-electron'
 import fs from 'node:fs'
@@ -27,7 +26,6 @@ export default defineConfig(async ({ command }) => {
         output: {
           manualChunks: {
             'react-vendor': ['react', 'react-dom'],
-            'tanstack-router': ['@tanstack/react-router']
           }
         }
       }
@@ -42,11 +40,6 @@ export default defineConfig(async ({ command }) => {
       }
     },
     plugins: [
-      TanStackRouterVite({ 
-        target: 'react', 
-        autoCodeSplitting: true,
-        generatedRouteTree: './src/routeTree.gen.ts'
-      }),
       react(),
       electron([
         {
