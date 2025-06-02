@@ -16,25 +16,22 @@ export const selectBoilerplate = (config: CLIResults) => {
 
   try {
     if (config.packages.router.includes("tanstack-router")) {
+      // TANSTACK ROUTER ######################################################
       for (let i = 0; i < config.packages.styles.length; i++) {
         const style = config.packages.styles[i];
 
         switch(style) {
           case "tailwind":
+            // TANSTACK ROUTER > with tailwind ################################
             // copy tanstack router "routes" directory (with tailwind) into the scaffolded src/ directory
             fs.copySync(
-              path.join(srcDir, "tanstackRouter", "with-tailwind"),
-              path.join(config.projectDir, "src")
+              path.join(srcDir, "tanstackRouter", "with-tailwind", "routes"),
+              path.join(config.projectDir, "src", "routes")
             );
   
             // copy the vite.config.ts file into the scaffolded project
             fs.copySync(
-              path.join(srcDir, "config", "vite-config-tailwind.ts"),
-              path.join(config.projectDir, "vite-config-tailwind.ts")
-            );
-  
-            fs.renameSync(
-              path.join(config.projectDir, "vite-config-tailwind.ts"),
+              path.join(srcDir, "tanstackRouter", "with-tailwind", "config", "vite.config.ts"),
               path.join(config.projectDir, "vite.config.ts")
             );
   
@@ -55,15 +52,70 @@ export const selectBoilerplate = (config: CLIResults) => {
   
             break;
           default:
+            // TANSTACK ROUTER > base (no tailwind) ###########################
             fs.copySync(
               path.join(srcDir, "tanstackRouter", "base"),
               path.join(config.projectDir, "src")
             );
         }
       }
+    } else if (config.packages.router.includes("react-router")) {
+      for (let i = 0; i < config.packages.styles.length; i++) {
+        // REACT ROUTER #######################################################
+        const style = config.packages.styles[i];
+
+        switch(style) {
+          case "tailwind":
+            // REACT ROUTER > with tailwind ###################################
+            // copy react router "routes" directory (with tailwind) into the scaffolded src/ directory
+            fs.copySync(
+              path.join(srcDir, "reactRouter", "with-tailwind", "routes"),
+              path.join(config.projectDir, "src", "routes")
+            );
+
+            fs.copySync(
+              path.join(srcDir, "reactRouter", "with-tailwind", "App.tsx"),
+              path.join(config.projectDir, "src", "App.tsx")
+            );
+
+            fs.copySync(
+              path.join(srcDir, "reactRouter", "with-tailwind", "main.tsx"),
+              path.join(config.projectDir, "src", "main.tsx")
+            );
+
+            // copy the vite.config.ts file into the scaffolded project
+            fs.copySync(
+              path.join(srcDir, "reactRouter", "with-tailwind", "config", "vite.config.ts"),
+              path.join(config.projectDir, "vite.config.ts")
+            );
+
+            // copy the tailwind.config.ts file into the scaffolded project
+            fs.copySync(
+              path.join(srcDir, "config", "tailwind.config.ts"),
+              path.join(config.projectDir, "tailwind.config.ts")
+            );
+            fs.copySync(
+              path.join(srcDir, "styles", "tailwind-index.css"),
+              path.join(config.projectDir, "tailwind-index.css")
+            );
+            fs.renameSync(
+              path.join(config.projectDir, "tailwind-index.css"),
+              path.join(config.projectDir, "index.css")
+            );
+            
+
+            break;
+          default:
+            // REACT ROUTER > base (no tailwind) ##############################
+            fs.copySync(
+              path.join(srcDir, "reactRouter", "with-tailwind"),
+              path.join(config.projectDir, "src")
+            );
+        }
+      }
     } else {
-      logger.error("🚨🚨 Currently there are not alternatives to Tanstack Router. React Router is coming soon!");
-      process.exit(1);
+      logger.error("🚨🚨 Invalid Routing Selection");
+      throw new Error("Invalid Routing Selection");
     }
   } catch (e) {
     logger.error("🚨🚨 Error selecting boilerplate", e);
