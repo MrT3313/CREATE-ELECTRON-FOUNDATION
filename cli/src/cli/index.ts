@@ -62,11 +62,11 @@ export const runUserPromptCli = async (): Promise<CLIResults> => {
             ],
             initialValue: "tanstack-router",
           }),
-        // useTailwind: () =>
-        //   p.confirm({
-        //     message: "Will you be using Tailwind CSS for styling?",
-        //     initialValue: true,
-        //   }),
+        useTailwind: () =>
+          p.confirm({
+            message: "Will you be using Tailwind CSS for styling?",
+            initialValue: true,
+          }),
         initializeGit: () =>
           p.confirm({
             message:
@@ -95,8 +95,7 @@ export const runUserPromptCli = async (): Promise<CLIResults> => {
       installDependencies: group.installDependencies,
       packages: {
         router: [group.router as RouterPackages],
-        // styles: group.useTailwind ? ["tailwind"] : [], 
-        styles: ["tailwind"], 
+        styles: group.useTailwind ? ["tailwind"] : ["css"], 
       }
     }
 
