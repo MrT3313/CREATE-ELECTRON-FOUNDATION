@@ -53,9 +53,22 @@ export const selectBoilerplate = (config: CLIResults) => {
             break;
           default:
             // TANSTACK ROUTER > base (no tailwind) ###########################
+            // copy tanstack router "routes" directory (no tailwind) into the scaffolded src/ directory
             fs.copySync(
-              path.join(srcDir, "tanstackRouter", "base"),
-              path.join(config.projectDir, "src")
+              path.join(srcDir, "tanstackRouter", "base", "routes"),
+              path.join(config.projectDir, "src", "routes")
+            );
+  
+            // copy the vite.config.ts file into the scaffolded project
+            fs.copySync(
+              path.join(srcDir, "tanstackRouter", "base", "config", "vite.config.ts"),
+              path.join(config.projectDir, "vite.config.ts")
+            );
+
+            // copy the index.css file into the scaffolded project
+            fs.copySync(
+              path.join(srcDir, "styles", "index.css"),
+              path.join(config.projectDir, "index.css")
             );
         }
       }
@@ -102,14 +115,36 @@ export const selectBoilerplate = (config: CLIResults) => {
               path.join(config.projectDir, "tailwind-index.css"),
               path.join(config.projectDir, "index.css")
             );
-            
 
             break;
           default:
             // REACT ROUTER > base (no tailwind) ##############################
+            // copy react router "routes" directory (with tailwind) into the scaffolded src/ directory
             fs.copySync(
-              path.join(srcDir, "reactRouter", "with-tailwind"),
-              path.join(config.projectDir, "src")
+              path.join(srcDir, "reactRouter", "base", "routes"),
+              path.join(config.projectDir, "src", "routes")
+            );
+
+            fs.copySync(
+              path.join(srcDir, "reactRouter", "base", "App.tsx"),
+              path.join(config.projectDir, "src", "App.tsx")
+            );
+
+            fs.copySync(
+              path.join(srcDir, "reactRouter", "base", "main.tsx"),
+              path.join(config.projectDir, "src", "main.tsx")
+            );
+
+            // copy the vite.config.ts file into the scaffolded project
+            fs.copySync(
+              path.join(srcDir, "reactRouter", "base", "config", "vite.config.ts"),
+              path.join(config.projectDir, "vite.config.ts")
+            );
+
+            // copy the index.css file into the scaffolded project
+            fs.copySync(
+              path.join(srcDir, "styles", "index.css"),
+              path.join(config.projectDir, "index.css")
             );
         }
       }

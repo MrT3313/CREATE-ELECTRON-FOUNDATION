@@ -2,7 +2,7 @@ import { Installer } from "./Installers.js";
 
 export type PackageManager = "npm"
 
-export type StylePackages = "tailwind";
+export type StylePackages = "tailwind" | "css";
 export type RouterPackages = "tanstack-router" | "react-router";
 export type AvailablePackages = StylePackages | RouterPackages;
 
