@@ -12,7 +12,7 @@ import * as p from "@clack/prompts";
 import { DEFAULT_APP_NAME } from "../consts.js";
 // TYPES
 import type { CLIDefaults, CLIResults, CLIArgs } from "../types/CLI.js";
-import type { RouterPackages } from "../types/Packages.js";
+import type { DatabasePackages, ORMPackages, RouterPackages } from "../types/Packages.js";
 
 const defaultConfig: CLIDefaults = {
   initializeGit: false,
@@ -21,7 +21,8 @@ const defaultConfig: CLIDefaults = {
   packages: {
     router: ["tanstack-router"],
     styles: ["tailwind"],
-    // database: ["sqlite", "electric-sql"],
+    database: ["sqlite"],
+    orm: ["drizzle"],
     // tables: ["tanstack-table"],
     // forms: ["tanstack-forms"],
   }
@@ -36,7 +37,6 @@ export const runUserPromptCli = async (cliArgs: CLIArgs = {}): Promise<CLIResult
   try {
     const prompts: any = {};
 
-    // Only prompt for project name if not provided via CLI
     if (!cliArgs.projectName) {
       prompts.projectName = () =>
         p.text({
@@ -51,7 +51,6 @@ export const runUserPromptCli = async (cliArgs: CLIArgs = {}): Promise<CLIResult
         });
     }
 
-    // Only prompt for router if not provided via CLI
     if (!cliArgs.router) {
       prompts.router = () =>
         p.select({
@@ -70,7 +69,34 @@ export const runUserPromptCli = async (cliArgs: CLIArgs = {}): Promise<CLIResult
         });
     }
 
-    // Only prompt for Tailwind if styles not provided via CLI
+    // if (!cliArgs.database) {
+    //   prompts.database = () =>
+    //     p.select({
+    //       message: "Which database would you like to use?",
+    //       options: [
+    //         {
+    //           value: "sqlite",
+    //           label: "SQLite",
+    //         },
+    //       ],
+    //       initialValue: "sqlite",
+    //     });
+    // }
+
+    // if (!cliArgs.orm) {
+    //   prompts.orm = () =>
+    //     p.select({
+    //       message: "Which ORM would you like to use?",
+    //       options: [
+    //         {
+    //           value: "drizzle", 
+    //           label: "Drizzle",
+    //         },
+    //       ],
+    //       initialValue: "drizzle",
+    //     });
+    // }
+
     if (!cliArgs.styles) {
       prompts.useTailwind = () =>
         p.confirm({
@@ -79,7 +105,6 @@ export const runUserPromptCli = async (cliArgs: CLIArgs = {}): Promise<CLIResult
         });
     }
 
-    // Only prompt for Git if not provided via CLI
     if (cliArgs.git === undefined) {
       prompts.initializeGit = () =>
         p.confirm({
@@ -89,7 +114,6 @@ export const runUserPromptCli = async (cliArgs: CLIArgs = {}): Promise<CLIResult
         });
     }
 
-    // Only prompt for install dependencies if not provided via CLI
     if (cliArgs.install === undefined) {
       prompts.installDependencies = () =>
         p.confirm({
@@ -109,6 +133,8 @@ export const runUserPromptCli = async (cliArgs: CLIArgs = {}): Promise<CLIResult
     // Get values from CLI args or prompts with fallbacks
     const projectName = cliArgs.projectName || (group as any).projectName || DEFAULT_APP_NAME;
     const router = cliArgs.router || (group as any).router || "tanstack-router";
+    const database = cliArgs.database || (group as any).database || "sqlite"
+    const orm = cliArgs.orm || (group as any).database || "drizzle"
     const useTailwind = cliArgs.styles === "tailwind" || (cliArgs.styles === undefined && ((group as any).useTailwind ?? true));
     const initializeGit = cliArgs.git !== undefined ? cliArgs.git : ((group as any).initializeGit ?? false);
     const installDependencies = cliArgs.install !== undefined ? cliArgs.install : ((group as any).installDependencies ?? true);
@@ -122,6 +148,8 @@ export const runUserPromptCli = async (cliArgs: CLIArgs = {}): Promise<CLIResult
       packages: {
         router: [router as RouterPackages],
         styles: useTailwind ? ["tailwind"] : ["css"], 
+        database: [database as DatabasePackages],
+        orm: [orm as ORMPackages],
       }
     }
 
@@ -130,8 +158,14 @@ export const runUserPromptCli = async (cliArgs: CLIArgs = {}): Promise<CLIResult
     await setTimeout(1000); // Simulate work
     s.stop("Choices processed");
 
-    p.note(`Project Name: ${config.projectName}\n
-      Router: ${config.packages.router}\nStyles: ${config.packages.styles}\nInstall Dependencies: ${config.installDependencies}\nInitialize Git: ${config.initializeGit}`,
+    p.note(`
+      Project Name: ${config.projectName}\n
+      Router: ${config.packages.router}\n
+      Styles: ${config.packages.styles}\n
+      Database: ${config.packages.database}\n
+      ORM: ${config.packages.orm}\n
+      Install Dependencies: ${config.installDependencies}\n
+      Initialize Git: ${config.initializeGit}`,
       "Summary of your choices:"
     );
 

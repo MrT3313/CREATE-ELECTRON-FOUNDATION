@@ -5,6 +5,8 @@ import chalk from "chalk";
 import { tailwindInstaller } from "./tailwind.js";
 import { tanstackRouterInstaller } from "./tanstackRouter.js";
 import { reactRouterInstaller } from "./reactRouter.js";
+import { sqliteInstaller } from "./sqlite.js";
+import { drizzleInstaller } from "./drizzle.js";
 
 // UTILS
 import { logger } from "../utils/logger.js";
@@ -28,6 +30,14 @@ export const buildPkgInstallerMap = (
     "react-router": {
       inUse: packages.includes("react-router"),
       installer: reactRouterInstaller,
+    },
+    "sqlite": {
+      inUse: packages.includes("sqlite"),
+      installer: sqliteInstaller,
+    },
+    "drizzle": {
+      inUse: packages.includes("drizzle"),
+      installer: drizzleInstaller,
     },
     tailwind: {
       inUse: packages.includes("tailwind"),

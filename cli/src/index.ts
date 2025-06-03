@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+import fs from "fs-extra";
+import path from "path";
+
 // FUNCTIONS
 import { renderTitle } from "./utils/renderTitle.js";
 import { runUserPromptCli } from "./cli/index.js";
@@ -34,6 +37,16 @@ const main = async () => {
       choices: ['tanstack-router', 'react-router'],
       description: 'Router to use'
     })
+    .option('database', {
+      type: 'string',
+      choices: ['sqlite'],
+      description: 'Database to use'
+    })
+    .option('orm', {  
+      type: 'string',
+      choices: ['drizzle'],
+      description: 'ORM to use'
+    })
     .option('styles', {
       type: 'string',
       choices: ['tailwind', 'css'],
@@ -56,10 +69,15 @@ const main = async () => {
   const cliArgs: CLIArgs = {
     projectName: argv.projectName as string || argv._[0] as string,
     router: argv.router as any,
+    database: argv.database as any,
+    orm: argv.orm as any,
     styles: argv.styles as any,
     git: argv.git,
     install: argv.install
   };
+
+  // INJECT ENV VARIABLES ######################################################
+  process.env.APP_NAME = cliArgs.projectName;
 
   // START ####################################################################
   renderTitle();
@@ -75,7 +93,6 @@ const main = async () => {
   scaffoldProject(config);
 
   // 4. install packages ######################################################
-  // THIS IS CAUSING ISSUES!
   installPackages({ 
     ...config, 
     packages: usePackages 
@@ -84,6 +101,15 @@ const main = async () => {
   // 5. select boilerplate ####################################################
   selectBoilerplate(config);
 
+  // 6. update package.json ###################################################
+  const pkgJson = fs.readJSONSync(
+    path.join(config.projectDir, "package.json")
+  );
+  pkgJson.name = config.projectName;
+  fs.writeJSONSync(
+    path.join(config.projectDir, "package.json"),
+    pkgJson
+  );
 
   // 6. install dependencies ##################################################
   // if (config.installDependencies) {

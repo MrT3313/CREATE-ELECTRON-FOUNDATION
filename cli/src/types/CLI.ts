@@ -1,9 +1,17 @@
-import type { StylePackages, RouterPackages, PackageManager } from "./Packages.js";
+import type { 
+  StylePackages, 
+  RouterPackages, 
+  PackageManager, 
+  DatabasePackages,
+  ORMPackages, AvailablePackages,
+} from "./Packages.js";
 
 export interface CLIArgs {
   projectName?: string;
   router?: RouterPackages;
   styles?: StylePackages;
+  database?: DatabasePackages;
+  orm?: ORMPackages;
   git?: boolean;
   install?: boolean;
 }
@@ -15,6 +23,8 @@ export interface CLIDefaults {
   packages: {
     router: [RouterPackages];
     styles: [StylePackages] | []; 
+    database: [DatabasePackages] | [];
+    orm: [ORMPackages] | [];
   }
 }
 

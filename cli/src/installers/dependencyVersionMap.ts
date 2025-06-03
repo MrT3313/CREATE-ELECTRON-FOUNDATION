@@ -6,6 +6,14 @@ export const dependencyVersionMap = {
   // TailwindCSS
   "tailwindcss": "^4.1.7",
   "@tailwindcss/vite": "^4.1.7",
+
+  // Drizzle
+  "drizzle-orm": "^0.43.1",
+  "drizzle-kit": "^0.31.1",
+
+  // SQLite
+  "better-sqlite3": "^11.8.0",
+  "@types/better-sqlite3": "^7.6.1",
   
   // React Router
   "react-router": "^7.6.1",
@@ -19,5 +27,7 @@ export const dependencyVersionMap = {
   "@tanstack/react-router-devtools": "^1.120.11",
   "@tanstack/router-cli": "^1.120.11",
   "@tanstack/router-plugin": "^1.120.11"
+
+
 } as const;
 export type AvailableDependencies = keyof typeof dependencyVersionMap;

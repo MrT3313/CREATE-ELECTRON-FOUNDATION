@@ -27,6 +27,11 @@ export const scaffoldProject = (config: CLIResults, debug=false): void => {
   }
   
   fs.cpSync(srcDir, config.projectDir, { recursive: true });
+  
+  const envContent = `APP_NAME=${config.projectName}\n`;
+  const envFilePath = path.join(config.projectDir, '.env');
+  fs.writeFileSync(envFilePath, envContent);
+  
   fs.renameSync(
     path.join(config.projectDir, "_gitignore"),
     path.join(config.projectDir, ".gitignore")
