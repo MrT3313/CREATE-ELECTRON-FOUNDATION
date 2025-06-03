@@ -152,6 +152,15 @@ export const selectBoilerplate = (config: CLIResults) => {
       logger.error("🚨🚨 Invalid Routing Selection");
       throw new Error("Invalid Routing Selection");
     }
+
+    // @ts-ignore
+    if (config.packages.orm.includes("drizzle")) {
+      fs.copySync(
+        path.join(srcDir, "drizzle", "drizzle.config.ts"),
+        path.join(config.projectDir, "drizzle.config.ts")
+      );
+    }
+
   } catch (e) {
     logger.error("🚨🚨 Error selecting boilerplate", e);
     process.exit(1);

@@ -108,7 +108,8 @@ const main = async () => {
   pkgJson.name = config.projectName;
   fs.writeJSONSync(
     path.join(config.projectDir, "package.json"),
-    pkgJson
+    pkgJson,
+    { spaces: 2 }
   );
 
   // 6. install dependencies ##################################################

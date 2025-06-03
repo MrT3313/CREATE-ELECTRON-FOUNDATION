@@ -17,14 +17,14 @@ export interface CLIArgs {
 }
 
 export interface CLIDefaults {
-  pkgManager: PackageManager;
+  pkgManager: PackageManager; // "npm"
   initializeGit: boolean;
   installDependencies: boolean;
   packages: {
-    router: [RouterPackages];
-    styles: [StylePackages] | []; 
-    database: [DatabasePackages] | [];
-    orm: [ORMPackages] | [];
+    router: [RouterPackages]; // ["tanstack-router"] | ["react-router"]
+    styles: [StylePackages] | []; // ["tailwind"] | ["css"] | []
+    database: [DatabasePackages] | []; // ["sqlite"] | []
+    orm: [ORMPackages] | []; // ["drizzle"] | []
   }
 }
 
