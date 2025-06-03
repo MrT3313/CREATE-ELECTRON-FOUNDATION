@@ -26,7 +26,7 @@ export function Index() {
       <div>
         <button 
           className={cx('border border-white p-2 m-2 rounded-md hover:bg-blue-600 text-white transition-colors')}
-          onClick={() => navigate('/utility-processes')}
+          onClick={() => navigate('/settings')}
         >Utility Processes</button>
       </div>
 

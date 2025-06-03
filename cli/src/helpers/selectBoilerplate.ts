@@ -53,9 +53,22 @@ export const selectBoilerplate = (config: CLIResults) => {
             break;
           default:
             // TANSTACK ROUTER > base (no tailwind) ###########################
+            // copy tanstack router "routes" directory (no tailwind) into the scaffolded src/ directory
             fs.copySync(
-              path.join(srcDir, "tanstackRouter", "base"),
-              path.join(config.projectDir, "src")
+              path.join(srcDir, "tanstackRouter", "base", "routes"),
+              path.join(config.projectDir, "src", "routes")
+            );
+  
+            // copy the vite.config.ts file into the scaffolded project
+            fs.copySync(
+              path.join(srcDir, "tanstackRouter", "base", "config", "vite.config.ts"),
+              path.join(config.projectDir, "vite.config.ts")
+            );
+
+            // copy the index.css file into the scaffolded project
+            fs.copySync(
+              path.join(srcDir, "styles", "index.css"),
+              path.join(config.projectDir, "index.css")
             );
         }
       }

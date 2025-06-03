@@ -4,7 +4,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { queryClient } from './lib/queryClient'
 import IndexPage from './routes/index'
-import UtilityProcessesPage from './routes/utility-processes'
+import SettingsPage from './routes/settings'
 import NotFoundPage from './routes/_404'
 
 const RootLayout = () => {
@@ -23,7 +23,7 @@ function App() {
     <Routes>
       <Route path="/" element={<RootLayout />}>
         <Route index element={<IndexPage />} />
-        <Route path="utility-processes" element={<UtilityProcessesPage />} />
+        <Route path="settings" element={<SettingsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

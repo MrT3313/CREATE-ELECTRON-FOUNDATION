@@ -14,18 +14,58 @@ import { logger } from "./utils/logger.js";
 import { execaSync } from 'execa';
 import ora from "ora";
 import chalk from "chalk";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
 // TYPES
-import type { CLIResults } from "./types/CLI.js";
+import type { CLIResults, CLIArgs } from "./types/CLI.js";
 
 const main = async () => {
   const ide = process.env.IDE || "cursor";
+
+  // Parse command line arguments
+  const argv = await yargs(hideBin(process.argv))
+    .option('projectName', {
+      type: 'string',
+      description: 'Name of the project'
+    })
+    .option('router', {
+      type: 'string',
+      choices: ['tanstack-router', 'react-router'],
+      description: 'Router to use'
+    })
+    .option('styles', {
+      type: 'string',
+      choices: ['tailwind', 'css'],
+      description: 'Styles to use'
+    })
+    .option('git', {
+      type: 'boolean',
+      description: 'Initialize Git repository'
+    })
+    .option('install', {
+      type: 'boolean',
+      description: 'Install dependencies'
+    })
+    .help()
+    .alias('help', 'h')
+    .version(false)
+    .parse();
+
+  // Extract named options and positional arguments
+  const cliArgs: CLIArgs = {
+    projectName: argv.projectName as string || argv._[0] as string,
+    router: argv.router as any,
+    styles: argv.styles as any,
+    git: argv.git,
+    install: argv.install
+  };
 
   // START ####################################################################
   renderTitle();
   
   // 1. run the user prompt cli ###############################################
-  const config: CLIResults = await runUserPromptCli();
+  const config: CLIResults = await runUserPromptCli(cliArgs);
 
   // 2. configure packages ####################################################
   const inUsePackages = Object.values(config.packages).flat();

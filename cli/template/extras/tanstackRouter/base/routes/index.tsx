@@ -1,16 +1,23 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
+import React, { useEffect, useState } from 'react'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import log from '../lib/logger';
 const homepageLogger = log.scope('homepage');
 import { useGetResource } from '../api/index'
 
+export const Route = createFileRoute('/')({
+  component: Index
+})
+
 export function Index() {
-  const navigate = useNavigate()
+  // HOOKS
+  const router = useRouter()
   const { data: usersResponse, isLoading, error: fetchError } = useGetResource({
     enabled: true,
   })
+  // STATE
   const [error, setError] = useState<string | null>(null)
 
+  // Log any fetch errors
   useEffect(() => {
     if (fetchError) {
       homepageLogger.error('Failed to load users:', fetchError);
@@ -25,44 +32,40 @@ export function Index() {
         
         <button 
           className="btn"
-          onClick={() => navigate('/settings')}
-        >
-          Settings
-        </button>
+          onClick={() => router.navigate({ to: '/settings' })}
+        >Utility Processes</button>
 
-        {error && (
+        {/* Error message */}
+        {(error) && (
           <div className="error-message">
             {error}
           </div>
         )}
 
+        {/* User List */}
         <div className="card">
           <h2>User List</h2>
           {isLoading ? (
             <div className="loading-message">Loading users...</div>
-          ) : usersResponse ? (
+          ) : (usersResponse) ? (
             <div className="user-info">
-              <h3>{usersResponse.title}</h3>
+              <h3>{usersResponse.userId}</h3>
               <div className="user-details">
-                <p><strong>User ID:</strong> {usersResponse.userId}</p>
-                <p><strong>ID:</strong> {usersResponse.id}</p>
-                <p>{usersResponse.body}</p>
+                <p>ID: {usersResponse.id}</p>
+                <p>Title: {usersResponse.title}</p>
+                <p>Body: {usersResponse.body}</p>
               </div>
             </div>
           ) : (
-            <div className="no-data-message">
-              No users found. Add your first user above!
-            </div>
+            <div className="no-data-message">No users found. Add your first user above!</div>
           )}
         </div>
         
         <div className="env-info">
-          <p><strong>CUSTOM_ENV_VAR:</strong> {window.env.CUSTOM_ENV_VAR}</p>
-          <p><strong>NODE_ENV:</strong> {window.env.NODE_ENV}</p>
+          <p>CUSTOM_ENV_VAR: {window.env.CUSTOM_ENV_VAR}</p>
+          <p>NODE_ENV: {window.env.NODE_ENV}</p>
         </div>
       </div>
     </div>
   )
 }
-
-export default Index
