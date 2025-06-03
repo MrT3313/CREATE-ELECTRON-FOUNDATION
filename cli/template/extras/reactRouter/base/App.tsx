@@ -1,6 +1,5 @@
 import React from 'react'
 import { Routes, Route, Outlet } from 'react-router'
-import cx from 'classnames'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { queryClient } from './lib/queryClient'
@@ -11,11 +10,7 @@ import NotFoundPage from './routes/_404'
 const RootLayout = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className={cx(
-        'flex flex-col', 
-        'items-center',
-        'min-h-screen', 'bg-blue-500', 'overflow-y-auto'
-      )}>
+      <div className="app-layout">
         <Outlet />
       </div>
       <ReactQueryDevtools initialIsOpen={false} />
@@ -35,4 +30,4 @@ function App() {
   )
 }
 
-export default App 
+export default App

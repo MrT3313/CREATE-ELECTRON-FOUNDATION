@@ -42,3 +42,6 @@ check-link:
 		which $(command) || echo "> '$(command)' not found in PATH via 'which'"; \
 	fi
 	@echo "-----------------------------------------------------"
+
+batch-test:
+	cd TEST && ./batch.test.sh
