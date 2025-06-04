@@ -31,16 +31,10 @@ export const installDependencies = async ({
   projectDir: string;
   pkgManager?: PackageManager;
 }) => {
-  const installSpinner = ora({
-    text: "Installing dependencies...",
-    spinner: "dots",
-  });
-  
-  installSpinner.start();
-
+  console.log(chalk.blue("Installing dependencies..."));
   try {
     await runInstallCommand(pkgManager, projectDir);
-    installSpinner.succeed("Installed dependencies!");
+    console.log(chalk.green("Installed dependencies!"));
   } catch (error) {
     console.log(chalk.red("Failed to install dependencies!"));
     if (error instanceof Error && error.message.includes('timed out')) {
