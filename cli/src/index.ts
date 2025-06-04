@@ -66,6 +66,11 @@ const main = async () => {
       type: 'boolean',
       description: 'Install dependencies'
     })
+    .option('y', {
+      type: 'boolean',
+      alias: 'yes',
+      description: 'Skip prompts and use defaults'
+    })
     .help()
     .alias('help', 'h')
     .version(false)
@@ -80,7 +85,8 @@ const main = async () => {
     styles: argv.styles as any,
     initializeGit: argv.initializeGit as boolean,
     installDependencies: argv.installDependencies as boolean,
-    runMigrations: argv.runMigrations as boolean
+    runMigrations: argv.runMigrations as boolean,
+    skipPrompts: argv.y as boolean,
   };
 
   // INJECT ENV VARIABLES ######################################################
@@ -123,10 +129,10 @@ const main = async () => {
     { spaces: 2 }
   );
 
-  const NewPkgJson = fs.readJSONSync(
-    path.join(config.projectDir, "package.json")
-  );
-  logger.info(JSON.stringify(NewPkgJson, null, 2));
+  // const NewPkgJson = fs.readJSONSync(
+  //   path.join(config.projectDir, "package.json")
+  // );
+  // logger.info(JSON.stringify(NewPkgJson, null, 2));
 
   // 7. install dependencies ##################################################
   if (config.installDependencies) {

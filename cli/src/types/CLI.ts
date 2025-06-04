@@ -15,6 +15,7 @@ export interface CLIArgs {
   styles?: StylePackages;
   database?: DatabasePackages;
   orm?: ORMPackages;
+  skipPrompts?: boolean;
 }
 
 export interface CLIDefaults {
