@@ -1,20 +1,33 @@
-import type { StylePackages, RouterPackages, PackageManager } from "./Packages.js";
+import type { 
+  StylePackages, 
+  RouterPackages, 
+  PackageManager, 
+  DatabasePackages,
+  ORMPackages, AvailablePackages,
+} from "./Packages.js";
 
 export interface CLIArgs {
   projectName?: string;
+  initializeGit?: boolean;
+  installDependencies?: boolean;
+  runMigrations?: boolean;
   router?: RouterPackages;
   styles?: StylePackages;
-  git?: boolean;
-  install?: boolean;
+  database?: DatabasePackages;
+  orm?: ORMPackages;
+  skipPrompts?: boolean;
 }
 
 export interface CLIDefaults {
-  pkgManager: PackageManager;
+  pkgManager: PackageManager; // "npm"
   initializeGit: boolean;
   installDependencies: boolean;
+  runMigrations: boolean;
   packages: {
-    router: [RouterPackages];
-    styles: [StylePackages] | []; 
+    router: [RouterPackages]; // ["tanstack-router"] | ["react-router"]
+    styles: [StylePackages] | []; // ["tailwind"] | ["css"] | []
+    database: [DatabasePackages] | []; // ["sqlite"] | []
+    orm: [ORMPackages] | []; // ["drizzle"] | []
   }
 }
 

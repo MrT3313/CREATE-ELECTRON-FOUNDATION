@@ -17,7 +17,7 @@ export const scaffoldProject = (config: CLIResults, debug=false): void => {
    * copy as much of the base boilerplate for electron
    * that is unaffected by the user's choices
    */  
-  const scaffoldSpinner = ora(`Scaffolding in: ${config.projectDir}...`).start();
+  const spinner = ora(`${config.projectName} ${chalk.bold("Scaffolding")} in: ${config.projectDir}...`).start();
 
   const srcDir = path.join(PKG_ROOT, "template/base");
 
@@ -27,12 +27,17 @@ export const scaffoldProject = (config: CLIResults, debug=false): void => {
   }
   
   fs.cpSync(srcDir, config.projectDir, { recursive: true });
+  
+  const envContent = `APP_NAME=${config.projectName}\n`;
+  const envFilePath = path.join(config.projectDir, '.env');
+  fs.writeFileSync(envFilePath, envContent);
+  
   fs.renameSync(
     path.join(config.projectDir, "_gitignore"),
     path.join(config.projectDir, ".gitignore")
   );
 
-  scaffoldSpinner.succeed(
-    `${config.projectName} ${chalk.green("scaffolded")} successfully!`
+  spinner.succeed(
+    `${config.projectName} ${chalk.bold.green("scaffolded")} successfully!`
   );
 }

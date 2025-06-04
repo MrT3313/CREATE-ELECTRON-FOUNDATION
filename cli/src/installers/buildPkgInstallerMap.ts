@@ -5,6 +5,8 @@ import chalk from "chalk";
 import { tailwindInstaller } from "./tailwind.js";
 import { tanstackRouterInstaller } from "./tanstackRouter.js";
 import { reactRouterInstaller } from "./reactRouter.js";
+import { sqliteInstaller } from "./sqlite.js";
+import { drizzleInstaller } from "./drizzle.js";
 
 // UTILS
 import { logger } from "../utils/logger.js";
@@ -18,7 +20,7 @@ export const buildPkgInstallerMap = (
   // databaseProvider: DatabaseProvider
   debug: boolean = false
 ): PkgInstallerMap => {
-  const spinner = ora("Building Pkg Installer Map...").start();
+  const spinner = ora(`${projectName} ${chalk.bold("Building")} ${chalk.bold("PkgInstallerMap")}...`).start();
 
   const map: PkgInstallerMap = {
     "tanstack-router": {
@@ -28,6 +30,14 @@ export const buildPkgInstallerMap = (
     "react-router": {
       inUse: packages.includes("react-router"),
       installer: reactRouterInstaller,
+    },
+    "sqlite": {
+      inUse: packages.includes("sqlite"),
+      installer: sqliteInstaller,
+    },
+    "drizzle": {
+      inUse: packages.includes("drizzle"),
+      installer: drizzleInstaller,
     },
     tailwind: {
       inUse: packages.includes("tailwind"),
@@ -42,6 +52,6 @@ export const buildPkgInstallerMap = (
   if (debug) {
     logger.debug("🧯🧯 PkgInstallerMap", JSON.stringify(map, null, 2));
   }
-  spinner.succeed(`${projectName} ${chalk.green("pkgInstallerMap built")} successfully`);
+  spinner.succeed(`${projectName} ${chalk.bold.green("pkgInstallerMap built")} successfully`);
   return map;
 };

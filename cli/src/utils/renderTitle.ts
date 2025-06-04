@@ -2,19 +2,18 @@ import gradient from "gradient-string";
 
 import { TITLE_TEXT } from "../consts.js";
 
-// colors brought in from vscode poimandres theme
-const poimandresTheme = {
-  blue: "#add7ff",
-  cyan: "#89ddff",
-  green: "#5de4c7",
-  magenta: "#fae4fc",
-  red: "#d0679d",
-  yellow: "#fffac2",
-};
+const theme = {
+  hotPink: "#FF0080",
+  electricBlue: "#0066FF",
+  neonPurple: "#8000FF",
+  cyan: "#00CCFF",
+  magenta: "#CC00FF",
+  violet: "#6600CC"
+}
 
 export const renderTitle = () => {
-  const t3Gradient = gradient(Object.values(poimandresTheme));
+  const myGradient = gradient(Object.values(theme));
 
   // resolves weird behavior where the ascii is offset
-  console.log(t3Gradient.multiline(TITLE_TEXT));
+  console.log(myGradient.multiline(TITLE_TEXT));
 };
