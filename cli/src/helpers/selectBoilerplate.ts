@@ -193,7 +193,7 @@ export const selectBoilerplate = (config: CLIResults) => {
     // @ts-ignore
     if (config.packages.orm.includes("drizzle")) {
       fs.copySync(
-        path.join(srcDir, "drizzle", "drizzle.config.ts"),
+        path.join(srcDir, "drizzle", "config", "drizzle.config.ts"),
         path.join(config.projectDir, "drizzle.config.ts")
       );
 
