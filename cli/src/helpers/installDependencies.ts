@@ -39,12 +39,8 @@ export const installDependencies = async ({
   installSpinner.start();
 
   try {
-    // Stop spinner to show npm output
-    installSpinner.stop();
-    console.log(chalk.blue("Installing dependencies..."));
-    
     await runInstallCommand(pkgManager, projectDir);
-    console.log(chalk.green("Installed dependencies!"));
+    installSpinner.succeed("Installed dependencies!");
   } catch (error) {
     console.log(chalk.red("Failed to install dependencies!"));
     if (error instanceof Error && error.message.includes('timed out')) {
