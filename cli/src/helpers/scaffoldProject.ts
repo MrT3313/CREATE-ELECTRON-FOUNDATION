@@ -17,7 +17,7 @@ export const scaffoldProject = (config: CLIResults, debug=false): void => {
    * copy as much of the base boilerplate for electron
    * that is unaffected by the user's choices
    */  
-  const scaffoldSpinner = ora(`Scaffolding in: ${config.projectDir}...`).start();
+  const spinner = ora(`${config.projectName} ${chalk.bold("Scaffolding")} in: ${config.projectDir}...`).start();
 
   const srcDir = path.join(PKG_ROOT, "template/base");
 
@@ -37,7 +37,7 @@ export const scaffoldProject = (config: CLIResults, debug=false): void => {
     path.join(config.projectDir, ".gitignore")
   );
 
-  scaffoldSpinner.succeed(
-    `${config.projectName} ${chalk.green("scaffolded")} successfully!`
+  spinner.succeed(
+    `${config.projectName} ${chalk.bold.green("scaffolded")} successfully!`
   );
 }

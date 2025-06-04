@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from "fs-extra";
 import path from "path";
+import assert from "assert";
 
 // FUNCTIONS
 import { renderTitle } from "./utils/renderTitle.js";
@@ -9,6 +10,7 @@ import { buildPkgInstallerMap } from "./installers/buildPkgInstallerMap.js";
 import { scaffoldProject } from "./helpers/scaffoldProject.js";
 import { installPackages } from "./helpers/installPackages.js";
 import { selectBoilerplate } from "./helpers/selectBoilerplate.js";
+import { installDependencies } from "./helpers/installDependencies.js";
 
 // UTILS
 import { logger } from "./utils/logger.js";
@@ -42,6 +44,10 @@ const main = async () => {
       choices: ['sqlite'],
       description: 'Database to use'
     })
+    .option('runMigrations', {
+      type: 'boolean',
+      description: 'Run migrations'
+    })
     .option('orm', {  
       type: 'string',
       choices: ['drizzle'],
@@ -52,11 +58,11 @@ const main = async () => {
       choices: ['tailwind', 'css'],
       description: 'Styles to use'
     })
-    .option('git', {
+    .option('initializeGit', {
       type: 'boolean',
       description: 'Initialize Git repository'
     })
-    .option('install', {
+    .option('installDependencies', {
       type: 'boolean',
       description: 'Install dependencies'
     })
@@ -72,8 +78,9 @@ const main = async () => {
     database: argv.database as any,
     orm: argv.orm as any,
     styles: argv.styles as any,
-    git: argv.git,
-    install: argv.install
+    initializeGit: argv.initializeGit as boolean,
+    installDependencies: argv.installDependencies as boolean,
+    runMigrations: argv.runMigrations as boolean
   };
 
   // INJECT ENV VARIABLES ######################################################
@@ -82,6 +89,10 @@ const main = async () => {
   // START ####################################################################
   renderTitle();
   
+  // Log current Node.js version
+  logger.info(`Node.js version: ${process.version}`);
+  assert(process.version === "v22.15.1", "Node.js version must be 22.15.1");
+
   // 1. run the user prompt cli ###############################################
   const config: CLIResults = await runUserPromptCli(cliArgs);
 
@@ -112,55 +123,99 @@ const main = async () => {
     { spaces: 2 }
   );
 
-  // 6. install dependencies ##################################################
-  // if (config.installDependencies) {
-  // await installDependencies({
-  //     pkgManager: config.pkgManager,
-  //     projectDir: config.projectDir,
-  //   });
-  // }
-  
-  // ##########################################################################
-  // The following block attempts to execute `cd {config.projectName} && make kac`.
-  // It assumes `config.projectName` holds the name of the directory to change into,
-  // and that the current working directory of this script is the parent of `config.projectName`.
-  // `execSync` from `child_process` is required for this to work.
-  // Ensure `import { execSync } from 'child_process';` is present at the top of the file.
+  const NewPkgJson = fs.readJSONSync(
+    path.join(config.projectDir, "package.json")
+  );
+  logger.info(JSON.stringify(NewPkgJson, null, 2));
 
-  if (config.projectName) {
-    // Using quotes around config.projectName to handle potential spaces or special characters,
-    // though typically project names avoid these.
-    let command = `cd "${config.projectName}"`;
-    if (config.initializeGit) command += ` && git init && git add . && git commit -m "Initial Scaffolding : create-electron-foundation"`;
-    if (config.installDependencies) command += ` && npm i`;
-    if (ide) command += ` && ${ide} .`;
-    
-    const spinner = ora(`Executing: ${command}`).start();
-    
-    try {
-      // `stdio: 'inherit'` pipes the child process's stdio to the parent, making output visible.
-      execaSync(command, { stdio: 'inherit', shell: true });
-      spinner.succeed(chalk.green(`Successfully executed: ${command}`));
-    } catch (error) {
-      spinner.fail(chalk.red(`Failed to execute: ${command}`));
-      logger.error(`Command execution failed for project ${config.projectName}.`);
-      
-      if (error instanceof Error) {
-        logger.error(`Error: ${error.message}`);
-      } else {
-        logger.error(`An unknown error occurred during command execution: ${String(error)}`);
-      }
-
-      // The error object from execSync might have a 'status' property with the exit code.
-      if (typeof error === 'object' && error !== null && 'status' in error) {
-        logger.error(`Exit status: ${error.status}`);
-      }
-      // Consider if the main script should terminate on this failure.
-      // For example: process.exit(1);
-    }
-  } else {
-    logger.warn("Project name is not defined in the configuration. Skipping setup command.");
+  // 7. install dependencies ##################################################
+  if (config.installDependencies) {
+  await installDependencies({
+      pkgManager: config.pkgManager,
+      projectDir: config.projectDir,
+    });
   }
+
+  // 8. migrations #########################################################
+  // TODO: move to its own helper function
+  // @ts-ignore
+  if (config.installDependencies && config.packages.database.includes("sqlite") && config.packages.orm.includes("drizzle")) {
+    const migrationsSpinner = ora({
+      text: "Setting up database...",
+      spinner: "dots",
+    });
+    migrationsSpinner.start();
+
+    let command = `cd "${config.projectName}"`;
+    if (config.runMigrations) {
+      command += ` && npm run db:setup`;
+    } else {
+      command += ` && npm run db:generate && npm run rebuild`
+    }
+
+    try {
+      execaSync(command, { 
+        // stdio: 'inherit', 
+        shell: true 
+      });
+      migrationsSpinner.succeed(
+        chalk.green("Database setup completed successfully!")
+      );
+    } catch (err) {
+      logger.error(`Failed to execute: ${command}`);
+      logger.error(err);
+      migrationsSpinner.fail(
+        chalk.red("Database setup failed!")
+      );
+    }
+  }
+
+  // 9. initialize git ########################################################
+  if (config.initializeGit) {
+    const initializeGitSpinner = ora({
+      text: "Initializing Git...",
+      spinner: "dots",
+    });
+    initializeGitSpinner.start();
+
+    let command = `cd "${config.projectName}"`;
+    command += ` && git init && git add . && git commit -m "Initial Scaffolding : create-electron-foundation"`;
+
+    try {
+      execaSync(command, { 
+        // stdio: 'inherit', 
+        shell: true 
+      });
+      initializeGitSpinner.succeed(
+        chalk.green("Git initialized successfully!")
+      );
+    } catch (err) {
+      logger.error(`Failed to execute: ${command}`);
+      logger.error(err);
+      initializeGitSpinner.fail(
+        chalk.red("Git initialization failed!")
+      );
+    }
+  }
+
+  // 10. open in ide ##########################################################
+  if (ide) {
+    let command = `cd "${config.projectName}"`;
+    command += ` && ${ide} .`;
+
+    try {
+      execaSync(command, { 
+        // stdio: 'inherit', 
+        shell: true 
+      });
+    } catch (err) {
+      logger.error(`Failed to execute: ${command}`);
+      logger.error(err);
+    }
+  }
+
+
+  logger.success(`${config.projectName} ${chalk.bold.green("Project Initialized Successfully with create-electron-foundation!")}`);
 }
 
 main();

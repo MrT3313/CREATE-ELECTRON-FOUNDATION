@@ -14,13 +14,9 @@ export const installPackages = (options: InstallerOptions) => {
 
   for (const [name, pkgOpts] of Object.entries(packages) as [string, PkgInstallerMap[keyof PkgInstallerMap]][]) {
     if (pkgOpts.inUse) {
-      const spinner = ora(`Installing ${chalk.bold(name)}...`).start();
+      const spinner = ora(`${options.projectName} ${chalk.bold(`Handling: ${name}`)}...`).start();
       pkgOpts.installer(options);
-      spinner.succeed(
-        chalk.green(
-          `Successfully setup boilerplate for ${chalk.green.bold(name)}`
-        )
-      );
+      spinner.succeed(`${options.projectName} ${chalk.green(`setup boilerplate for`)} ${chalk.bold.green(name)}`);
     }
   }
 };

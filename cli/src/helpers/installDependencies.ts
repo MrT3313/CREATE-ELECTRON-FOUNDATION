@@ -9,20 +9,18 @@ import type { PackageManager } from "../types/Packages.js";
 const runInstallCommand = async (
   pkgManager: PackageManager,
   projectDir: string
-): Promise<null> => {
+): Promise<void> => {
   switch (pkgManager) {
-    // When using npm, inherit the stderr stream so that the progress bar is shown
     case "npm":
       await execa(pkgManager, ["install"], {
         cwd: projectDir,
+        stdout: "inherit",
         stderr: "inherit",
+        timeout: 300000, // 5 minutes timeout
       });
-
-      return null;
+      break;
     default:
-      // Or throw an error for unsupported package managers
-      // throw new Error(`Unsupported package manager: ${pkgManager}`);
-      return null; // Ensure all paths return null
+      throw new Error(`Unsupported package manager: ${pkgManager}`);
   }
 };
 
@@ -33,11 +31,25 @@ export const installDependencies = async ({
   projectDir: string;
   pkgManager?: PackageManager;
 }) => {
-  const installSpinner = await runInstallCommand(pkgManager, projectDir);
+  const installSpinner = ora({
+    text: "Installing dependencies...",
+    spinner: "dots",
+  });
+  
+  installSpinner.start();
 
-  // If the spinner was used to show the progress, use succeed method on it
-  // If not, use the succeed on a new spinner
-  (installSpinner ?? ora()).succeed(
-    chalk.green("Successfully installed dependencies!\n")
-  );
+  try {
+    // Stop spinner to show npm output
+    installSpinner.stop();
+    console.log(chalk.blue("Installing dependencies..."));
+    
+    await runInstallCommand(pkgManager, projectDir);
+    console.log(chalk.green("Installed dependencies!"));
+  } catch (error) {
+    console.log(chalk.red("Failed to install dependencies!"));
+    if (error instanceof Error && error.message.includes('timed out')) {
+      console.log(chalk.yellow("Installation timed out. Try running 'npm install' manually in the project directory."));
+    }
+    throw error;
+  }
 };

@@ -8,18 +8,20 @@ import type {
 
 export interface CLIArgs {
   projectName?: string;
+  initializeGit?: boolean;
+  installDependencies?: boolean;
+  runMigrations?: boolean;
   router?: RouterPackages;
   styles?: StylePackages;
   database?: DatabasePackages;
   orm?: ORMPackages;
-  git?: boolean;
-  install?: boolean;
 }
 
 export interface CLIDefaults {
   pkgManager: PackageManager; // "npm"
   initializeGit: boolean;
   installDependencies: boolean;
+  runMigrations: boolean;
   packages: {
     router: [RouterPackages]; // ["tanstack-router"] | ["react-router"]
     styles: [StylePackages] | []; // ["tailwind"] | ["css"] | []

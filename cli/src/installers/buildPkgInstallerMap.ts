@@ -20,7 +20,7 @@ export const buildPkgInstallerMap = (
   // databaseProvider: DatabaseProvider
   debug: boolean = false
 ): PkgInstallerMap => {
-  const spinner = ora("Building Pkg Installer Map...").start();
+  const spinner = ora(`${projectName} ${chalk.bold("Building")} ${chalk.bold("PkgInstallerMap")}...`).start();
 
   const map: PkgInstallerMap = {
     "tanstack-router": {
@@ -52,6 +52,6 @@ export const buildPkgInstallerMap = (
   if (debug) {
     logger.debug("🧯🧯 PkgInstallerMap", JSON.stringify(map, null, 2));
   }
-  spinner.succeed(`${projectName} ${chalk.green("pkgInstallerMap built")} successfully`);
+  spinner.succeed(`${projectName} ${chalk.bold.green("pkgInstallerMap built")} successfully`);
   return map;
 };

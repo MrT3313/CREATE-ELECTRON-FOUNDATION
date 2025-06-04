@@ -1,10 +1,6 @@
 import { setTimeout } from "node:timers/promises";
 import color from "picocolors";
 
-// TERMINAL
-import ora from "ora";
-import chalk from "chalk";
-
 // TERMINAL > user prompting
 import * as p from "@clack/prompts";
 
@@ -14,10 +10,14 @@ import { DEFAULT_APP_NAME } from "../consts.js";
 import type { CLIDefaults, CLIResults, CLIArgs } from "../types/CLI.js";
 import type { DatabasePackages, ORMPackages, RouterPackages } from "../types/Packages.js";
 
+// UTILS
+import { logger } from "../utils/logger.js";
+
 const defaultConfig: CLIDefaults = {
-  initializeGit: false,
   pkgManager: "npm",
+  initializeGit: false,
   installDependencies: true,
+  runMigrations: true,
   packages: {
     router: ["tanstack-router"],
     styles: ["tailwind"],
@@ -69,33 +69,57 @@ export const runUserPromptCli = async (cliArgs: CLIArgs = {}): Promise<CLIResult
         });
     }
 
-    // if (!cliArgs.database) {
-    //   prompts.database = () =>
-    //     p.select({
-    //       message: "Which database would you like to use?",
-    //       options: [
-    //         {
-    //           value: "sqlite",
-    //           label: "SQLite",
-    //         },
-    //       ],
-    //       initialValue: "sqlite",
-    //     });
-    // }
+    prompts.initializeDatabase = () =>
+      p.confirm({
+        message: "Should we initialize a database?",
+        initialValue: true,
+      });
 
-    // if (!cliArgs.orm) {
-    //   prompts.orm = () =>
-    //     p.select({
-    //       message: "Which ORM would you like to use?",
-    //       options: [
-    //         {
-    //           value: "drizzle", 
-    //           label: "Drizzle",
-    //         },
-    //       ],
-    //       initialValue: "drizzle",
-    //     });
-    // }
+    if (!cliArgs.database) {
+      prompts.database = ({ results }: { results: any }) => {
+        if (results.initializeDatabase) {
+          return p.select({
+            message: "Which database would you like to use?",
+            options: [
+              {
+                value: "sqlite",
+                label: "SQLite",
+              },
+            ],
+            initialValue: "sqlite",
+          });
+        }
+        return Promise.resolve(null);
+      };
+    }
+
+    prompts.initializeORM = ({ results }: { results: any }) => {
+      if (results.initializeDatabase) {
+        return p.confirm({
+          message: "Should we initialize an ORM?",
+          initialValue: true,
+        });
+      }
+      return Promise.resolve(false);
+    };
+
+    if (!cliArgs.orm) {
+      prompts.orm = ({ results }: { results: any }) => {
+        if (results.initializeDatabase && results.initializeORM) {
+          return p.select({
+            message: "Which ORM would you like to use?",
+            options: [
+              {
+                value: "drizzle", 
+                label: "Drizzle",
+              },
+            ],
+            initialValue: "drizzle",
+          });
+        }
+        return Promise.resolve(null);
+      };
+    }
 
     if (!cliArgs.styles) {
       prompts.useTailwind = () =>
@@ -105,7 +129,7 @@ export const runUserPromptCli = async (cliArgs: CLIArgs = {}): Promise<CLIResult
         });
     }
 
-    if (cliArgs.git === undefined) {
+    if (cliArgs.initializeGit === undefined) {
       prompts.initializeGit = () =>
         p.confirm({
           message:
@@ -114,7 +138,7 @@ export const runUserPromptCli = async (cliArgs: CLIArgs = {}): Promise<CLIResult
         });
     }
 
-    if (cliArgs.install === undefined) {
+    if (cliArgs.installDependencies === undefined) {
       prompts.installDependencies = () =>
         p.confirm({
           message:
@@ -133,11 +157,14 @@ export const runUserPromptCli = async (cliArgs: CLIArgs = {}): Promise<CLIResult
     // Get values from CLI args or prompts with fallbacks
     const projectName = cliArgs.projectName || (group as any).projectName || DEFAULT_APP_NAME;
     const router = cliArgs.router || (group as any).router || "tanstack-router";
-    const database = cliArgs.database || (group as any).database || "sqlite"
-    const orm = cliArgs.orm || (group as any).database || "drizzle"
+    const initializeDatabase = (group as any).initializeDatabase ?? false;
+    const database = cliArgs.database || (initializeDatabase ? ((group as any).database || "sqlite") : null);
+    const initializeORM = (group as any).initializeORM ?? false;
+    const orm = cliArgs.orm || (initializeDatabase && initializeORM ? ((group as any).orm || "drizzle") : null);
     const useTailwind = cliArgs.styles === "tailwind" || (cliArgs.styles === undefined && ((group as any).useTailwind ?? true));
-    const initializeGit = cliArgs.git !== undefined ? cliArgs.git : ((group as any).initializeGit ?? false);
-    const installDependencies = cliArgs.install !== undefined ? cliArgs.install : ((group as any).installDependencies ?? true);
+    const initializeGit = cliArgs.initializeGit !== undefined ? cliArgs.initializeGit : ((group as any).initializeGit ?? false);
+    const installDependencies = cliArgs.installDependencies !== undefined ? cliArgs.installDependencies : ((group as any).installDependencies ?? true);
+    const runMigrations = cliArgs.runMigrations !== undefined ? cliArgs.runMigrations : ((group as any).runMigrations ?? true);
 
     const config: CLIResults = {
       projectName,
@@ -145,29 +172,31 @@ export const runUserPromptCli = async (cliArgs: CLIArgs = {}): Promise<CLIResult
       ...defaultConfig,
       initializeGit,
       installDependencies,
+      runMigrations,
       packages: {
         router: [router as RouterPackages],
         styles: useTailwind ? ["tailwind"] : ["css"], 
-        database: [database as DatabasePackages],
-        orm: [orm as ORMPackages],
+        ...(database && { database: [database as DatabasePackages] }),
+        ...(orm && { orm: [orm as ORMPackages] }),
       }
     }
+
+    p.note(`
+      Project Name: ${config.projectName}
+      Router: ${config.packages.router}
+      Styles: ${config.packages.styles}${database ? `
+      Database: ${config.packages.database}` : ''}${orm ? `
+      ORM: ${config.packages.orm}` : ''}
+      Install Dependencies: ${config.installDependencies}
+      Run Migrations: ${config.runMigrations}
+      Initialize Git: ${config.initializeGit}`,
+      "Summary of your choices:"
+    );
 
     const s = p.spinner();
     s.start("Processing your choices");
     await setTimeout(1000); // Simulate work
     s.stop("Choices processed");
-
-    p.note(`
-      Project Name: ${config.projectName}\n
-      Router: ${config.packages.router}\n
-      Styles: ${config.packages.styles}\n
-      Database: ${config.packages.database}\n
-      ORM: ${config.packages.orm}\n
-      Install Dependencies: ${config.installDependencies}\n
-      Initialize Git: ${config.initializeGit}`,
-      "Summary of your choices:"
-    );
 
     return config;
   } catch (e) {
@@ -177,6 +206,7 @@ export const runUserPromptCli = async (cliArgs: CLIArgs = {}): Promise<CLIResult
       p.cancel("An unexpected error occurred.");
       console.error(e);
     }
+    logger.error("🚨🚨 Error running prompt cli", e);
     process.exit(1);
   }  
 }

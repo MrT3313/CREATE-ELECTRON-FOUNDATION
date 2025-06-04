@@ -1,6 +1,11 @@
 import path from "path";
 import fs from "fs-extra"
 import assert from "assert";
+import sort from "sort-package-json";
+
+// TERMINAL
+import ora from "ora";
+import chalk from "chalk";
 
 // UTILS
 import { logger } from "../utils/logger.js";
@@ -12,6 +17,7 @@ import { PKG_ROOT } from "../consts.js";
 import type { CLIResults } from "../types/CLI.js";
 
 export const selectBoilerplate = (config: CLIResults) => {
+  const spinner = ora(`${config.projectName} ${chalk.bold("Selecting Boilerplate")}...`).start();
   const srcDir = path.join(PKG_ROOT, "template/extras");
 
   try {
@@ -196,23 +202,34 @@ export const selectBoilerplate = (config: CLIResults) => {
         path.join(config.projectDir, "src", "api")
       );
 
-      // add package.json scripts
+      const drizzleScripts = {
+        "drizzle:rebuild": "npm rebuild better-sqlite3",
+        "drizzle:generate": "drizzle-kit generate",
+        "drizzle:migrate": "drizzle-kit migrate",
+        "drizzle:studio": "drizzle-kit studio"
+      };
+      
+      const workflowScripts = {
+        "db:setup": "npm run drizzle:rebuild && npm run drizzle:generate && npm run drizzle:migrate"
+      };
+      
       const pkgJson = fs.readJSONSync(path.join(config.projectDir, "package.json"));
       pkgJson.scripts = {
         ...pkgJson.scripts,
-        "postinstall": "npm run rebuild:all", 
-        "db:setup": "npm run db:generate && npm run rebuild:all && npm run db:migrate",
-        "db:generate": "drizzle-kit generate",
-        "db:migrate": "drizzle-kit migrate",
-        "db:push": "drizzle-kit push",
-        "db:studio": "drizzle-kit studio",
-        "rebuild": "npx @electron/rebuild",
-        "rebuild:all": "npm rebuild better-sqlite3 && npx @electron/rebuild",
-        "rebuild:db": "npm rebuild better-sqlite3",
+        // "postinstall": "electron-rebuild -f -w better-sqlite3",
+        ...drizzleScripts,
+        ...workflowScripts
       };
-      fs.writeJSONSync(path.join(config.projectDir, "package.json"), pkgJson, { spaces: 2 });
+      
+      const sortedPkgJson = sort(pkgJson);
+      fs.writeFileSync(
+        path.join(config.projectDir, "package.json"), 
+        JSON.stringify(sortedPkgJson, null, 2) + '\n'
+      );
     }
+    spinner.succeed(`${config.projectName} ${chalk.bold.green("Boilerplate selected")} successfully`);
   } catch (e) {
+    spinner.fail(`${config.projectName} ${chalk.red("Error selecting boilerplate")}`);
     logger.error("🚨🚨 Error selecting boilerplate", e);
     process.exit(1);
   }
