@@ -31,12 +31,14 @@ export const dbConnect = async ({
     db = drizzle(sqlite, { schema })
 
     // PRODUCTION MIGRATIONS ##################################################
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production' || process.env.RUN_MIGRATIONS === 'true') {
       try {
-        const migrationsDirectoryPath = path.join(__dirname, './migrations')
-        if (debug) dbConnectLogger.info(`🔍🔍 PRODUCTION Migrations directory path: ${migrationsDirectoryPath}`)
+        const migrationsDirectoryPath = path.join(__dirname, './db/migrations')
+        if (debug) dbConnectLogger.info(`🔍🔍 MIGRATIONS Migrations directory path: ${migrationsDirectoryPath}`)
         await migrate(db, { migrationsFolder: migrationsDirectoryPath })
+        dbConnectLogger.info(`✅✅ Migrations completed successfully`)
       } catch (error) {
+        dbConnectLogger.error(`❌❌ Migration failed: ${error.message}`)
         throw error
       }
     }

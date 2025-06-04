@@ -15,7 +15,7 @@ if (!existsSync(dbDir)) {
 export default defineConfig({
   dialect: 'sqlite',
   schema: './electron/main/db/schema/index.ts',
-  out: './migrations',
+  out: './electron/main/db/migrations',
   dbCredentials: {
     url: databasePath
   }

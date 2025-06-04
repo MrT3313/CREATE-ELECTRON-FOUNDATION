@@ -8,11 +8,11 @@ export const dependencyVersionMap = {
   "@tailwindcss/vite": "^4.1.7",
 
   // Drizzle
-  "drizzle-orm": "^0.43.1",
+  "drizzle-orm": "^0.44.1",
   "drizzle-kit": "^0.31.1",
 
   // SQLite
-  "better-sqlite3": "^11.8.0",
+  "better-sqlite3": "^11.10.0",
   "@types/better-sqlite3": "^7.6.1",
   
   // React Router
@@ -20,8 +20,8 @@ export const dependencyVersionMap = {
 
   // Tanstack
   // Tanstack > query
-  "@tanstack/react-query": "^5.79.0",
-  "@tanstack/react-query-devtools": "^5.79.0",
+  "@tanstack/react-query": "^5.80.2",
+  "@tanstack/react-query-devtools": "^5.80.2",
   // Tanstack > router
   "@tanstack/react-router": "^1.120.11",
   "@tanstack/react-router-devtools": "^1.120.11",

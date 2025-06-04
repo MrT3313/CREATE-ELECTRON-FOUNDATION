@@ -6,12 +6,7 @@
   "scripts": {
     "tanstackrouter:generate:routes": "npx @tanstack/router-cli ./src/routes -y",
     "dev": "vite",
-    "rebuild": "npx @electron/rebuild",
-    "postinstall": "npx @electron/rebuild",
-    "db:generate":"drizzle-kit generate",
-    "db:migrate":"drizzle-kit migrate",
-    "db:push":"drizzle-kit push",
-    "db:studio":"drizzle-kit studio"
+    "rebuild": "npx @electron/rebuild"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.79.0",
