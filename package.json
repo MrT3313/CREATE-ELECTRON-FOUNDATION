@@ -9,12 +9,26 @@
     "url": "https://github.com/MrT3313/CREATE-ELECTRON-FOUNDATION.git"
   },
   "license": "MIT",
-  "keywords": ["electron", "cli", "scaffolding", "boilerplate", "electronjs", "desktop-app", "interactive-cli", "create-app"],
+  "keywords": [
+    "electron",
+    "cli",
+    "scaffolding",
+    "boilerplate",
+    "electronjs",
+    "desktop-app",
+    "interactive-cli",
+    "create-app"
+  ],
   "bugs": {
     "url": "https://github.com/MrT3313/CREATE-ELECTRON-FOUNDATION/issues"
   },
   "homepage": "https://github.com/MrT3313/CREATE-ELECTRON-FOUNDATION#readme",
-  "files": ["cli/dist", "README.md", "LICENSE", "CHANGELOG.md"],
+  "files": [
+    "cli/dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "main": "cli/dist/index.js",
   "bin": {
     "create-electron-foundation": "cli/dist/index.js"
