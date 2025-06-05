@@ -1,11 +1,13 @@
 .PHONY: i ri build link unlink check-link
 
+# PACKAGE MANAGEMENT ##########################################################
 i:
 	npm install
 ri:
 	rm -rf node_modules package-lock.json
 	make i
 
+# BUILDING ####################################################################
 build:
 	@echo "Cleaning old build directory..."
 	@rm -rf dist
@@ -13,7 +15,22 @@ build:
 	@echo "Making cli/dist/index.js executable..."
 	@chmod +x cli/dist/index.js
 
-# Symlink management
+# PUBLISHING ##################################################################
+pack:
+	npm pack
+
+dry-run:
+	npm publish --dry-run
+
+PUBLISH_TAG=alpha
+publish:
+	@if [ "$$(git branch --show-current)" != "main" ]; then \
+		echo "Error: publish can only be run on the main branch"; \
+		exit 1; \
+	fi
+	npm publish --tag $(PUBLISH_TAG)
+
+# SYMLINK MANAGEMENT ##########################################################
 command=create-electron-foundation
 
 link: build
@@ -43,5 +60,6 @@ check-link:
 	fi
 	@echo "-----------------------------------------------------"
 
+# TESTING #####################################################################
 batch-test:
 	cd TEST && ./batch.test.sh

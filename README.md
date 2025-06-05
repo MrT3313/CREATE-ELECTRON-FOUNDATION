@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  Get started by running: <code>...published-npm-command...</code>
+  Get started by running: <code>npx create-electron-foundation@alpha</code>
 </p>
 
 ## 🛠️ Customizable Setup
