@@ -3,6 +3,18 @@
   "type": "module",
   "version": "0.0.4",
   "description": "A CLI tool to scaffold Electron projects",
+  "author": "Reed Turgeon <turgeon.devd@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MrT3313/CREATE-ELECTRON-FOUNDATION.git"
+  },
+  "license": "MIT",
+  "keywords": ["electron", "cli", "scaffolding", "boilerplate", "electronjs", "desktop-app", "interactive-cli", "create-app"],
+  "bugs": {
+    "url": "https://github.com/MrT3313/CREATE-ELECTRON-FOUNDATION/issues"
+  },
+  "homepage": "https://github.com/MrT3313/CREATE-ELECTRON-FOUNDATION#readme",
+  "files": ["cli/dist", "README.md", "LICENSE", "CHANGELOG.md"],
   "main": "cli/dist/index.js",
   "bin": {
     "create-electron-foundation": "cli/dist/index.js"
@@ -15,9 +27,6 @@
     "@types/node": "^22.15.27",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@create-electron-foundation/cli": "workspace:*"
   },
   "workspaces": [
     "cli"
