@@ -128,12 +128,34 @@
   - `npx create-electron-foundation --help` (Output: Help menu displayed)
 - **Verification**: CLI is executable and basic commands work as expected from local install.
 
-## Phase 3: Versioning with NPM - STARTED
+## Phase 3: Versioning with NPM - COMPLETED ✅
 
 ### Step 3.1: Execute `npm version`
 
-**Status**: FAILED ❌ (Git working directory not clean)
+**Status**: COMPLETED ✅
 
-- **Command Attempted**: `npm version $(node -p "require('./package.json').version") -m "chore: release %s" --allow-same-version`
-- **Error**: `npm error Git working directory not clean.`
-- **Next Steps**: User advised to run `git status`, then commit or stash changes, and confirm when the directory is clean.
+- **Command**: `npm version $(node -p "require('./package.json').version") -m "chore: release %s" --allow-same-version`
+- **Outcome**: Command executed successfully. Output: `v0.0.4`. Git commit and tag created.
+
+## Phase 4: NPM Publishing - STARTED
+
+### Step 4.1: Login to NPM (if not already done)
+
+**Status**: COMPLETED ✅
+
+- **Action**: User ran `npm login` and confirmed login status with `npm whoami` (Logged in as `mrt13`).
+
+### Step 4.2: Perform NPM Publish Dry Run
+
+**Status**: COMPLETED ✅
+
+- **Command**: `npm publish --dry-run` executed successfully.
+- **Warning Addressed**: `repository.url` corrected to `git+https://...` in `package.json`, and `npm pkg fix` was run.
+- **Verification**: Dry run output confirmed package contents and readiness.
+
+### Step 4.3: Publish to NPM Registry
+
+**Status**: PENDING USER CONFIRMATION (npm publish command) ⏳
+
+- **Command Proposed**: `npm publish`
+- **Purpose**: To publish the package to the NPM registry, making it publicly available.

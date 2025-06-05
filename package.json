@@ -6,7 +6,7 @@
   "author": "Reed Turgeon <turgeon.devd@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MrT3313/CREATE-ELECTRON-FOUNDATION.git"
+    "url": "git+https://github.com/MrT3313/CREATE-ELECTRON-FOUNDATION.git"
   },
   "license": "MIT",
   "keywords": [
