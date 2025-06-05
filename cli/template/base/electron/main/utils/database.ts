@@ -4,12 +4,14 @@ import { existsSync, mkdirSync } from 'fs'
 import { getDbConfig, APP_NAME } from './consts'
 
 // Safely try to import Electron app module
-let electronApp: any = null;
+let electronApp: any = null
 try {
-  const electron = require('electron');
-  electronApp = electron.app;
+  const electron = require('electron')
+  electronApp = electron.app
 } catch (error) {
-  console.log('Running in non-Electron environment, using fallbacks for app APIs');
+  console.log(
+    'Running in non-Electron environment, using fallbacks for app APIs'
+  )
 }
 
 /**
@@ -19,14 +21,14 @@ export function getDatabaseDir(): string {
   try {
     // Try Electron's app.getPath if available
     if (electronApp) {
-      return electronApp.getPath('userData');
+      return electronApp.getPath('userData')
     }
-    throw new Error('Not in Electron context');
+    throw new Error('Not in Electron context')
   } catch {
     // Fallback for non-Electron environment (like drizzle-kit)
     const homeDir = os.homedir()
     const platform = os.platform()
-    
+
     switch (platform) {
       case 'darwin':
         return path.join(homeDir, 'Library', 'Application Support', APP_NAME)
@@ -44,11 +46,11 @@ export function getDatabaseDir(): string {
 export function getDatabasePath(): string {
   const dbDir = getDatabaseDir()
   const dbPath = path.join(dbDir, getDbConfig().name)
-  
+
   // Ensure the directory exists
   if (!existsSync(dbDir)) {
     mkdirSync(dbDir, { recursive: true })
   }
-  
+
   return dbPath
-} 
+}

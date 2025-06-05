@@ -56,8 +56,8 @@ const preloadPath = path.join(__dirname, '../preload/index.js')
 // CONFIGURE: main window #####################################################
 const webPreferences = {
   preload: preloadPath,
-  // enables Node.js integration in the renderer process. 
-  // This should be used with caution as it can pose security risks. 
+  // enables Node.js integration in the renderer process.
+  // This should be used with caution as it can pose security risks.
   //    > 👀 just keep it disabled.
   nodeIntegration: false,
   // context isolation creates a separate JavaScript context for the preload script.
@@ -105,10 +105,12 @@ async function createWindow() {
     win.loadURL(process.env.VITE_DEV_SERVER_URL)
   } else {
     const indexPath = path.join(process.env.DIST!, 'index.html')
-    if (fs.existsSync(indexPath)) {      
+    if (fs.existsSync(indexPath)) {
       win.loadFile(indexPath)
     } else {
-      mainLogger.error(`Index file not found at: ${indexPath}. This is the expected location for the production build.`)
+      mainLogger.error(
+        `Index file not found at: ${indexPath}. This is the expected location for the production build.`
+      )
 
       const errorHtml = `
         <html>
@@ -121,7 +123,9 @@ async function createWindow() {
           </body>
         </html>
       `
-      win.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(errorHtml)}`)
+      win.loadURL(
+        `data:text/html;charset=utf-8,${encodeURIComponent(errorHtml)}`
+      )
     }
   }
 }
@@ -134,7 +138,7 @@ app.whenReady().then(async () => {
     await dbInit()
 
     // Creates the main application window after the database is initialized.
-    await createWindow()  
+    await createWindow()
   } catch (error) {
     mainLogger.error('🚨🚨 Failed to initialize application:', error)
     app.quit()
@@ -189,6 +193,8 @@ ipcMain.handle('open-win', (_, arg) => {
   if (process.env.VITE_DEV_SERVER_URL) {
     childWindow.loadURL(`${process.env.VITE_DEV_SERVER_URL}#${arg}`)
   } else {
-    childWindow.loadFile(path.join(process.env.DIST, 'index.html'), { hash: arg })
+    childWindow.loadFile(path.join(process.env.DIST, 'index.html'), {
+      hash: arg,
+    })
   }
 })

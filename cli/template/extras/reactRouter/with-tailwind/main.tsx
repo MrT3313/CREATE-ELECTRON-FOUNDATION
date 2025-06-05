@@ -9,22 +9,26 @@ const mainLogger = log.scope('main.tsx')
 function ErrorDisplay({ error }: { error: Error | string }) {
   const errorMessage = error instanceof Error ? error.message : error
   const errorStack = error instanceof Error ? error.stack : ''
-  
+
   return (
-    <div style={{
-      padding: '20px',
-      fontFamily: 'monospace',
-      color: 'white',
-      backgroundColor: '#ff0000',
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      overflow: 'auto',
-      zIndex: 9999
-    }}>
-      <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>Application Error</h1>
+    <div
+      style={{
+        padding: '20px',
+        fontFamily: 'monospace',
+        color: 'white',
+        backgroundColor: '#ff0000',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        overflow: 'auto',
+        zIndex: 9999,
+      }}
+    >
+      <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>
+        Application Error
+      </h1>
       <div style={{ marginBottom: '20px' }}>
         <strong>Message:</strong> {errorMessage}
       </div>
@@ -48,7 +52,7 @@ try {
   if (!rootElement) {
     throw new Error('Root element #app not found')
   }
-  
+
   const root = createRoot(rootElement)
   root.render(
     <React.StrictMode>
@@ -57,11 +61,11 @@ try {
       </MemoryRouter>
     </React.StrictMode>
   )
-  
+
   mainLogger.info(`🎉🎉 App rendered successfully`)
 } catch (error) {
   mainLogger.error(`🚨🚨 Failed to initialize renderer:`, error)
-  
+
   // Display error on screen for debugging
   const rootElement = document.getElementById('app')
   if (rootElement) {

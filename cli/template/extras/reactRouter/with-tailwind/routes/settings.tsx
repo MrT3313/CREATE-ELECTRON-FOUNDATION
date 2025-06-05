@@ -12,14 +12,22 @@ export function Settings() {
 
   const navigate = useNavigate()
   return (
-    <div className={cx('flex flex-col items-center w-full py-8 px-4 overflow-y-auto')}>
+    <div
+      className={cx(
+        'flex flex-col items-center w-full py-8 px-4 overflow-y-auto'
+      )}
+    >
       <h1 className="text-2xl font-bold text-white text-center">Settings</h1>
-      
+
       <div className={cx('flex flex-col', 'gap-2')}>
-        <button 
-          className={cx('border border-white p-2 m-2 rounded-md hover:bg-blue-600 text-white transition-colors')}
+        <button
+          className={cx(
+            'border border-white p-2 m-2 rounded-md hover:bg-blue-600 text-white transition-colors'
+          )}
           onClick={() => navigate('/')}
-        >Home</button>
+        >
+          Home
+        </button>
       </div>
     </div>
   )

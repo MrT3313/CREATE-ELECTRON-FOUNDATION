@@ -5,15 +5,15 @@ import * as schema from './schema'
 import { getDatabasePath } from '../utils/database'
 import { getDbConfig } from '../utils/consts'
 import path from 'path'
-export let db: BetterSQLite3Database<typeof schema>;
+export let db: BetterSQLite3Database<typeof schema>
 import log from '../logger/index'
 
 // CONNECT TO DATABASE ########################################################
 const dbConnectLogger = log.scope('db/dbConnect.ts')
-export const dbConnect = async ({ 
-  debug = true 
-}: { 
-  debug?: boolean 
+export const dbConnect = async ({
+  debug = true,
+}: {
+  debug?: boolean
 } = {}) => {
   try {
     const dbPath = getDatabasePath()
@@ -31,10 +31,16 @@ export const dbConnect = async ({
     db = drizzle(sqlite, { schema })
 
     // PRODUCTION MIGRATIONS ##################################################
-    if (process.env.NODE_ENV === 'production' || process.env.RUN_MIGRATIONS === 'true') {
+    if (
+      process.env.NODE_ENV === 'production' ||
+      process.env.RUN_MIGRATIONS === 'true'
+    ) {
       try {
         const migrationsDirectoryPath = path.join(__dirname, './db/migrations')
-        if (debug) dbConnectLogger.info(`🔍🔍 MIGRATIONS Migrations directory path: ${migrationsDirectoryPath}`)
+        if (debug)
+          dbConnectLogger.info(
+            `🔍🔍 MIGRATIONS Migrations directory path: ${migrationsDirectoryPath}`
+          )
         await migrate(db, { migrationsFolder: migrationsDirectoryPath })
         dbConnectLogger.info(`✅✅ Migrations completed successfully`)
       } catch (error) {
@@ -42,8 +48,10 @@ export const dbConnect = async ({
         throw error
       }
     }
-    
-    dbConnectLogger.info(`🎉🎉 Database connection and setup completed successfully`)
+
+    dbConnectLogger.info(
+      `🎉🎉 Database connection and setup completed successfully`
+    )
   } catch (error) {
     dbConnectLogger.error(`🔴🔴 Database connection failed: ${error.message}`)
     throw new Error(`Database connection failed: ${error.message}`)

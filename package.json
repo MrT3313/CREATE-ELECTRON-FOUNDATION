@@ -1,7 +1,7 @@
 {
   "name": "create-electron-foundation",
   "type": "module",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A CLI tool to scaffold Electron projects",
   "author": "Reed Turgeon <turgeon.devd@gmail.com>",
   "repository": {
@@ -48,12 +48,22 @@
   },
   "scripts": {
     "build": "npm run build -w @create-electron-foundation/cli",
-    "start": "node cli/dist/index.js"
+    "start": "node cli/dist/index.js",
+    "lint": "npm run lint -w @create-electron-foundation/cli",
+    "format": "npm run format -w @create-electron-foundation/cli",
+    "format:check": "npm run format:check -w @create-electron-foundation/cli"
   },
   "devDependencies": {
     "@types/node": "^22.15.27",
+    "@typescript-eslint/eslint-plugin": "^8.33.1",
+    "@typescript-eslint/parser": "^8.33.1",
+    "eslint": "^9.28.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.4.1",
+    "prettier": "^3.5.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.33.1"
   },
   "workspaces": [
     "cli"

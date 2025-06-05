@@ -1,5 +1,5 @@
-import log from 'electron-log/renderer';
+import log from 'electron-log/renderer'
 
-log.scope.labelPadding = false;
+log.scope.labelPadding = false
 
-export default log;
+export default log

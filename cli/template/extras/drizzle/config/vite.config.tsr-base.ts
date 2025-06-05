@@ -27,10 +27,10 @@ export default defineConfig(async ({ command }) => {
         output: {
           manualChunks: {
             'react-vendor': ['react', 'react-dom'],
-            'tanstack-router': ['@tanstack/react-router']
-          }
-        }
-      }
+            'tanstack-router': ['@tanstack/react-router'],
+          },
+        },
+      },
     },
     server: {
       port: 5173,
@@ -38,14 +38,14 @@ export default defineConfig(async ({ command }) => {
     },
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src')
-      }
+        '@': path.resolve(__dirname, './src'),
+      },
     },
     plugins: [
-      TanStackRouterVite({ 
-        target: 'react', 
+      TanStackRouterVite({
+        target: 'react',
         autoCodeSplitting: true,
-        generatedRouteTree: './src/routeTree.gen.ts'
+        generatedRouteTree: './src/routeTree.gen.ts',
       }),
       react(),
       electron([
@@ -54,11 +54,13 @@ export default defineConfig(async ({ command }) => {
           entry: 'electron/main/index.ts',
           onstart(args) {
             if (process.env.RENDERER_ONLY_MODE === 'true') {
-              console.log('[startup] RENDERER_ONLY_MODE: Main process startup skipped.');
+              console.log(
+                '[startup] RENDERER_ONLY_MODE: Main process startup skipped.'
+              )
             } else if (process.env.VSCODE_DEBUG) {
-              console.log('[startup] Electron App');
+              console.log('[startup] Electron App')
             } else {
-              args.startup();
+              args.startup()
             }
           },
           vite: {
@@ -67,7 +69,7 @@ export default defineConfig(async ({ command }) => {
               minify: isBuild,
               outDir: 'dist-electron/main',
               rollupOptions: {
-                external: Object.keys(pkg.dependencies || {})
+                external: Object.keys(pkg.dependencies || {}),
               },
             },
           },
@@ -103,7 +105,7 @@ export default defineConfig(async ({ command }) => {
         {
           entry: 'electron/preload/index.ts',
           onstart(args) {
-            // Notify the Renderer process to reload the page when the Preload scripts build is complete, 
+            // Notify the Renderer process to reload the page when the Preload scripts build is complete,
             // instead of restarting the entire Electron App.
             args.reload()
           },
@@ -113,13 +115,13 @@ export default defineConfig(async ({ command }) => {
               minify: isBuild,
               outDir: 'dist-electron/preload',
               rollupOptions: {
-                external: Object.keys(pkg.dependencies || {})
+                external: Object.keys(pkg.dependencies || {}),
               },
             },
           },
-        }
+        },
       ]),
-      copyMigrationsPlugin()
+      copyMigrationsPlugin(),
     ],
     clearScreen: false,
   }
@@ -130,22 +132,28 @@ function copyMigrationsPlugin() {
   return {
     name: 'copy-migrations',
     writeBundle() {
-      const migrationsSource = path.resolve(__dirname, 'electron/main/db/migrations')
-      const migrationsTarget = path.resolve(__dirname, 'dist-electron/main/db/migrations')
-      
+      const migrationsSource = path.resolve(
+        __dirname,
+        'electron/main/db/migrations'
+      )
+      const migrationsTarget = path.resolve(
+        __dirname,
+        'dist-electron/main/db/migrations'
+      )
+
       if (fs.existsSync(migrationsSource)) {
         // Ensure the db directory exists
         const dbDir = path.dirname(migrationsTarget)
         if (!fs.existsSync(dbDir)) {
           fs.mkdirSync(dbDir, { recursive: true })
         }
-        
+
         if (fs.existsSync(migrationsTarget)) {
           fs.rmSync(migrationsTarget, { recursive: true, force: true })
         }
         fs.cpSync(migrationsSource, migrationsTarget, { recursive: true })
         console.log('✅ Migrations copied to dist/db directory')
       }
-    }
+    },
   }
 }

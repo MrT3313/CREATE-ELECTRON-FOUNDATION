@@ -5,7 +5,7 @@ import log from 'electron-log/renderer'
 const utilityProcessLogger = log.scope('settings')
 
 export const Route = createFileRoute('/settings')({
-  component: Settings
+  component: Settings,
 })
 
 export function Settings() {
@@ -19,11 +19,10 @@ export function Settings() {
       <div className="page">
         <div className="container">
           <h1>Settings</h1>
-          
-          <button 
-            className="btn"
-            onClick={() => router.navigate({ to: '/' })}
-          >Home</button>
+
+          <button className="btn" onClick={() => router.navigate({ to: '/' })}>
+            Home
+          </button>
         </div>
       </div>
     </div>

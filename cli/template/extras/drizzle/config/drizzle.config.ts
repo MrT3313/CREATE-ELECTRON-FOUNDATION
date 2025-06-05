@@ -17,6 +17,6 @@ export default defineConfig({
   schema: './electron/main/db/schema/index.ts',
   out: './electron/main/db/migrations',
   dbCredentials: {
-    url: databasePath
-  }
+    url: databasePath,
+  },
 })

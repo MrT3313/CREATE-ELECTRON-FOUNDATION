@@ -6,7 +6,7 @@ import log from 'electron-log/renderer'
 const utilityProcessLogger = log.scope('settings')
 
 export const Route = createFileRoute('/settings')({
-  component: Settings
+  component: Settings,
 })
 
 export function Settings() {
@@ -16,14 +16,22 @@ export function Settings() {
 
   const router = useRouter()
   return (
-    <div className={cx('flex flex-col items-center w-full py-8 px-4 overflow-y-auto')}>
+    <div
+      className={cx(
+        'flex flex-col items-center w-full py-8 px-4 overflow-y-auto'
+      )}
+    >
       <h1 className="text-2xl font-bold text-white text-center">Settings</h1>
-      
+
       <div className={cx('flex flex-col', 'gap-2')}>
-        <button 
-          className={cx('border border-white p-2 m-2 rounded-md hover:bg-blue-600 text-white transition-colors')}
+        <button
+          className={cx(
+            'border border-white p-2 m-2 rounded-md hover:bg-blue-600 text-white transition-colors'
+          )}
           onClick={() => router.navigate({ to: '/' })}
-        >Home</button>
+        >
+          Home
+        </button>
       </div>
     </div>
   )

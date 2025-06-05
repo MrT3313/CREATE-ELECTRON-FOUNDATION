@@ -28,7 +28,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 // Exposes a custom API `electronAPI` to the renderer process.
 contextBridge.exposeInMainWorld('electronAPI', {
   launchCounterUtility: () => ipcRenderer.invoke('launch-counter-utility'),
-  launchRngUtility: () => ipcRenderer.invoke('launch-rng-utility')
+  launchRngUtility: () => ipcRenderer.invoke('launch-rng-utility'),
 })
 
 // Exposes specific environment variables to the renderer process.
@@ -40,7 +40,9 @@ contextBridge.exposeInMainWorld('env', {
 // A utility function that returns a Promise, resolving when the document's readyState
 // matches one of the specified conditions (defaulting to 'complete' or 'interactive').
 // This is useful for ensuring that DOM manipulations occur only after the DOM is ready.
-function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
+function domReady(
+  condition: DocumentReadyState[] = ['complete', 'interactive']
+) {
   return new Promise((resolve) => {
     if (condition.includes(document.readyState)) {
       resolve(true)
@@ -59,12 +61,12 @@ function domReady(condition: DocumentReadyState[] = ['complete', 'interactive'])
 // to prevent duplicate appends or errors during removal.
 const safeDOM = {
   append(parent: HTMLElement, child: HTMLElement) {
-    if (!Array.from(parent.children).find(e => e === child)) {
+    if (!Array.from(parent.children).find((e) => e === child)) {
       return parent.appendChild(child)
     }
   },
   remove(parent: HTMLElement, child: HTMLElement) {
-    if (Array.from(parent.children).find(e => e === child)) {
+    if (Array.from(parent.children).find((e) => e === child)) {
       return parent.removeChild(child)
     }
   },

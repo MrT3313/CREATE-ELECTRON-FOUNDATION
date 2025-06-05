@@ -1,18 +1,18 @@
-import ora from "ora";
-import chalk from "chalk";
+import ora from 'ora'
+import chalk from 'chalk'
 
 // INSTALLERS
-import { tailwindInstaller } from "./tailwind.js";
-import { tanstackRouterInstaller } from "./tanstackRouter.js";
-import { reactRouterInstaller } from "./reactRouter.js";
-import { sqliteInstaller } from "./sqlite.js";
-import { drizzleInstaller } from "./drizzle.js";
+import { tailwindInstaller } from './tailwind.js'
+import { tanstackRouterInstaller } from './tanstackRouter.js'
+import { reactRouterInstaller } from './reactRouter.js'
+import { sqliteInstaller } from './sqlite.js'
+import { drizzleInstaller } from './drizzle.js'
 
 // UTILS
-import { logger } from "../utils/logger.js";
+import { logger } from '../utils/logger.js'
 
 // TYPES
-import type { AvailablePackages, PkgInstallerMap } from "../types/Packages.js";
+import type { AvailablePackages, PkgInstallerMap } from '../types/Packages.js'
 
 export const buildPkgInstallerMap = (
   projectName: string,
@@ -20,38 +20,42 @@ export const buildPkgInstallerMap = (
   // databaseProvider: DatabaseProvider
   debug: boolean = false
 ): PkgInstallerMap => {
-  const spinner = ora(`${projectName} ${chalk.bold("Building")} ${chalk.bold("PkgInstallerMap")}...`).start();
+  const spinner = ora(
+    `${projectName} ${chalk.bold('Building')} ${chalk.bold('PkgInstallerMap')}...`
+  ).start()
 
   const map: PkgInstallerMap = {
-    "tanstack-router": {
-      inUse: packages.includes("tanstack-router"),
+    'tanstack-router': {
+      inUse: packages.includes('tanstack-router'),
       installer: tanstackRouterInstaller,
     },
-    "react-router": {
-      inUse: packages.includes("react-router"),
+    'react-router': {
+      inUse: packages.includes('react-router'),
       installer: reactRouterInstaller,
     },
-    "sqlite": {
-      inUse: packages.includes("sqlite"),
+    sqlite: {
+      inUse: packages.includes('sqlite'),
       installer: sqliteInstaller,
     },
-    "drizzle": {
-      inUse: packages.includes("drizzle"),
+    drizzle: {
+      inUse: packages.includes('drizzle'),
       installer: drizzleInstaller,
     },
     tailwind: {
-      inUse: packages.includes("tailwind"),
+      inUse: packages.includes('tailwind'),
       installer: tailwindInstaller,
     },
-    "css": {
-      inUse: packages.includes("css"),
+    css: {
+      inUse: packages.includes('css'),
       installer: () => {},
-    }
-  };
+    },
+  }
 
   if (debug) {
-    logger.debug("🧯🧯 PkgInstallerMap", JSON.stringify(map, null, 2));
+    logger.debug('🧯🧯 PkgInstallerMap', JSON.stringify(map, null, 2))
   }
-  spinner.succeed(`${projectName} ${chalk.bold.green("pkgInstallerMap built")} successfully`);
-  return map;
-};
+  spinner.succeed(
+    `${projectName} ${chalk.bold.green('pkgInstallerMap built')} successfully`
+  )
+  return map
+}

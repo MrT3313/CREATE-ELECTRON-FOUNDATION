@@ -2,16 +2,13 @@ import { useQuery } from '@tanstack/react-query'
 
 import { Resource } from '../../types/resource'
 
-export const useGetResource = ({
-  enabled = true,
-}: {
-  enabled?: boolean
-}) => {
+export const useGetResource = ({ enabled = true }: { enabled?: boolean }) => {
   return useQuery<Resource>({
     queryKey: ['resource'],
     queryFn: () => {
-      return fetch('https://jsonplaceholder.typicode.com/posts/1')
-        .then(res => res.json())
+      return fetch('https://jsonplaceholder.typicode.com/posts/1').then((res) =>
+        res.json()
+      )
     },
     enabled,
     staleTime: 1000 * 60 * 5, // 5 minutes

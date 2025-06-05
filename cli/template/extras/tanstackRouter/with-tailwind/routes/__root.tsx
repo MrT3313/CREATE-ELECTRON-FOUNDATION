@@ -12,11 +12,15 @@ export const Route = createRootRoute({
 export function Root() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className={cx(
-        'flex flex-col', 
-        'items-center',
-        'min-h-screen', 'bg-blue-500', 'overflow-y-auto'
-      )}>
+      <div
+        className={cx(
+          'flex flex-col',
+          'items-center',
+          'min-h-screen',
+          'bg-blue-500',
+          'overflow-y-auto'
+        )}
+      >
         <Outlet />
       </div>
       <TanStackRouterDevtools position="bottom-right" />

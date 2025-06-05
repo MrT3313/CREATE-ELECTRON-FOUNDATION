@@ -10,16 +10,13 @@ export function Settings() {
   const [isRngRunning, setIsRngRunning] = useState<boolean>(false)
 
   const navigate = useNavigate()
-  
+
   return (
     <div className="page">
       <div className="container">
         <h1>Settings</h1>
-        
-        <button 
-          className="btn"
-          onClick={() => navigate('/')}
-        >
+
+        <button className="btn" onClick={() => navigate('/')}>
           Home
         </button>
       </div>

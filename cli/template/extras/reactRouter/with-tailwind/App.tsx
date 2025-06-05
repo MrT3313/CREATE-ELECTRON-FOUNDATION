@@ -11,11 +11,15 @@ import NotFoundPage from './routes/_404'
 const RootLayout = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className={cx(
-        'flex flex-col', 
-        'items-center',
-        'min-h-screen', 'bg-blue-500', 'overflow-y-auto'
-      )}>
+      <div
+        className={cx(
+          'flex flex-col',
+          'items-center',
+          'min-h-screen',
+          'bg-blue-500',
+          'overflow-y-auto'
+        )}
+      >
         <Outlet />
       </div>
       <ReactQueryDevtools initialIsOpen={false} />
@@ -35,4 +39,4 @@ function App() {
   )
 }
 
-export default App 
+export default App

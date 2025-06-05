@@ -2,16 +2,14 @@ import { useQuery } from '@tanstack/react-query'
 
 import { Resource } from '../../types/resource'
 
-export const useGetResource = ({
-  enabled = true,
-}: {
-  enabled?: boolean
-}) => {
+export const useGetResource = ({ enabled = true }: { enabled?: boolean }) => {
   return useQuery<Resource>({
     queryKey: ['resource'],
     queryFn: async () => {
       try {
-        const response = await window.ipcRenderer.invoke('db/resource/getResource')
+        const response = await window.ipcRenderer.invoke(
+          'db/resource/getResource'
+        )
         return response
       } catch (err) {
         throw err
@@ -28,11 +26,7 @@ export const useGetResource = ({
   })
 }
 
-export const useGetResources = ({
-  enabled = true,
-}: {
-  enabled?: boolean
-}) => {
+export const useGetResources = ({ enabled = true }: { enabled?: boolean }) => {
   return useQuery<Resource[]>({
     queryKey: ['resources'],
     queryFn: async () => {

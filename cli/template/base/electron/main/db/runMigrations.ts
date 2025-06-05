@@ -19,7 +19,7 @@ const runMigrations = async () => {
     console.log(`🔍 Migrations directory: ${migrationsDirectoryPath}`)
 
     await migrate(db, { migrationsFolder: migrationsDirectoryPath })
-    
+
     console.log('✅ Migrations completed successfully!')
     sqlite.close()
   } catch (error) {
@@ -28,4 +28,4 @@ const runMigrations = async () => {
   }
 }
 
-runMigrations() 
+runMigrations()

@@ -26,9 +26,9 @@ export default defineConfig(async ({ command }) => {
         output: {
           manualChunks: {
             'react-vendor': ['react', 'react-dom'],
-          }
-        }
-      }
+          },
+        },
+      },
     },
     server: {
       port: 5173,
@@ -36,8 +36,8 @@ export default defineConfig(async ({ command }) => {
     },
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src')
-      }
+        '@': path.resolve(__dirname, './src'),
+      },
     },
     plugins: [
       react(),
@@ -47,11 +47,13 @@ export default defineConfig(async ({ command }) => {
           entry: 'electron/main/index.ts',
           onstart(args) {
             if (process.env.RENDERER_ONLY_MODE === 'true') {
-              console.log('[startup] RENDERER_ONLY_MODE: Main process startup skipped.');
+              console.log(
+                '[startup] RENDERER_ONLY_MODE: Main process startup skipped.'
+              )
             } else if (process.env.VSCODE_DEBUG) {
-              console.log('[startup] Electron App');
+              console.log('[startup] Electron App')
             } else {
-              args.startup();
+              args.startup()
             }
           },
           vite: {
@@ -60,7 +62,7 @@ export default defineConfig(async ({ command }) => {
               minify: isBuild,
               outDir: 'dist-electron/main',
               rollupOptions: {
-                external: Object.keys(pkg.dependencies || {})
+                external: Object.keys(pkg.dependencies || {}),
               },
             },
           },
@@ -96,7 +98,7 @@ export default defineConfig(async ({ command }) => {
         {
           entry: 'electron/preload/index.ts',
           onstart(args) {
-            // Notify the Renderer process to reload the page when the Preload scripts build is complete, 
+            // Notify the Renderer process to reload the page when the Preload scripts build is complete,
             // instead of restarting the entire Electron App.
             args.reload()
           },
@@ -106,11 +108,11 @@ export default defineConfig(async ({ command }) => {
               minify: isBuild,
               outDir: 'dist-electron/preload',
               rollupOptions: {
-                external: Object.keys(pkg.dependencies || {})
+                external: Object.keys(pkg.dependencies || {}),
               },
             },
           },
-        }
+        },
       ]),
     ],
     clearScreen: false,
