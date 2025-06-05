@@ -19,6 +19,13 @@ build:
 pack:
 	npm pack
 
+publish:
+	@if [ "$$(git branch --show-current)" != "main" ]; then \
+		echo "Error: publish can only be run on the main branch"; \
+		exit 1; \
+	fi
+	npm publish
+
 # SYMLINK MANAGEMENT ##########################################################
 command=create-electron-foundation
 
