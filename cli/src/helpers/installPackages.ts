@@ -18,11 +18,11 @@ export const installPackages = (options: InstallerOptions) => {
   ][]) {
     if (pkgOpts.inUse) {
       const spinner = ora(
-        `${options.projectName} ${chalk.bold(`Handling: ${name}`)}...`
+        `${options.project_name} ${chalk.bold(`Handling: ${name}`)}...`
       ).start()
       pkgOpts.installer(options)
       spinner.succeed(
-        `${options.projectName} ${chalk.green(`setup boilerplate for`)} ${chalk.bold.green(name)}`
+        `${options.project_name} ${chalk.green(`setup boilerplate for`)} ${chalk.bold.green(name)}`
       )
     }
   }

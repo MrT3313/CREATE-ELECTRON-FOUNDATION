@@ -1,4 +1,4 @@
-import type { PackageManager, PkgInstallerMap } from './Packages.js'
+import type { PkgInstallerMap } from './Packages.js'
 import type { CLIResults } from './CLI.js'
 
 export interface InstallerOptions extends Omit<CLIResults, 'packages'> {

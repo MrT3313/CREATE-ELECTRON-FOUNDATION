@@ -1,6 +1,5 @@
 // TERMINAL
 import chalk from 'chalk'
-import ora from 'ora'
 import { execa } from 'execa'
 
 // TYPES

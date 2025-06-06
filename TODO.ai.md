@@ -3,7 +3,7 @@
 1.  **Update Argument Casing and Definitions in `cli/src/index.ts`:**
 
     - Rename options from camelCase to snake_case:
-      - `projectName` -> `project_name`
+      - `project_name` -> `project_name`
       - `initializeGit` -> `initialize_git`
       - `installDependencies` -> `install_dependencies`
       - `runMigrations` -> `run_migrations`
@@ -37,7 +37,7 @@
 
 5.  **Update Code to Use New Argument Names and Defaults:**
 
-    - Throughout `cli/src/index.ts`, change all references from the old camelCase argument names in `cliArgs` to the new snake_case names (e.g., `cliArgs.projectName` to `cliArgs.project_name`).
+    - Throughout `cli/src/index.ts`, change all references from the old camelCase argument names in `cliArgs` to the new snake_case names (e.g., `cliArgs.project_name` to `cliArgs.project_name`).
     - Ensure `process.env.APP_NAME` is set using `cliArgs.project_name`.
     - Verify that the `skipPrompts` (`-y`/`--yes`) option correctly interacts with the new defaults (i.e., defaults are used, and no prompts appear).
 

@@ -1,4 +1,5 @@
 export const response = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ok: (data?: { code?: number; msg?: string; data?: any }) => {
     return {
       code: 200,
@@ -7,6 +8,7 @@ export const response = {
       ...data,
     }
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error: (data?: { code?: number; msg?: string; data?: any }) => {
     return {
       code: 500,

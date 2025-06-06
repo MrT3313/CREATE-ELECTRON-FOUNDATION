@@ -1,6 +1,5 @@
 import path from 'path'
 import fs from 'fs-extra'
-import assert from 'assert'
 import sort from 'sort-package-json'
 
 // TERMINAL
@@ -18,7 +17,7 @@ import type { CLIResults } from '../types/CLI.js'
 
 export const selectBoilerplate = (config: CLIResults) => {
   const spinner = ora(
-    `${config.projectName} ${chalk.bold('Selecting Boilerplate')}...`
+    `${config.project_name} ${chalk.bold('Selecting Boilerplate')}...`
   ).start()
   const srcDir = path.join(PKG_ROOT, 'template/extras')
 
@@ -63,7 +62,6 @@ export const selectBoilerplate = (config: CLIResults) => {
               path.join(config.projectDir, 'index.css')
             )
 
-            // @ts-ignore
             if (config.packages.orm.includes('drizzle')) {
               fs.copySync(
                 path.join(
@@ -103,7 +101,6 @@ export const selectBoilerplate = (config: CLIResults) => {
               path.join(config.projectDir, 'index.css')
             )
 
-            // @ts-ignore
             if (config.packages.orm.includes('drizzle')) {
               fs.copySync(
                 path.join(
@@ -167,7 +164,6 @@ export const selectBoilerplate = (config: CLIResults) => {
               path.join(config.projectDir, 'index.css')
             )
 
-            // @ts-ignore
             if (config.packages.orm.includes('drizzle')) {
               fs.copySync(
                 path.join(
@@ -217,7 +213,6 @@ export const selectBoilerplate = (config: CLIResults) => {
               path.join(config.projectDir, 'index.css')
             )
 
-            // @ts-ignore
             if (config.packages.orm.includes('drizzle')) {
               fs.copySync(
                 path.join(
@@ -236,7 +231,6 @@ export const selectBoilerplate = (config: CLIResults) => {
       throw new Error('Invalid Routing Selection')
     }
 
-    // @ts-ignore
     if (config.packages.orm.includes('drizzle')) {
       fs.copySync(
         path.join(srcDir, 'drizzle', 'config', 'drizzle.config.ts'),
@@ -277,11 +271,11 @@ export const selectBoilerplate = (config: CLIResults) => {
       )
     }
     spinner.succeed(
-      `${config.projectName} ${chalk.bold.green('Boilerplate selected')} successfully`
+      `${config.project_name} ${chalk.bold.green('Boilerplate selected')} successfully`
     )
   } catch (e) {
     spinner.fail(
-      `${config.projectName} ${chalk.red('Error selecting boilerplate')}`
+      `${config.project_name} ${chalk.red('Error selecting boilerplate')}`
     )
     logger.error('🚨🚨 Error selecting boilerplate', e)
     process.exit(1)

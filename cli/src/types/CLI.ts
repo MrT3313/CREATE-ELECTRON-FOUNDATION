@@ -4,7 +4,7 @@ import type {
   PackageManager,
   DatabasePackages,
   ORMPackages,
-  AvailablePackages,
+  // AvailablePackages,
 } from './Packages.js'
 
 export interface CLIArgs {
@@ -35,6 +35,6 @@ export interface CLIDefaults {
 }
 
 export interface CLIResults extends CLIDefaults {
-  projectName: string
+  project_name: string
   projectDir: string
 }

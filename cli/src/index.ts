@@ -49,7 +49,8 @@ const main = async () => {
     .option('database', {
       type: 'string',
       choices: ['sqlite', 'null'],
-      description: "Database to use (e.g., 'sqlite'). Pass 'null' for no database.",
+      description:
+        "Database to use (e.g., 'sqlite'). Pass 'null' for no database.",
       default: 'null',
       coerce: (arg: string) => (arg.toLowerCase() === 'null' ? null : arg),
     })
@@ -93,16 +94,24 @@ const main = async () => {
     })
     .check((argv) => {
       if (argv.database !== null && argv.orm === null) {
-        throw new Error("If a database is selected, an ORM must also be selected (e.g., --orm=drizzle).")
+        throw new Error(
+          'If a database is selected, an ORM must also be selected (e.g., --orm=drizzle).'
+        )
       }
       if (argv.database === null && argv.orm !== null) {
         throw new Error("If no database is selected, ORM must also be 'null'.")
       }
-      if (argv.database === null && argv.run_migrations && (argv.install_dependencies || argv.ci)) {
+      if (
+        argv.database === null &&
+        argv.run_migrations &&
+        (argv.install_dependencies || argv.ci)
+      ) {
         if (!argv.y && !argv.ci) {
-            logger.warn("`run_migrations` is true but no database is selected. Migrations will be skipped.")
+          logger.warn(
+            '`run_migrations` is true but no database is selected. Migrations will be skipped.'
+          )
         }
-        argv.run_migrations = false;
+        argv.run_migrations = false
       }
       return true
     })
@@ -127,11 +136,13 @@ const main = async () => {
 
   // INJECT ENV VARIABLES ######################################################
   if (!cliArgs.project_name && cliArgs.skipPrompts) {
-    logger.error("Project name is required. Please provide it as an argument or via the --project_name option.")
-    process.exit(1);
+    logger.error(
+      'Project name is required. Please provide it as an argument or via the --project_name option.'
+    )
+    process.exit(1)
   }
   // Set APP_NAME early if project_name is available from args.
-  // runUserPromptCli will use this or prompt if necessary, then set config.projectName
+  // runUserPromptCli will use this or prompt if necessary, then set config.project_name
   if (cliArgs.project_name) {
     process.env.APP_NAME = cliArgs.project_name
   }
@@ -148,7 +159,7 @@ const main = async () => {
 
   // 2. configure packages ####################################################
   const inUsePackages = Object.values(config.packages).flat()
-  const usePackages = buildPkgInstallerMap(config.projectName, inUsePackages)
+  const usePackages = buildPkgInstallerMap(config.project_name, inUsePackages)
 
   // 3. scaffold base project #################################################
   scaffoldProject(config)
@@ -164,7 +175,7 @@ const main = async () => {
 
   // 6. update package.json ###################################################
   const pkgJson = fs.readJSONSync(path.join(config.projectDir, 'package.json'))
-  pkgJson.name = config.projectName
+  pkgJson.name = config.project_name
   fs.writeJSONSync(path.join(config.projectDir, 'package.json'), pkgJson, {
     spaces: 2,
   })
@@ -180,7 +191,7 @@ const main = async () => {
   // 8. migrations #########################################################
   if (
     config.installDependencies &&
-    config.runMigrations && 
+    config.runMigrations &&
     config.packages.database?.includes('sqlite') &&
     config.packages.orm?.includes('drizzle')
   ) {
@@ -190,7 +201,7 @@ const main = async () => {
     })
     migrationsSpinner.start()
 
-    let command = `cd "${config.projectName}"`
+    let command = `cd "${config.project_name}"`
     command += ` && npm run db:setup`
 
     try {
@@ -205,9 +216,17 @@ const main = async () => {
       logger.error(err)
       migrationsSpinner.fail(chalk.red('Database setup failed!'))
     }
-  } else if (config.runMigrations && !(config.packages.database?.includes('sqlite') && config.packages.orm?.includes('drizzle'))) {
-    if (config.runMigrations) { 
-        logger.info("Skipping database migrations as database/ORM requirements are not met or migrations disabled.");
+  } else if (
+    config.runMigrations &&
+    !(
+      config.packages.database?.includes('sqlite') &&
+      config.packages.orm?.includes('drizzle')
+    )
+  ) {
+    if (config.runMigrations) {
+      logger.info(
+        'Skipping database migrations as database/ORM requirements are not met or migrations disabled.'
+      )
     }
   }
 
@@ -219,7 +238,7 @@ const main = async () => {
     })
     initializeGitSpinner.start()
 
-    let command = `cd "${config.projectName}"`
+    let command = `cd "${config.project_name}"`
     command += ` && git init && git add . && git commit -m "Initial Scaffolding : create-electron-foundation"`
 
     try {
@@ -235,8 +254,9 @@ const main = async () => {
   }
 
   // 10. open in ide ##########################################################
-  if (ide && !config.ci) { // Do not open IDE in CI mode
-    let command = `cd "${config.projectName}"`
+  if (ide && !config.ci) {
+    // Do not open IDE in CI mode
+    let command = `cd "${config.project_name}"`
     command += ` && ${ide} .`
 
     try {
@@ -250,7 +270,7 @@ const main = async () => {
   }
 
   logger.success(
-    `${config.projectName} ${chalk.bold.green('Project Initialized Successfully with create-electron-foundation!')}`
+    `${config.project_name} ${chalk.bold.green('Project Initialized Successfully with create-electron-foundation!')}`
   )
 }
 
