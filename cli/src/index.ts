@@ -24,13 +24,19 @@ import { hideBin } from 'yargs/helpers'
 
 // TYPES
 import type { CLIResults, CLIArgs } from './types/CLI.js'
+import type {
+  RouterPackages,
+  DatabasePackages,
+  ORMPackages,
+  StylePackages,
+} from './types/Packages.js'
 
 const main = async () => {
   const ide = process.env.IDE || 'cursor'
 
   // Parse command line arguments
   const argv = await yargs(hideBin(process.argv))
-    .option('projectName', {
+    .option('project_name', {
       type: 'string',
       description: 'Name of the project',
     })
@@ -38,38 +44,67 @@ const main = async () => {
       type: 'string',
       choices: ['tanstack-router', 'react-router'],
       description: 'Router to use',
+      default: 'tanstack-router',
     })
     .option('database', {
       type: 'string',
-      choices: ['sqlite'],
-      description: 'Database to use',
+      choices: ['sqlite', 'null'],
+      description: "Database to use (e.g., 'sqlite'). Pass 'null' for no database.",
+      default: 'null',
+      coerce: (arg: string) => (arg.toLowerCase() === 'null' ? null : arg),
     })
-    .option('runMigrations', {
+    .option('run_migrations', {
       type: 'boolean',
       description: 'Run migrations',
+      default: true,
     })
     .option('orm', {
       type: 'string',
-      choices: ['drizzle'],
-      description: 'ORM to use',
+      choices: ['drizzle', 'null'],
+      description: "ORM to use (e.g., 'drizzle'). Pass 'null' for no ORM.",
+      default: 'null',
+      coerce: (arg: string) => (arg.toLowerCase() === 'null' ? null : arg),
     })
     .option('styles', {
       type: 'string',
       choices: ['tailwind', 'css'],
       description: 'Styles to use',
+      default: 'tailwind',
     })
-    .option('initializeGit', {
+    .option('initialize_git', {
       type: 'boolean',
       description: 'Initialize Git repository',
+      default: true,
     })
-    .option('installDependencies', {
+    .option('install_dependencies', {
       type: 'boolean',
       description: 'Install dependencies',
+      default: true,
+    })
+    .option('ci', {
+      type: 'boolean',
+      description: 'Run in CI mode (non-interactive, skip IDE open)',
+      default: false,
     })
     .option('y', {
       type: 'boolean',
       alias: 'yes',
       description: 'Skip prompts and use defaults',
+    })
+    .check((argv) => {
+      if (argv.database !== null && argv.orm === null) {
+        throw new Error("If a database is selected, an ORM must also be selected (e.g., --orm=drizzle).")
+      }
+      if (argv.database === null && argv.orm !== null) {
+        throw new Error("If no database is selected, ORM must also be 'null'.")
+      }
+      if (argv.database === null && argv.run_migrations && (argv.install_dependencies || argv.ci)) {
+        if (!argv.y && !argv.ci) {
+            logger.warn("`run_migrations` is true but no database is selected. Migrations will be skipped.")
+        }
+        argv.run_migrations = false;
+      }
+      return true
     })
     .help()
     .alias('help', 'h')
@@ -78,19 +113,28 @@ const main = async () => {
 
   // Extract named options and positional arguments
   const cliArgs: CLIArgs = {
-    projectName: (argv.projectName as string) || (argv._[0] as string),
-    router: argv.router as any,
-    database: argv.database as any,
-    orm: argv.orm as any,
-    styles: argv.styles as any,
-    initializeGit: argv.initializeGit as boolean,
-    installDependencies: argv.installDependencies as boolean,
-    runMigrations: argv.runMigrations as boolean,
-    skipPrompts: argv.y as boolean,
+    project_name: (argv.project_name as string) || (argv._[0] as string),
+    router: argv.router as RouterPackages,
+    database: argv.database as DatabasePackages | null,
+    orm: argv.orm as ORMPackages | null,
+    styles: argv.styles as StylePackages,
+    initialize_git: argv.initialize_git as boolean,
+    install_dependencies: argv.install_dependencies as boolean,
+    run_migrations: argv.run_migrations as boolean,
+    skipPrompts: (argv.y as boolean) || (argv.ci as boolean),
+    ci: argv.ci as boolean,
   }
 
   // INJECT ENV VARIABLES ######################################################
-  process.env.APP_NAME = cliArgs.projectName
+  if (!cliArgs.project_name && cliArgs.skipPrompts) {
+    logger.error("Project name is required. Please provide it as an argument or via the --project_name option.")
+    process.exit(1);
+  }
+  // Set APP_NAME early if project_name is available from args.
+  // runUserPromptCli will use this or prompt if necessary, then set config.projectName
+  if (cliArgs.project_name) {
+    process.env.APP_NAME = cliArgs.project_name
+  }
 
   // START ####################################################################
   renderTitle()
@@ -125,11 +169,6 @@ const main = async () => {
     spaces: 2,
   })
 
-  // const NewPkgJson = fs.readJSONSync(
-  //   path.join(config.projectDir, "package.json")
-  // );
-  // logger.info(JSON.stringify(NewPkgJson, null, 2));
-
   // 7. install dependencies ##################################################
   if (config.installDependencies) {
     await installDependencies({
@@ -139,13 +178,11 @@ const main = async () => {
   }
 
   // 8. migrations #########################################################
-  // TODO: move to its own helper function
   if (
     config.installDependencies &&
-    // @ts-ignore
-    config.packages.database.includes('sqlite') &&
-    // @ts-ignore
-    config.packages.orm.includes('drizzle')
+    config.runMigrations && 
+    config.packages.database?.includes('sqlite') &&
+    config.packages.orm?.includes('drizzle')
   ) {
     const migrationsSpinner = ora({
       text: 'Setting up database...',
@@ -154,15 +191,10 @@ const main = async () => {
     migrationsSpinner.start()
 
     let command = `cd "${config.projectName}"`
-    if (config.runMigrations) {
-      command += ` && npm run db:setup`
-    } else {
-      command += ` && npm run db:generate && npm run rebuild`
-    }
+    command += ` && npm run db:setup`
 
     try {
       execaSync(command, {
-        // stdio: 'inherit',
         shell: true,
       })
       migrationsSpinner.succeed(
@@ -172,6 +204,10 @@ const main = async () => {
       logger.error(`Failed to execute: ${command}`)
       logger.error(err)
       migrationsSpinner.fail(chalk.red('Database setup failed!'))
+    }
+  } else if (config.runMigrations && !(config.packages.database?.includes('sqlite') && config.packages.orm?.includes('drizzle'))) {
+    if (config.runMigrations) { 
+        logger.info("Skipping database migrations as database/ORM requirements are not met or migrations disabled.");
     }
   }
 
@@ -188,7 +224,6 @@ const main = async () => {
 
     try {
       execaSync(command, {
-        // stdio: 'inherit',
         shell: true,
       })
       initializeGitSpinner.succeed(chalk.green('Git initialized successfully!'))
@@ -200,13 +235,12 @@ const main = async () => {
   }
 
   // 10. open in ide ##########################################################
-  if (ide) {
+  if (ide && !config.ci) { // Do not open IDE in CI mode
     let command = `cd "${config.projectName}"`
     command += ` && ${ide} .`
 
     try {
       execaSync(command, {
-        // stdio: 'inherit',
         shell: true,
       })
     } catch (err) {
@@ -220,4 +254,15 @@ const main = async () => {
   )
 }
 
-main()
+main().catch((error) => {
+  logger.error('An unexpected error occurred:')
+  if (error instanceof Error) {
+    logger.error(error.message)
+    if (error.stack) {
+      logger.error(error.stack)
+    }
+  } else {
+    logger.error(String(error))
+  }
+  process.exit(1)
+})

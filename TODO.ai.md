@@ -1,112 +1,65 @@
-# Plan for Auto-Testing Framework using GitHub Actions
+# TODO: Refactor Yargs CLI Argument Handling
 
-This plan outlines the steps to create a robust automated testing framework using GitHub Actions, particularly for a Command Line Interface (CLI) tool that scaffolds projects.
+1.  **Update Argument Casing and Definitions in `cli/src/index.ts`:**
 
-## 1. Define Testing Strategy
+    - Rename options from camelCase to snake_case:
+      - `projectName` -> `project_name`
+      - `initializeGit` -> `initialize_git`
+      - `installDependencies` -> `install_dependencies`
+      - `runMigrations` -> `run_migrations`
+      - `router` (no change in name, but ensure consistency)
+      - `styles` (no change in name, but ensure consistency)
+      - `database` (no change in name, but ensure consistency)
+      - `orm` (no change in name, but ensure consistency)
+    - Update the `CLIArgs` type to reflect these snake_case names.
 
-- **Identify Test Types:** Determine the necessary types of tests:
-  - **Unit Tests:** For individual functions/modules of the CLI.
-  - **Integration Tests:** For interactions between CLI components.
-  - **End-to-End (E2E) Tests:** For the complete CLI workflow, from command execution to validating the scaffolded project.
-- **Prioritize Critical Paths:** Focus on testing core functionalities, common user scenarios, and critical CLI options/flags.
-- **CLI Scaffolding Specifics:**
-  - Test CLI execution with a matrix of different option combinations.
-  - Validate the integrity of the scaffolded project:
-    - Can it install dependencies?
-    - Can it build successfully?
-    - Can it run basic commands (e.g., linting, its own tests)?
-    - Are configuration files generated correctly?
+2.  **Set Default Values for Arguments:**
 
-## 2. Set Up Core CI Workflow (e.g., `.github/workflows/ci.yml`)
+    - `project_name`: Keep as is (positional or optional flag, no default value for the name itself).
+    - `initialize_git`: `true`
+    - `install_dependencies`: `true`
+    - `run_migrations`: `true`
+    - `router`: `'tanstack-router'`
+    - `styles`: `'tailwind'`
+    - `database`: `null` (ensure string 'null' from CLI becomes actual null)
+    - `orm`: `null` (ensure string 'null' from CLI becomes actual null)
 
-- **Triggers:** Run on `push` to main branches and all `pull_request` events.
-- **Jobs:**
-  - **Linting & Formatting:**
-    - Tools: ESLint, Prettier, Biome, etc.
-    - Purpose: Enforce code style and catch syntax errors early.
-    - Example commands: `pnpm lint`, `pnpm format:check`.
-  - **Type Checking (if applicable, e.g., TypeScript):**
-    - Tool: TypeScript Compiler (`tsc`).
-    - Purpose: Catch type errors.
-    - Example command: `pnpm typecheck` or `tsc --noEmit`.
-  - **CLI Build:**
-    - Purpose: Ensure the CLI tool itself can be successfully compiled/built.
-    - Example command: `pnpm build:cli` (or project-specific build command).
-  - **Unit & Integration Tests (if implemented):**
-    - Tools: Jest, Vitest, Mocha, etc.
-    - Purpose: Test individual CLI components and their interactions.
-    - Example command: `pnpm test:unit`.
+3.  **Implement Conditional Logic for `orm` and `database`:**
 
-## 3. Develop E2E Testing Workflow (e.g., `.github/workflows/e2e.yml`)
+    - Use `yargs.check()` or a similar mechanism to enforce the rule: if `database` is not `null` (e.g., 'sqlite'), then `orm` must not be `null` (i.e., must be 'drizzle'). If `database` is specified and `orm` is `null` (either by default or explicitly passed as 'null'), an error should be raised.
+    - Consider if `orm` should automatically default to `drizzle` if `database` is `sqlite` and `orm` is not provided. The current requirement is a validation check.
 
-- **Triggers:**
-  - Run on `pull_request` events targeting CLI source code paths.
-  - Allow manual trigger via `workflow_dispatch`.
-  - Consider running on a schedule (e.g., nightly) for comprehensive checks.
-- **Matrix Strategy (for varied CLI options):**
-  - Use GitHub Actions matrix to test numerous combinations of CLI flags, features, and configurations.
-  - Example options: different frameworks, UI libraries, database choices, linters, package managers.
-- **E2E Job Steps (for each matrix combination):**
-  1.  **Setup Environment:**
-      - Checkout repository code (`actions/checkout`).
-      - Set up required runtimes (e.g., Node.js via `actions/setup-node`, Bun).
-      - Install project dependencies (e.g., `pnpm install`).
-  2.  **Build CLI:** (If not built as part of a shared workflow artifact).
-  3.  **Scaffold Test Project:**
-      - Execute the CLI with the current matrix options.
-      - Output the scaffolded project to a temporary directory.
-      - Use flags like `--noGit` (if applicable) and `--CI` or specific flags to indicate non-interactive mode.
-      - Example: `node ./cli/dist/index.js my-test-project --featureA --optionB --packageManager=pnpm --CI`
-  4.  **Validate Scaffolded Project:**
-      - Navigate into the generated project's directory.
-      - Install its dependencies (respecting the package manager chosen for scaffolding if that's a test variable).
-      - Run the generated project's build command (e.g., `pnpm build`).
-      - Run the generated project's test suite (e.g., `pnpm test`).
-      - Run linters/formatters within the generated project (e.g., `pnpm lint`).
-      - Verify the existence and content of key configuration files.
+4.  **Introduce a CI Flag:**
 
-## 4. Templating Strategy (for CLI Scaffolding)
+    - Add a new boolean option `--ci` (default: `false`).
+    - Add `ci` to the `CLIArgs` type.
+    - This flag can be used later to alter behavior for CI environments (e.g., skipping IDE opening).
 
-- **Base Template:**
-  - Location: e.g., `templates/base/` or `cli/templates/base/`.
-  - Contents: Core files, directories, and configurations common to all projects generated by the CLI.
-- **Optional Features/Extras Templates:**
-  - Location: e.g., `templates/extras/` or `cli/templates/extras/`.
-  - Structure: Subdirectories for each optional feature (e.g., `templates/extras/tailwind/`, `templates/extras/drizzle/`).
-  - Contents: Files specific to those optional features.
-- **Programmatic Scaffolding Logic:**
-  - Implement "installer" scripts or functions (e.g., in `cli/src/installers/`).
-  - Responsibilities:
-    - Copy files from the base template.
-    - Conditionally copy or modify files from "extras" templates based on user CLI options.
-    - Programmatically update `package.json` (add dependencies, scripts).
-    - Generate or modify configuration files (e.g., `vite.config.js`, `.eslintrc.js`, `tailwind.config.js`).
-    - Handle file merges or transformations if necessary.
+5.  **Update Code to Use New Argument Names and Defaults:**
 
-## 5. Reusable Workflows / Composite Actions (Optional)
+    - Throughout `cli/src/index.ts`, change all references from the old camelCase argument names in `cliArgs` to the new snake_case names (e.g., `cliArgs.projectName` to `cliArgs.project_name`).
+    - Ensure `process.env.APP_NAME` is set using `cliArgs.project_name`.
+    - Verify that the `skipPrompts` (`-y`/`--yes`) option correctly interacts with the new defaults (i.e., defaults are used, and no prompts appear).
 
-- **Purpose:** To DRY (Don't Repeat Yourself) common steps across multiple jobs or workflows.
-- **Example:** A reusable action for setting up Node.js, pnpm, and installing dependencies.
-  - Location: `.github/actions/setup/action.yml`.
+6.  **Testing:**
 
-## 6. Secrets and Environment Variables
+    - Manually test various CLI combinations:
+      - No arguments (to check defaults and `project_name` handling).
+      - Only `project_name`.
+      - Overriding some defaults.
+      - Using the `--ci` flag.
+      - Testing the `database`/`orm` validation:
+        - `--database=sqlite` (should error if orm is not specified or is null)
+        - `--database=sqlite --orm=drizzle` (should pass)
+        - `--database=null --orm=drizzle` (should error or orm should be ignored/set to null) - clarify this behavior. If database is null, orm should ideally also be null or ignored.
+        - `--database=sqlite --orm=null` (should error)
+    - Ensure help message (`--help`) reflects new names, defaults, and the `--ci` flag.
 
-- **Secrets:** Use GitHub encrypted secrets (`secrets.GITHUB_TOKEN`, custom secrets) for any sensitive data needed during tests (e.g., API keys for external services, private package registry tokens).
-- **Environment Variables:** Use environment variables for non-sensitive configuration that might vary between test runs or environments.
+7.  **Review `yargs` Configuration for Positional `project_name`:**
 
-## 7. Artifacts and Reporting
+    - Confirm that `project_name` can still be provided as a positional argument (`argv._[0]`) and also as an option (`--project_name`). Ensure the logic for `cliArgs.project_name = (argv.project_name as string) || (argv._[0] as string)` remains correct.
 
-- **Test Reports:** If test runners generate reports (e.g., JUnit XML, HTML reports), upload them as artifacts for easier debugging.
-  - Action: `actions/upload-artifact`.
-- **Build Artifacts:** Upload build outputs (e.g., the built CLI, scaffolded project examples) if useful for debugging or downstream processes.
-
-## 8. Notifications (Optional)
-
-- Configure notifications (e.g., Slack, email) for workflow failures or successes using marketplace actions or GitHub's built-in notification settings.
-
-## 9. Documentation
-
-- **README/Contributing Guide:** Document the testing framework, how to run tests locally, how to add new tests, and common troubleshooting steps.
-- **Workflow Comments:** Add comments within the YAML workflow files to explain complex steps or configurations.
-
-This plan provides a comprehensive approach to building an automated testing framework. It should be adapted based on the specific needs and complexity of the CLI tool.
+8.  **Cleanup and Final Review:**
+    - Remove any commented-out or dead code related to old argument parsing.
+    - Ensure consistency in option descriptions.
+    - Verify all user rules (simplicity, readability) are followed.
