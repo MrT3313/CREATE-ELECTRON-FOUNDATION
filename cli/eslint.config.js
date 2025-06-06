@@ -6,7 +6,7 @@ export default tseslint.config(
     ignores: ['dist/', 'node_modules/', '*.config.js', '*.config.mjs'],
   },
   {
-    files: ['src/**/*.ts'],
+    files: ['**/*.ts'],
     extends: [...tseslint.configs.recommended, eslintPluginPrettierRecommended],
     languageOptions: {
       parser: tseslint.parser,

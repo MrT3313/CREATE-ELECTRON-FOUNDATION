@@ -1,6 +1,3 @@
-import path from 'path'
-import fs from 'fs-extra'
-
 // FUNCTIONS
 import { addPackageDependency } from '../utils/addPackageDependency.js'
 

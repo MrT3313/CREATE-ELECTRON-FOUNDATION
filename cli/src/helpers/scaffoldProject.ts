@@ -12,13 +12,13 @@ import { PKG_ROOT } from '../consts.js'
 // TYPES
 import type { CLIResults } from '../types/CLI.js'
 
-export const scaffoldProject = (config: CLIResults, debug = false): void => {
+export const scaffoldProject = (config: CLIResults): void => {
   /**
    * copy as much of the base boilerplate for electron
    * that is unaffected by the user's choices
    */
   const spinner = ora(
-    `${config.projectName} ${chalk.bold('Scaffolding')} in: ${config.projectDir}...`
+    `${config.project_name} ${chalk.bold('Scaffolding')} in: ${config.projectDir}...`
   ).start()
 
   const srcDir = path.join(PKG_ROOT, 'template/base')
@@ -30,7 +30,7 @@ export const scaffoldProject = (config: CLIResults, debug = false): void => {
 
   fs.cpSync(srcDir, config.projectDir, { recursive: true })
 
-  const envContent = `APP_NAME=${config.projectName}\n`
+  const envContent = `APP_NAME=${config.project_name}\n`
   const envFilePath = path.join(config.projectDir, '.env')
   fs.writeFileSync(envFilePath, envContent)
 
@@ -40,6 +40,6 @@ export const scaffoldProject = (config: CLIResults, debug = false): void => {
   )
 
   spinner.succeed(
-    `${config.projectName} ${chalk.bold.green('scaffolded')} successfully!`
+    `${config.project_name} ${chalk.bold.green('scaffolded')} successfully!`
   )
 }

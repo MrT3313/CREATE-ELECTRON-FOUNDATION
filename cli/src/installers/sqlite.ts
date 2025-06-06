@@ -1,9 +1,3 @@
-import path from 'path'
-import fs from 'fs-extra'
-
-// UTILS
-import { PKG_ROOT } from '../consts.js'
-
 // FUNCTIONS
 import { addPackageDependency } from '../utils/addPackageDependency.js'
 

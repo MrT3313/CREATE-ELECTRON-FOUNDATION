@@ -1,9 +1,9 @@
 <h1 align="center">
-  🚧 UNDER CONSTRUCTION 🚧
+  🚧 UNDER CONSTRUCTION : ALPHA 🚧
 </h1>
 
 <h1 align="center">
-  create-electron-foundation
+  Create Electron Foundation
 </h1>
 
 <p align="center">
@@ -14,24 +14,94 @@
   Get started by running: <code>npx create-electron-foundation@alpha</code>
 </p>
 
-## 🛠️ Customizable Setup
+<div align="center">
+  <h2 align="center">
+    Configuration Options
+  </h2>
 
-> [!WARNING]
->
-> the npm package / command is NOT published yet  
-> you will need to clone the repo and symlink the command to the cli ./dist directory
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>router</th>
+        <th>styles</th>
+        <th>database</th>
+        <th>orm</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><span style="color: green;">Tanstack Query</span></td>
+        <td><span style="color: green;">Tailwind</span></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><span style="color: green;">Tanstack Query</span></td>
+        <td><span style="color: green;">Tailwind</span></td>
+        <td>sqlite</td>
+        <td>drizzle</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><span style="color: green;">Tanstack Query</span></td>
+        <td>CSS</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><span style="color: green;">Tanstack Query</span></td>
+        <td>CSS</td>
+        <td>sqlite</td>
+        <td>drizzle</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>React Router</td>
+        <td><span style="color: green;">Tailwind</span></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>React Router</td>
+        <td><span style="color: green;">Tailwind</span></td>
+        <td>sqlite</td>
+        <td>drizzle</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>React Router</td>
+        <td>CSS</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>React Router</td>
+        <td>CSS</td>
+        <td>sqlite</td>
+        <td>drizzle</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="width: full;">
+    <span>fuck</span>
+  </div>
 
-`create-electron-foundation` allows you to tailor your new Electron project. During the interactive setup, you'll be able to choose:
+  <h2 align="center">
+    Command Line Arguments
+  </h2>
 
-- **Routing:**
-  - TanStack Router
-  - React Router
-  - None (no router will be pre-configured)
-- **Styling:**
-  - Tailwind CSS
-  - Basic CSS (e.g., CSS Modules, plain CSS files)
-  - None (no specific styling library will be pre-configured)
-- **Git Initialization:**
-  - Whether to initialize a new Git repository in your project.
-- **Dependency Installation:**
-  - Whether to automatically install dependencies (using your detected package manager) after project scaffolding.
+| argument           | options                             |
+| ------------------ | ----------------------------------- |
+| _first positional_ | project name string                 |
+| --router=          | 'tanstack-router' or 'react-router' |
+| --styles=          | 'tailwind' or 'css'                 |
+| --database=        | 'sqlite' or null                    |
+| --orm=             | 'drizzle' or null                   |
+
+</div>

@@ -1,12 +1,7 @@
-import { asc, between, count, eq, getTableColumns, sql } from 'drizzle-orm'
 import { db } from '../dbConnect'
 import { resources } from '../schema'
 import { response } from '../../utils/response'
-import log from '../../logger/index'
-
-// CONFIGURE: logger ##########################################################
-const resourceServiceLogger = log.scope('db/services/resource')
-
+import { eq } from 'drizzle-orm'
 export class resourceServices {
   static async getResourceById(id: string) {
     try {
@@ -27,6 +22,7 @@ export class resourceServices {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static async updateResourceById(id: number, data: any) {
     try {
       const result = db.transaction(() => {
@@ -47,6 +43,7 @@ export class resourceServices {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static async insertResource(data: any) {
     try {
       // Prepare the data with timestamps

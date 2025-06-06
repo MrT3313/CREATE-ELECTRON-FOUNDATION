@@ -1,0 +1,162 @@
+# ==================================================================================================
+# SUMMARY
+# ==================================================================================================
+# This file defines the main Continuous Integration (CI) workflow for the project.
+#
+# Purpose:
+#   To automatically build, lint, format-check, and type-check the project's codebase whenever
+#   changes are pushed to the 'main' branch or when a pull request is created/updated.
+#   Its primary goal is to ensure code quality, consistency, and build integrity before merging
+#   changes.
+#
+# Triggers:
+#   - Push events to the 'main' branch.
+#   - Pull request events (targeting any branch).
+#
+# Key Jobs & Steps:
+#   1. lint-format (Job):
+#      - Checks out the code.
+#      - Sets up the Node.js environment using the local './.github/actions/setup' composite action
+#        (which installs Node.js, caches dependencies, and runs 'npm ci').
+#      - Runs 'npm run lint' to perform static code analysis and identify potential errors/style issues.
+#      - Runs 'npm run format:check' to verify code formatting against defined project styles.
+#
+#   2. type-check (Job):
+#      - Checks out the code.
+#      - Sets up the Node.js environment (via './.github/actions/setup').
+#      - Runs 'npm run build -w @create-electron-foundation/cli -- --noEmit' to perform TypeScript type checking
+#        for the CLI workspace without generating build artifacts.
+#
+#   3. build-cli (Job):
+#      - Depends on the successful completion of 'lint-format' and 'type-check' jobs.
+#      - Checks out the code.
+#      - Sets up the Node.js environment (via './.github/actions/setup').
+#      - Runs 'npm run build' to compile/build the CLI application (specifically the CLI workspace).
+#
+#   4. unit-integration-tests (Job - Currently Commented Out):
+#      - Placeholder for running automated unit and integration tests.
+#      - Would typically depend on 'build-cli' and use 'npm test' or similar.
+#
+# Overall Flow:
+#   The workflow ensures that basic code quality checks (linting, formatting, type safety) pass and
+#   that the CLI application can be successfully built before any code is considered for merging
+#   into the main branch. It uses a reusable composite action for environment setup to maintain
+#   consistency and reduce redundancy.
+# ==================================================================================================
+
+# Name of the workflow, displayed on the GitHub Actions UI.
+name: Core CI
+
+# Specifies the events that trigger this workflow.
+on:
+  # Trigger on pushes to the 'main' branch.
+  push:
+    branches:
+      - main
+  # # Trigger on any pull request, regardless of the target branch.
+  # pull_request:
+
+# Defines a collection of jobs that run as part of this workflow.
+jobs:
+  # First job: Linting and formatting checks.
+  lint-format:
+    # Name of the job, displayed on the GitHub Actions UI.
+    name: Lint & Format
+    # Specifies the type of runner the job will run on.
+    # ubuntu-latest uses the latest stable version of Ubuntu provided by GitHub.
+    runs-on: ubuntu-latest
+    # Contains a sequence of tasks called steps that will be executed as part of the job.
+    steps:
+      # Step 1: Check out the repository code.
+      # This action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
+      - uses: actions/checkout@v4
+
+      # Step 2: Read Node.js version from .nvmrc file
+      - name: Read .nvmrc
+        id: nvm
+        run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+
+      # Step 3: Setup the environment using a local composite action.
+      # This refers to the action defined in ./.github/actions/setup/action.yml
+      - name: Setup Environment
+        uses: ./.github/actions/setup # Use the local composite action
+        with:
+          # Input: Specify the Node.js version for the setup action, read from .nvmrc
+          node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
+
+      # Step 4: Run the linting command.
+      # This runs the "lint" script from your root package.json: "npm run lint -w @create-electron-foundation/cli"
+      # which in turn runs "eslint . --ext .ts,.js --fix" in the cli workspace.
+      - name: Lint
+        run: npm run lint
+
+      # Step 5: Run the formatting check command.
+      # This runs the "format:check" script from your root package.json: "npm run format:check -w @create-electron-foundation/cli"
+      # which in turn runs "prettier --check ." in the cli workspace.
+      - name: Format Check
+        run: npm run format:check
+
+  # Second job: Type checking (e.g., for TypeScript).
+  type-check:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read .nvmrc
+        id: nvm
+        run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+      - name: Setup Environment
+        uses: ./.github/actions/setup
+        with:
+          node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
+
+      # Step to run the type checking command.
+      # This effectively runs "tsc --noEmit" within the context of the CLI workspace build script.
+      # It assumes your "build" script in "cli/package.json" (tsc -p tsconfig.json) can accept additional arguments like --noEmit.
+      - name: Type Check
+        run: npm run build -w @create-electron-foundation/cli -- --noEmit
+
+  # Third job: Build the CLI application.
+  build-cli:
+    name: Build CLI
+    runs-on: ubuntu-latest
+    # Specifies that this job depends on the successful completion of 'lint-format' and 'type-check' jobs.
+    # It will only start after both those jobs have completed successfully.
+    needs: [lint-format, type-check]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read .nvmrc
+        id: nvm
+        run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+      - name: Setup Environment
+        uses: ./.github/actions/setup
+        with:
+          node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
+
+      # Step to run the CLI build command.
+      # This runs the "build" script from your root package.json: "npm run build -w @create-electron-foundation/cli"
+      # which in turn runs "tsc -p tsconfig.json" in the cli workspace.
+      - name: Build CLI
+        run: npm run build
+
+  # Placeholder for Unit & Integration Tests job.
+  # This job is currently commented out. Uncomment and configure if you have unit/integration tests.
+  # No "test" scripts found in your package.json files.
+  # unit-integration-tests:
+  #   name: Unit & Integration Tests
+  #   runs-on: ubuntu-latest
+  #   # This job would typically depend on the CLI being built successfully.
+  #   needs: [build-cli]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Read .nvmrc
+  #       id: nvm
+  #       run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+  #     - name: Setup Environment
+  #       uses: ./.github/actions/setup
+  #       with:
+  #         node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
+  #     # Step to run unit and integration tests.
+  #     # TODO: Replace 'npm test' or 'npm run test:unit' with your project's actual test command if you add one.
+  #     - name: Run Unit & Integration Tests
+  #       run: npm test # Or npm run test:unit

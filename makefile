@@ -15,6 +15,11 @@ build:
 	@echo "Making cli/dist/index.js executable..."
 	@chmod +x cli/dist/index.js
 
+# LINTING & FORMATTING
+laf:
+	npm run lint
+	npm run format
+
 # PUBLISHING ##################################################################
 pack:
 	npm pack
