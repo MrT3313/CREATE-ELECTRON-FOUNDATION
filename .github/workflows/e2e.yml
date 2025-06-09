@@ -61,7 +61,7 @@ on:
 # 2. 👀 Defines the jobs for this workflow.
 jobs:
   e2e-test:
-    name: E2E Test - ${{ matrix.os }} - ${{ matrix.name }}
+    name: E2E Test - ${{ matrix.name }}
     # Specifies the type of runner for this job, using a matrix variable.
     runs-on: ${{ matrix.os }}
 
@@ -177,7 +177,7 @@ jobs:
           echo "PROJECT_NAME=$project_name" >> $GITHUB_ENV
 
           # Execute the CLI to scaffold a new project.
-          node cli/dist/index.js "./temp-scaffolded-project/$project_name" --router="${{ matrix.router }}" --styles="${{ matrix.styles }}" ${{ matrix.db_opts }} ${{ matrix.orm_opts }} --yes
+          node cli/dist/index.js "./temp-scaffolded-project/$project_name" --router="${{ matrix.router }}" --styles="${{ matrix.styles }}" ${{ matrix.db_opts }} ${{ matrix.orm_opts }} --yes --ci
 
       #########################################################
       # ⭐️⭐️⭐️

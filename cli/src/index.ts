@@ -231,7 +231,7 @@ const main = async () => {
   }
 
   // 9. initialize git ########################################################
-  if (config.initializeGit) {
+  if (config.initializeGit && !config.ci) {
     const initializeGitSpinner = ora({
       text: 'Initializing Git...',
       spinner: 'dots',
