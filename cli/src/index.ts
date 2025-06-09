@@ -52,7 +52,6 @@ const main = async () => {
       description:
         "Database to use (e.g., 'sqlite'). Pass 'none' for no database.",
       default: 'none',
-      coerce: (arg: string) => (arg.toLowerCase() === 'none' ? null : arg),
     })
     .option('run_migrations', {
       type: 'boolean',
@@ -64,7 +63,6 @@ const main = async () => {
       choices: ['drizzle', 'none'],
       description: "ORM to use (e.g., 'drizzle'). Pass 'none' for no ORM.",
       default: 'none',
-      coerce: (arg: string) => (arg.toLowerCase() === 'none' ? null : arg),
     })
     .option('styles', {
       type: 'string',
@@ -93,16 +91,16 @@ const main = async () => {
       description: 'Skip prompts and use defaults',
     })
     .check((argv) => {
-      if (argv.database !== null && argv.orm === null) {
+      if (argv.database !== 'none' && argv.orm === 'none') {
         throw new Error(
           'If a database is selected, an ORM must also be selected (e.g., --orm=drizzle).'
         )
       }
-      if (argv.database === null && argv.orm !== null) {
+      if (argv.database === 'none' && argv.orm !== 'none') {
         throw new Error("If no database is selected, ORM must also be 'none'.")
       }
       if (
-        argv.database === null &&
+        argv.database === 'none' &&
         argv.run_migrations &&
         (argv.install_dependencies || argv.ci)
       ) {
@@ -124,8 +122,11 @@ const main = async () => {
   const cliArgs: CLIArgs = {
     project_name: (argv.project_name as string) || (argv._[0] as string),
     router: argv.router as RouterPackages,
-    database: argv.database as DatabasePackages | null,
-    orm: argv.orm as ORMPackages | null,
+    database:
+      argv.database === 'none'
+        ? null
+        : (argv.database as DatabasePackages | null),
+    orm: argv.orm === 'none' ? null : (argv.orm as ORMPackages | null),
     styles: argv.styles as StylePackages,
     initialize_git: argv.initialize_git as boolean,
     install_dependencies: argv.install_dependencies as boolean,
