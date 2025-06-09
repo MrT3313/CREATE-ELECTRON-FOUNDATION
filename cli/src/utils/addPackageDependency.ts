@@ -15,13 +15,13 @@ import {
 export const addPackageDependency = (opts: {
   dependencies: AvailableDependencies[]
   devMode: boolean
-  projectDir: string
+  project_dir: string
   debug?: boolean
 }) => {
-  const { dependencies, devMode, projectDir, debug = false } = opts
+  const { dependencies, devMode, project_dir, debug = false } = opts
 
   const pkgJson = fs.readJSONSync(
-    path.join(projectDir, 'package.json')
+    path.join(project_dir, 'package.json')
   ) as PackageJson
 
   dependencies.forEach((pkgName) => {
@@ -35,12 +35,12 @@ export const addPackageDependency = (opts: {
   })
   const sortedPkgJson = sortPackageJson(pkgJson)
 
-  fs.writeJSONSync(path.join(projectDir, 'package.json'), sortedPkgJson, {
+  fs.writeJSONSync(path.join(project_dir, 'package.json'), sortedPkgJson, {
     spaces: 2,
   })
 
   const finalPkgJson = fs.readJSONSync(
-    path.join(projectDir, 'package.json')
+    path.join(project_dir, 'package.json')
   ) as PackageJson
 
   if (debug)

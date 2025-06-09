@@ -22,7 +22,7 @@ export const selectBoilerplate = (config: CLIResults) => {
   const srcDir = path.join(PKG_ROOT, 'template/extras')
 
   try {
-    if (config.packages.router.includes('tanstack-router')) {
+    if (config.packages.router === 'tanstack-router') {
       // TANSTACK ROUTER ######################################################
       for (let i = 0; i < config.packages.styles.length; i++) {
         const style = config.packages.styles[i]
@@ -33,7 +33,7 @@ export const selectBoilerplate = (config: CLIResults) => {
             // copy tanstack router "routes" directory (with tailwind) into the scaffolded src/ directory
             fs.copySync(
               path.join(srcDir, 'tanstackRouter', 'with-tailwind', 'routes'),
-              path.join(config.projectDir, 'src', 'routes')
+              path.join(config.project_dir, 'src', 'routes')
             )
 
             // copy the vite.config.ts file into the scaffolded project
@@ -45,24 +45,24 @@ export const selectBoilerplate = (config: CLIResults) => {
                 'config',
                 'vite.config.ts'
               ),
-              path.join(config.projectDir, 'vite.config.ts')
+              path.join(config.project_dir, 'vite.config.ts')
             )
 
             // copy the tailwind.config.ts file into the scaffolded project
             fs.copySync(
               path.join(srcDir, 'config', 'tailwind.config.ts'),
-              path.join(config.projectDir, 'tailwind.config.ts')
+              path.join(config.project_dir, 'tailwind.config.ts')
             )
             fs.copySync(
               path.join(srcDir, 'styles', 'tailwind-index.css'),
-              path.join(config.projectDir, 'tailwind-index.css')
+              path.join(config.project_dir, 'tailwind-index.css')
             )
             fs.renameSync(
-              path.join(config.projectDir, 'tailwind-index.css'),
-              path.join(config.projectDir, 'index.css')
+              path.join(config.project_dir, 'tailwind-index.css'),
+              path.join(config.project_dir, 'index.css')
             )
 
-            if (config.packages.orm.includes('drizzle')) {
+            if (config.packages.orm === 'drizzle') {
               fs.copySync(
                 path.join(
                   srcDir,
@@ -70,7 +70,7 @@ export const selectBoilerplate = (config: CLIResults) => {
                   'config',
                   'vite.config.tsr-withtailwind.ts'
                 ),
-                path.join(config.projectDir, 'vite.config.ts')
+                path.join(config.project_dir, 'vite.config.ts')
               )
             }
 
@@ -80,7 +80,7 @@ export const selectBoilerplate = (config: CLIResults) => {
             // copy tanstack router "routes" directory (no tailwind) into the scaffolded src/ directory
             fs.copySync(
               path.join(srcDir, 'tanstackRouter', 'base', 'routes'),
-              path.join(config.projectDir, 'src', 'routes')
+              path.join(config.project_dir, 'src', 'routes')
             )
 
             // copy the vite.config.ts file into the scaffolded project
@@ -92,16 +92,16 @@ export const selectBoilerplate = (config: CLIResults) => {
                 'config',
                 'vite.config.ts'
               ),
-              path.join(config.projectDir, 'vite.config.ts')
+              path.join(config.project_dir, 'vite.config.ts')
             )
 
             // copy the index.css file into the scaffolded project
             fs.copySync(
               path.join(srcDir, 'styles', 'index.css'),
-              path.join(config.projectDir, 'index.css')
+              path.join(config.project_dir, 'index.css')
             )
 
-            if (config.packages.orm.includes('drizzle')) {
+            if (config.packages.orm === 'drizzle') {
               fs.copySync(
                 path.join(
                   srcDir,
@@ -109,12 +109,29 @@ export const selectBoilerplate = (config: CLIResults) => {
                   'config',
                   'vite.config.tsr-base.ts'
                 ),
-                path.join(config.projectDir, 'vite.config.ts')
+                path.join(config.project_dir, 'vite.config.ts')
               )
             }
         }
+
+        if (config.packages.database === 'sqlite') {
+          fs.copySync(
+            path.join(srcDir, 'electron', 'db'),
+            path.join(config.project_dir, 'electron', 'main', 'db')
+          )
+
+          fs.copySync(
+            path.join(srcDir, 'electron', 'index-db.ts'),
+            path.join(config.project_dir, 'electron', 'main', 'index.ts')
+          )
+
+          fs.copySync(
+            path.join(srcDir, 'config', 'makefile-db.sh'),
+            path.join(config.project_dir, 'makefile')
+          )
+        }
       }
-    } else if (config.packages.router.includes('react-router')) {
+    } else if (config.packages.router === 'react-router') {
       for (let i = 0; i < config.packages.styles.length; i++) {
         // REACT ROUTER #######################################################
         const style = config.packages.styles[i]
@@ -125,17 +142,17 @@ export const selectBoilerplate = (config: CLIResults) => {
             // copy react router "routes" directory (with tailwind) into the scaffolded src/ directory
             fs.copySync(
               path.join(srcDir, 'reactRouter', 'with-tailwind', 'routes'),
-              path.join(config.projectDir, 'src', 'routes')
+              path.join(config.project_dir, 'src', 'routes')
             )
 
             fs.copySync(
               path.join(srcDir, 'reactRouter', 'with-tailwind', 'App.tsx'),
-              path.join(config.projectDir, 'src', 'App.tsx')
+              path.join(config.project_dir, 'src', 'App.tsx')
             )
 
             fs.copySync(
               path.join(srcDir, 'reactRouter', 'with-tailwind', 'main.tsx'),
-              path.join(config.projectDir, 'src', 'main.tsx')
+              path.join(config.project_dir, 'src', 'main.tsx')
             )
 
             // copy the vite.config.ts file into the scaffolded project
@@ -147,24 +164,24 @@ export const selectBoilerplate = (config: CLIResults) => {
                 'config',
                 'vite.config.ts'
               ),
-              path.join(config.projectDir, 'vite.config.ts')
+              path.join(config.project_dir, 'vite.config.ts')
             )
 
             // copy the tailwind.config.ts file into the scaffolded project
             fs.copySync(
               path.join(srcDir, 'config', 'tailwind.config.ts'),
-              path.join(config.projectDir, 'tailwind.config.ts')
+              path.join(config.project_dir, 'tailwind.config.ts')
             )
             fs.copySync(
               path.join(srcDir, 'styles', 'tailwind-index.css'),
-              path.join(config.projectDir, 'tailwind-index.css')
+              path.join(config.project_dir, 'tailwind-index.css')
             )
             fs.renameSync(
-              path.join(config.projectDir, 'tailwind-index.css'),
-              path.join(config.projectDir, 'index.css')
+              path.join(config.project_dir, 'tailwind-index.css'),
+              path.join(config.project_dir, 'index.css')
             )
 
-            if (config.packages.orm.includes('drizzle')) {
+            if (config.packages.orm === 'drizzle') {
               fs.copySync(
                 path.join(
                   srcDir,
@@ -172,7 +189,7 @@ export const selectBoilerplate = (config: CLIResults) => {
                   'config',
                   'vite.config.rr-withtailwind.ts'
                 ),
-                path.join(config.projectDir, 'vite.config.ts')
+                path.join(config.project_dir, 'vite.config.ts')
               )
             }
 
@@ -182,17 +199,17 @@ export const selectBoilerplate = (config: CLIResults) => {
             // copy react router "routes" directory (with tailwind) into the scaffolded src/ directory
             fs.copySync(
               path.join(srcDir, 'reactRouter', 'base', 'routes'),
-              path.join(config.projectDir, 'src', 'routes')
+              path.join(config.project_dir, 'src', 'routes')
             )
 
             fs.copySync(
               path.join(srcDir, 'reactRouter', 'base', 'App.tsx'),
-              path.join(config.projectDir, 'src', 'App.tsx')
+              path.join(config.project_dir, 'src', 'App.tsx')
             )
 
             fs.copySync(
               path.join(srcDir, 'reactRouter', 'base', 'main.tsx'),
-              path.join(config.projectDir, 'src', 'main.tsx')
+              path.join(config.project_dir, 'src', 'main.tsx')
             )
 
             // copy the vite.config.ts file into the scaffolded project
@@ -204,16 +221,16 @@ export const selectBoilerplate = (config: CLIResults) => {
                 'config',
                 'vite.config.ts'
               ),
-              path.join(config.projectDir, 'vite.config.ts')
+              path.join(config.project_dir, 'vite.config.ts')
             )
 
             // copy the index.css file into the scaffolded project
             fs.copySync(
               path.join(srcDir, 'styles', 'index.css'),
-              path.join(config.projectDir, 'index.css')
+              path.join(config.project_dir, 'index.css')
             )
 
-            if (config.packages.orm.includes('drizzle')) {
+            if (config.packages.orm === 'drizzle') {
               fs.copySync(
                 path.join(
                   srcDir,
@@ -221,9 +238,16 @@ export const selectBoilerplate = (config: CLIResults) => {
                   'config',
                   'vite.config.rr-base.ts'
                 ),
-                path.join(config.projectDir, 'vite.config.ts')
+                path.join(config.project_dir, 'vite.config.ts')
               )
             }
+        }
+
+        if (config.packages.database === 'sqlite') {
+          fs.copySync(
+            path.join(srcDir, 'config', 'makefile-db.sh'),
+            path.join(config.project_dir, 'makefile')
+          )
         }
       }
     } else {
@@ -231,15 +255,15 @@ export const selectBoilerplate = (config: CLIResults) => {
       throw new Error('Invalid Routing Selection')
     }
 
-    if (config.packages.orm.includes('drizzle')) {
+    if (config.packages.orm === 'drizzle') {
       fs.copySync(
         path.join(srcDir, 'drizzle', 'config', 'drizzle.config.ts'),
-        path.join(config.projectDir, 'drizzle.config.ts')
+        path.join(config.project_dir, 'drizzle.config.ts')
       )
 
       fs.copySync(
         path.join(srcDir, 'drizzle', 'api'),
-        path.join(config.projectDir, 'src', 'api')
+        path.join(config.project_dir, 'src', 'api')
       )
 
       const drizzleScripts = {
@@ -255,7 +279,7 @@ export const selectBoilerplate = (config: CLIResults) => {
       }
 
       const pkgJson = fs.readJSONSync(
-        path.join(config.projectDir, 'package.json')
+        path.join(config.project_dir, 'package.json')
       )
       pkgJson.scripts = {
         ...pkgJson.scripts,
@@ -266,7 +290,7 @@ export const selectBoilerplate = (config: CLIResults) => {
 
       const sortedPkgJson = sort(pkgJson)
       fs.writeFileSync(
-        path.join(config.projectDir, 'package.json'),
+        path.join(config.project_dir, 'package.json'),
         JSON.stringify(sortedPkgJson, null, 2) + '\n'
       )
     }

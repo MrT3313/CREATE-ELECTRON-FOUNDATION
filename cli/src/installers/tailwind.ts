@@ -10,9 +10,9 @@ import { addPackageDependency } from '../utils/addPackageDependency.js'
 // TYPES
 import type { Installer } from '../types/Installers.js'
 
-export const tailwindInstaller: Installer = ({ projectDir }) => {
+export const tailwindInstaller: Installer = ({ project_dir }) => {
   addPackageDependency({
-    projectDir,
+    project_dir,
     dependencies: ['tailwindcss', '@tailwindcss/vite'],
     devMode: true,
   })
@@ -20,10 +20,10 @@ export const tailwindInstaller: Installer = ({ projectDir }) => {
   const extrasDir = path.join(PKG_ROOT, 'template/extras')
 
   const cssSrc = path.join(extrasDir, 'styles/tailwind-index.css')
-  const cssDest = path.join(projectDir, 'src/styles/index.css')
+  const cssDest = path.join(project_dir, 'src/styles/index.css')
   fs.copySync(cssSrc, cssDest)
 
   const tailwindConfigSrc = path.join(extrasDir, 'styles/tailwind.config.ts')
-  const tailwindConfigDest = path.join(projectDir, 'tailwind.config.ts')
+  const tailwindConfigDest = path.join(project_dir, 'tailwind.config.ts')
   fs.copySync(tailwindConfigSrc, tailwindConfigDest)
 }

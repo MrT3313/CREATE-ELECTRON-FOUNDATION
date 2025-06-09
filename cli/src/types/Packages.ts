@@ -4,23 +4,24 @@ import { Installer } from './Installers.js'
 export type PackageManager = 'npm'
 
 // STYLES
-export type StylePackage = 'tailwind' | 'css'
-export type StylePackages = StylePackage
-
+export const validRouters = ['tanstack-router', 'react-router']
 export type RouterPackage = 'tanstack-router' | 'react-router'
-export type RouterPackages = RouterPackage
 
+export const validStyles = ['tailwind']
+export type StylePackage = 'tailwind'
+
+// DATABASE & ORM
+export const validDatabases = ['sqlite']
 export type DatabasePackage = 'sqlite'
-export type DatabasePackages = DatabasePackage
 
+export const validORMs = ['drizzle']
 export type ORMPackage = 'drizzle'
-export type ORMPackages = ORMPackage
 
 export type AvailablePackages =
-  | StylePackages
-  | RouterPackages
-  | DatabasePackages
-  | ORMPackages
+  | StylePackage
+  | RouterPackage
+  | DatabasePackage
+  | ORMPackage
 
 // PACKAGE INSTALLER MAP
 export type PkgInstallerMap = Record<

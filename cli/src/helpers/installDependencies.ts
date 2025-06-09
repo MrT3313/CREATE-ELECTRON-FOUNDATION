@@ -6,33 +6,33 @@ import { execa } from 'execa'
 import type { PackageManager } from '../types/Packages.js'
 
 const runInstallCommand = async (
-  pkgManager: PackageManager,
-  projectDir: string
+  pkg_manager: PackageManager,
+  project_dir: string
 ): Promise<void> => {
-  switch (pkgManager) {
+  switch (pkg_manager) {
     case 'npm':
-      await execa(pkgManager, ['install'], {
-        cwd: projectDir,
+      await execa(pkg_manager, ['install'], {
+        cwd: project_dir,
         stdout: 'inherit',
         stderr: 'inherit',
         timeout: 300000, // 5 minutes timeout
       })
       break
     default:
-      throw new Error(`Unsupported package manager: ${pkgManager}`)
+      throw new Error(`Unsupported package manager: ${pkg_manager}`)
   }
 }
 
 export const installDependencies = async ({
-  projectDir,
-  pkgManager = 'npm',
+  project_dir,
+  pkg_manager = 'npm',
 }: {
-  projectDir: string
-  pkgManager?: PackageManager
+  project_dir: string
+  pkg_manager?: PackageManager
 }) => {
   console.log(chalk.blue('Installing dependencies...'))
   try {
-    await runInstallCommand(pkgManager, projectDir)
+    await runInstallCommand(pkg_manager, project_dir)
     console.log(chalk.green('Installed dependencies!'))
   } catch (error) {
     console.log(chalk.red('Failed to install dependencies!'))

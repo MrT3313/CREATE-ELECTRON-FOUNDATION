@@ -1,11 +1,13 @@
 import type {
-  StylePackages,
-  RouterPackages,
+  StylePackage,
+  RouterPackage,
   PackageManager,
-  DatabasePackages,
-  ORMPackages,
-  // AvailablePackages,
+  DatabasePackage,
+  ORMPackage,
 } from './Packages.js'
+
+export type ConfigKey =
+  `${RouterPackage}-${StylePackage}-${DatabasePackage | 'none'}-${ORMPackage | 'none'}`
 
 export interface Yargs {
   ci: boolean | undefined
@@ -22,33 +24,34 @@ export interface Yargs {
   install_dependencies: boolean | undefined
 }
 
-interface CLIDefaults {
-  pkgManager: PackageManager // "npm"
-  initializeGit: boolean
-  installDependencies: boolean
-  runMigrations: boolean
+export interface CLIDefaults {
+  pkg_manager: PackageManager // "npm"
+  initialize_git: boolean
+  install_dependencies: boolean
+  run_migrations: boolean
   packages: {
-    router: [RouterPackages] // Correct: always one router
-    styles: [StylePackages] // Corrected: always one style, like router
-    database: DatabasePackages[] // Correct: array, can be empty, works with .includes()
-    orm: ORMPackages[] // Correct: array, can be empty, works with .includes()
+    router: RouterPackage
+    styles: StylePackage
+    database: DatabasePackage
+    orm: ORMPackage
   }
 }
 
 export const defaultCLIConfig: CLIDefaults = {
-  pkgManager: 'npm',
-  initializeGit: false,
-  installDependencies: true,
-  runMigrations: true,
+  pkg_manager: 'npm',
+  initialize_git: false,
+  install_dependencies: true,
+  run_migrations: true,
   packages: {
-    router: ['tanstack-router'],
-    styles: ['tailwind'],
-    database: ['sqlite'],
-    orm: ['drizzle'],
+    router: 'tanstack-router',
+    styles: 'tailwind',
+    database: 'sqlite',
+    orm: 'drizzle',
   },
 }
 
 export interface CLIResults extends CLIDefaults {
   project_name: string
-  projectDir: string
+  project_dir: string
+  config_key: ConfigKey
 }

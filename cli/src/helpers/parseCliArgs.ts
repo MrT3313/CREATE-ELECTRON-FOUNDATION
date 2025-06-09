@@ -8,6 +8,18 @@ import { logger } from '../utils/logger.js'
 
 // TYPES
 import type { Yargs } from '../types/CLI.js'
+import {
+  validStyles,
+  validRouters,
+  validDatabases,
+  validORMs,
+} from '../types/Packages.js'
+import type {
+  StylePackage,
+  RouterPackage,
+  DatabasePackage,
+  ORMPackage,
+} from '../types/Packages.js'
 
 export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
   logger.info(`argv: ${JSON.stringify(argv, null, 2)}`)
@@ -64,15 +76,35 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     })
     .option('install_dependencies', {
       type: 'boolean',
+      alias: 'install',
       description: 'Install dependencies',
       default: true,
     })
     .option('initialize_git', {
       type: 'boolean',
+      alias: 'git',
       description: 'Initialize Git repository',
       default: true,
     })
     .check((argv) => {
+      if (argv.router && !validRouters.includes(argv.router)) {
+        logger.error(`Invalid router: ${argv.router}. Setting to undefined.`)
+        argv.router = undefined
+      }
+      if (argv.styles && !validStyles.includes(argv.styles)) {
+        logger.error(`Invalid styles: ${argv.styles}. Setting to undefined.`)
+        argv.styles = undefined
+      }
+      if (argv.database && !validDatabases.includes(argv.database)) {
+        logger.error(
+          `Invalid database: ${argv.database}. Setting to undefined.`
+        )
+        argv.database = undefined
+      }
+      if (argv.orm && !validORMs.includes(argv.orm)) {
+        logger.error(`Invalid ORM: ${argv.orm}. Setting to undefined.`)
+        argv.orm = undefined
+      }
       if (
         (argv.database && argv.database.length > 0 && !argv.orm) ||
         (!argv.database && argv.orm && argv.orm.length > 0)
@@ -100,11 +132,11 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     y: args.y || undefined,
     project_name: project_name || undefined,
     project_dir: project_name ? path.resolve(project_name) : undefined,
-    router: args.router || undefined,
-    styles: args.styles || undefined,
-    database: args.database || undefined,
+    router: (args.router as RouterPackage) || undefined,
+    styles: (args.styles as StylePackage) || undefined,
+    database: (args.database as DatabasePackage) || undefined,
+    orm: (args.orm as ORMPackage) || undefined,
     run_migrations: args.run_migrations || undefined,
-    orm: args.orm || undefined,
     pkg_manager: args.pkg_manager || undefined,
     initialize_git: args.initialize_git || undefined,
     install_dependencies: args.install_dependencies || undefined,

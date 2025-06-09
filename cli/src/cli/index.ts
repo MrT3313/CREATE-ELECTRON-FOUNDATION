@@ -9,12 +9,13 @@ import * as p from '@clack/prompts'
 import { DEFAULT_APP_NAME } from '../consts.js'
 
 // TYPES
-import type { Yargs, CLIResults } from '../types/CLI.js'
+import type { ConfigKey, Yargs, CLIResults } from '../types/CLI.js'
 import { defaultCLIConfig } from '../types/CLI.js'
 import type {
-  DatabasePackages,
-  ORMPackages,
-  RouterPackages,
+  RouterPackage,
+  DatabasePackage,
+  ORMPackage,
+  StylePackage,
 } from '../types/Packages.js'
 
 // UTILS
@@ -28,209 +29,251 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
   p.intro(`${color.bgCyan(color.black('create-electron-foundation'))}`)
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let group: any = {}
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const prompts: Record<string, any> = {}
+    let config: CLIResults
 
-    if (!cliArgs.project_name) {
-      prompts.project_name = () =>
-        p.text({
-          message: 'What is the name of your project?',
-          placeholder: DEFAULT_APP_NAME,
-          validate(value) {
-            if (value.length === 0) return `Project name is required!`
-            if (!/^[a-z0-9_.-]+$/.test(value))
-              return 'Project name can only contain lowercase letters, numbers, underscores, hyphens, and periods.'
+    if (cliArgs.y || cliArgs.ci) {
+      /* ########################################################################
+        if --yes | -y is passed in the CLI, we can skip the prompts and use 
+            - the passed cliArgs and fallback on the default configuration
+
+        This is useful for CI/CD pipelines, etc.
+      ######################################################################## */
+
+      const config_key: ConfigKey = `${cliArgs.router as RouterPackage}-${cliArgs.styles as StylePackage}-${cliArgs.database as DatabasePackage | 'none'}-${cliArgs.orm as ORMPackage | 'none'}`
+
+      config = {
+        config_key,
+        ...defaultCLIConfig,
+        project_name: cliArgs.project_name || DEFAULT_APP_NAME,
+        project_dir: `./${cliArgs.project_name || DEFAULT_APP_NAME}`,
+      }
+
+      try {
+        if (cliArgs.router) {
+          config.packages.router = cliArgs.router as RouterPackage
+        }
+
+        if (cliArgs.styles) {
+          config.packages.styles = cliArgs.styles as StylePackage
+        }
+
+        if (cliArgs.database) {
+          config.packages.database = cliArgs.database as DatabasePackage
+        }
+
+        if (cliArgs.orm) {
+          config.packages.orm = cliArgs.orm as ORMPackage
+        }
+
+        if (cliArgs.install_dependencies) {
+          config.install_dependencies = cliArgs.install_dependencies
+        }
+
+        if (cliArgs.initialize_git) {
+          config.initialize_git = cliArgs.initialize_git
+        }
+      } catch (err) {
+        logger.error('🚨🚨 Error running prompt cli --yes', err)
+        process.exit(1)
+      }
+    } else {
+      /* ########################################################################
+        if --yes | -y is not passed in the CLI, we need to prompt the user for 
+            - the project name, router, styles, database, orm, install dependencies, 
+            - initialize git, and run migrations
+
+        This is the default behavior.
+      ######################################################################## */
+
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let group: any = {}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const prompts: Record<string, any> = {}
+
+        if (!cliArgs.project_name) {
+          prompts.project_name = () =>
+            p.text({
+              message: 'What is the name of your project?',
+              placeholder: DEFAULT_APP_NAME,
+              validate(value) {
+                if (value.length === 0) return `Project name is required!`
+                if (!/^[a-z0-9_.-]+$/.test(value))
+                  return 'Project name can only contain lowercase letters, numbers, underscores, hyphens, and periods.'
+              },
+            })
+        }
+
+        if (!cliArgs.router) {
+          prompts.router = () =>
+            p.select({
+              message: 'Which router would you like to use?',
+              options: [
+                {
+                  value: 'tanstack-router',
+                  label: 'Tanstack Router',
+                },
+                {
+                  value: 'react-router',
+                  label: 'React Router',
+                },
+              ],
+              initialValue: 'tanstack-router',
+            })
+        }
+
+        if (!cliArgs.database) {
+          prompts.initialize_database = () =>
+            p.confirm({
+              message: 'Should we initialize a database?',
+              initialValue: true,
+            })
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          prompts.database = ({ results }: { results: any }) => {
+            if (results.initialize_database) {
+              return p.select({
+                message: 'Which database would you like to use?',
+                options: [
+                  {
+                    value: 'sqlite',
+                    label: 'SQLite',
+                  },
+                ],
+                initialValue: 'sqlite',
+              })
+            }
+            return Promise.resolve(null)
+          }
+        }
+
+        if (!cliArgs.orm) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          prompts.initializeORM = ({ results }: { results: any }) => {
+            if (results.initialize_database) {
+              return p.confirm({
+                message: 'Should we initialize an ORM?',
+                initialValue: true,
+              })
+            }
+            return Promise.resolve(false)
+          }
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          prompts.orm = ({ results }: { results: any }) => {
+            if (results.initialize_database && results.initializeORM) {
+              return p.select({
+                message: 'Which ORM would you like to use?',
+                options: [
+                  {
+                    value: 'drizzle',
+                    label: 'Drizzle',
+                  },
+                ],
+                initialValue: 'drizzle',
+              })
+            }
+            return Promise.resolve(null)
+          }
+        }
+
+        if (!cliArgs.styles) {
+          prompts.useTailwind = () =>
+            p.confirm({
+              message: 'Will you be using Tailwind CSS for styling?',
+              initialValue: true,
+            })
+        }
+
+        if (cliArgs.initialize_git === undefined) {
+          prompts.initialize_git = () =>
+            p.confirm({
+              message:
+                'Should we initialize a Git repository and stage the changes?',
+              initialValue: true,
+            })
+        }
+
+        if (cliArgs.install_dependencies === undefined) {
+          prompts.install_dependencies = () =>
+            p.confirm({
+              message: 'Should we install dependencies after scaffolding?',
+              initialValue: true,
+            })
+        }
+
+        // Run prompts if any exist
+        if (Object.keys(prompts).length > 0) {
+          group = await p.group(prompts, {
+            onCancel: () => {
+              p.cancel('Scaffolding cancelled.')
+              process.exit(0)
+            },
+          })
+        }
+
+        const initialize_git = group.initialize_git || cliArgs.initialize_git
+        console.log('BLARG - 1', initialize_git)
+
+        const install_dependencies =
+          group.install_dependencies || cliArgs.install_dependencies
+        console.log('BLARG - 2', install_dependencies)
+
+        const run_migrations = group.run_migrations || cliArgs.run_migrations
+        console.log('BLARG - 3', run_migrations)
+
+        const router = group.router || cliArgs.router
+        console.log('BLARG - 4', router)
+
+        const styles = group.styles || cliArgs.styles
+        console.log('BLARG - 5', styles)
+
+        const database = group.database || cliArgs.database
+        console.log('BLARG - 6', database)
+
+        const project_name = group.project_name || cliArgs.project_name
+        console.log('BLARG - 7', project_name)
+
+        const orm = group.orm || cliArgs.orm
+        console.log('BLARG - 8', orm)
+
+        const config_key: ConfigKey = `${router as RouterPackage}-${styles as StylePackage}-${database as DatabasePackage | 'none'}-${orm as ORMPackage | 'none'}`
+
+        config = {
+          config_key,
+          project_name: cliArgs.project_name || DEFAULT_APP_NAME,
+          project_dir: `./${cliArgs.project_name || DEFAULT_APP_NAME}`,
+          pkg_manager: 'npm',
+          initialize_git,
+          install_dependencies,
+          run_migrations,
+          packages: {
+            router,
+            styles,
+            database,
+            orm,
           },
-        })
-    }
-
-    // Skip other prompts only if -y is passed
-    if (!cliArgs.y) {
-      if (!cliArgs.router) {
-        prompts.router = () =>
-          p.select({
-            message: 'Which router would you like to use?',
-            options: [
-              {
-                value: 'tanstack-router',
-                label: 'Tanstack Router',
-              },
-              {
-                value: 'react-router',
-                label: 'React Router',
-              },
-            ],
-            initialValue: 'tanstack-router',
-          })
-      }
-
-      if (!cliArgs.database) {
-        prompts.initialize_database = () =>
-          p.confirm({
-            message: 'Should we initialize a database?',
-            initialValue: true,
-          })
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        prompts.database = ({ results }: { results: any }) => {
-          if (results.initialize_database) {
-            return p.select({
-              message: 'Which database would you like to use?',
-              options: [
-                {
-                  value: 'sqlite',
-                  label: 'SQLite',
-                },
-              ],
-              initialValue: 'sqlite',
-            })
-          }
-          return Promise.resolve(null)
         }
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      prompts.initializeORM = ({ results }: { results: any }) => {
-        if (results.initialize_database) {
-          return p.confirm({
-            message: 'Should we initialize an ORM?',
-            initialValue: true,
-          })
-        }
-        return Promise.resolve(false)
-      }
-
-      if (!cliArgs.orm) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        prompts.orm = ({ results }: { results: any }) => {
-          if (results.initialize_database && results.initializeORM) {
-            return p.select({
-              message: 'Which ORM would you like to use?',
-              options: [
-                {
-                  value: 'drizzle',
-                  label: 'Drizzle',
-                },
-              ],
-              initialValue: 'drizzle',
-            })
-          }
-          return Promise.resolve(null)
-        }
-      }
-
-      if (!cliArgs.styles) {
-        prompts.useTailwind = () =>
-          p.confirm({
-            message: 'Will you be using Tailwind CSS for styling?',
-            initialValue: true,
-          })
-      }
-
-      if (cliArgs.initialize_git === undefined) {
-        prompts.initializeGit = () =>
-          p.confirm({
-            message:
-              'Should we initialize a Git repository and stage the changes?',
-            initialValue: true,
-          })
-      }
-
-      if (cliArgs.install_dependencies === undefined) {
-        prompts.installDependencies = () =>
-          p.confirm({
-            message: 'Should we install dependencies after scaffolding?',
-            initialValue: true,
-          })
+      } catch (err) {
+        logger.error('🚨🚨 Error running prompt cli', err)
+        process.exit(1)
       }
     }
 
-    // Run prompts if any exist
-    if (Object.keys(prompts).length > 0) {
-      group = await p.group(prompts, {
-        onCancel: () => {
-          p.cancel('Scaffolding cancelled.')
-          process.exit(0)
-        },
-      })
-    }
-
-    const project_name =
-      cliArgs.project_name || group.project_name || DEFAULT_APP_NAME
-    const router = cliArgs.router || group.router || 'tanstack-router'
-    const initialize_database = cliArgs.y
-      ? true
-      : (group.initialize_database ?? false)
-    const database =
-      cliArgs.database ||
-      (initialize_database ? group.database || 'sqlite' : null)
-    const initializeORM = cliArgs.y ? true : (group.initializeORM ?? false)
-    const orm =
-      cliArgs.orm ||
-      (initialize_database && initializeORM ? group.orm || 'drizzle' : null)
-    const useTailwind =
-      cliArgs.styles === 'tailwind' ||
-      (cliArgs.styles === undefined &&
-        (cliArgs.y ? true : (group.useTailwind ?? true)))
-    const initializeGit = cliArgs.ci
-      ? false
-      : cliArgs.initialize_git !== undefined
-        ? cliArgs.initialize_git
-        : cliArgs.y
-          ? false
-          : (group.initializeGit ?? false)
-    const installDependencies =
-      cliArgs.install_dependencies !== undefined
-        ? cliArgs.install_dependencies
-        : cliArgs.y
-          ? true
-          : (group.installDependencies ?? true)
-    const runMigrations =
-      cliArgs.run_migrations !== undefined
-        ? cliArgs.run_migrations
-        : cliArgs.y
-          ? true
-          : (group.runMigrations ?? true)
-
-    const config: CLIResults = {
-      project_name,
-      projectDir: `./${project_name}`,
-      ...defaultCLIConfig,
-      initializeGit,
-      installDependencies,
-      runMigrations,
-      packages: {
-        ...defaultCLIConfig.packages,
-        router: [router as RouterPackages],
-        styles: useTailwind ? ['tailwind'] : ['css'],
-        database: database ? [database as DatabasePackages] : [],
-        orm: orm ? [orm as ORMPackages] : [],
-      },
-    }
+    console.log('FUCK ME RIGHT HERE!!! config', config)
 
     p.note(
       `
       Project Name: ${config.project_name}
-      Router: ${config.packages.router}
-      Styles: ${config.packages.styles}${
-        database
-          ? `
-      Database: ${config.packages.database}`
-          : ''
-      }${
-        orm
-          ? `
-      ORM: ${config.packages.orm}`
-          : ''
-      }
-      Install Dependencies: ${config.installDependencies}
-      Run Migrations: ${config.runMigrations}
-      Initialize Git: ${config.initializeGit}`,
+      Router: ${config?.packages?.router}
+      Styles: ${config?.packages?.styles}
+      Database: ${config?.packages?.database}
+      \tORM: ${config?.packages?.orm}
+      Install Dependencies: ${config.install_dependencies}
+      Run Migrations: ${config.run_migrations}
+      Initialize Git: ${config.initialize_git}`,
       'Summary of your choices:'
     )
-
     if (!cliArgs.y || !cliArgs.project_name) {
       const s = p.spinner()
       s.start('Processing your choices')

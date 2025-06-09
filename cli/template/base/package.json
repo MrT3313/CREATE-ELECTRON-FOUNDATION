@@ -8,13 +8,7 @@
   },
   "scripts": {
     "tanstackrouter:generate:routes": "npx @tanstack/router-cli ./src/routes -y",
-    "dev": "npm run rebuild:check && vite",
-    "rebuild:local": "npm rebuild",
-    "rebuild:electron": "electron-rebuild -f -w better-sqlite3",
-    "rebuild:all": "npm run rebuild:local && npm run rebuild:electron",
-    "rebuild:check": "node -e \"try { require('better-sqlite3'); console.log('✓ better-sqlite3 loaded successfully'); } catch(e) { console.log('✗ better-sqlite3 failed:', e.message); console.log('Run: npm run rebuild:electron'); process.exit(1); }\"",
-    "setup": "npm install && npm run rebuild:electron",
-    "clean:rebuild": "rm -rf node_modules package-lock.json && npm install && npm run rebuild:electron"
+    "dev": "vite"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.79.0",

@@ -65,24 +65,24 @@ const main = async () => {
   selectBoilerplate(config)
 
   // 6. update package.json ###################################################
-  const pkgJson = fs.readJSONSync(path.join(config.projectDir, 'package.json'))
+  const pkgJson = fs.readJSONSync(path.join(config.project_dir, 'package.json'))
   pkgJson.name = config.project_name
-  fs.writeJSONSync(path.join(config.projectDir, 'package.json'), pkgJson, {
+  fs.writeJSONSync(path.join(config.project_dir, 'package.json'), pkgJson, {
     spaces: 2,
   })
 
   // 7. install dependencies ##################################################
-  if (config.installDependencies) {
+  if (config.install_dependencies) {
     await installDependencies({
-      pkgManager: config.pkgManager,
-      projectDir: config.projectDir,
+      pkg_manager: config.pkg_manager,
+      project_dir: config.project_dir,
     })
   }
 
   // 8. migrations #########################################################
   if (
-    config.installDependencies &&
-    config.runMigrations &&
+    config.install_dependencies &&
+    config.run_migrations &&
     config.packages.database?.includes('sqlite') &&
     config.packages.orm?.includes('drizzle')
   ) {
@@ -108,13 +108,13 @@ const main = async () => {
       migrationsSpinner.fail(chalk.red('Database setup failed!'))
     }
   } else if (
-    config.runMigrations &&
+    config.run_migrations &&
     !(
       config.packages.database?.includes('sqlite') &&
       config.packages.orm?.includes('drizzle')
     )
   ) {
-    if (config.runMigrations) {
+    if (config.run_migrations) {
       logger.info(
         'Skipping database migrations as database/ORM requirements are not met or migrations disabled.'
       )
@@ -122,7 +122,7 @@ const main = async () => {
   }
 
   // 9. initialize git ########################################################
-  if (config.initializeGit && !cliArgs.ci) {
+  if (config.initialize_git && !cliArgs.ci) {
     const initializeGitSpinner = ora({
       text: 'Initializing Git...',
       spinner: 'dots',
