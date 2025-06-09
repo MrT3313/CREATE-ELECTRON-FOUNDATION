@@ -4,10 +4,10 @@ import path from 'path'
 import chalk from 'chalk'
 
 // UTILS
-import { logger } from './utils/logger.js'
+import { logger } from '../utils/logger.js'
 
 // TYPES
-import type { Yargs } from './types/CLI.js'
+import type { Yargs } from '../types/CLI.js'
 
 export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
   logger.info(`argv: ${JSON.stringify(argv, null, 2)}`)

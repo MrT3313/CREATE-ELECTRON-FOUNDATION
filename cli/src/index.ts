@@ -11,7 +11,7 @@ import { scaffoldProject } from './helpers/scaffoldProject.js'
 import { installPackages } from './helpers/installPackages.js'
 import { selectBoilerplate } from './helpers/selectBoilerplate.js'
 import { installDependencies } from './helpers/installDependencies.js'
-import { parseCliArgs } from './parseCliArgs.js'
+import { parseCliArgs } from './helpers/parseCliArgs.js'
 
 // UTILS
 import { logger } from './utils/logger.js'
