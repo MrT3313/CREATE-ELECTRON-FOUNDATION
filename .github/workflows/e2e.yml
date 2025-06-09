@@ -61,9 +61,9 @@ on:
 # 2. 👀 Defines the jobs for this workflow.
 jobs:
   e2e-test:
-    name: E2E Test - ${{ matrix.name }}
+    name: E2E Test - ${{ matrix.config.name }}
     # Specifies the type of runner for this job, using a matrix variable.
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.config.os }}
 
     ###########################################################################
     # ⭐️
@@ -76,13 +76,11 @@ jobs:
 
       # CONFIGURE: matrix of run configurations.
       matrix:
-        # Operating System(s) to test on.
-        os: [ubuntu-latest]
-
         # Defines the specific CLI feature combinations to test.
-        include:
+        config:
           # 0. DEFAULT
           - name: 'Tanstack Router, Tailwind, SQLite, Drizzle'
+            os: ubuntu-latest
             router: 'tanstack-router'
             styles: 'tailwind'
             db_opts: '--database=sqlite'
@@ -90,16 +88,19 @@ jobs:
 
           # 1. Tanstack Router
           - name: 'Tanstack Router, Tailwind'
+            os: ubuntu-latest
             router: 'tanstack-router'
             styles: 'tailwind'
             db_opts: ''
             orm_opts: ''
           - name: 'Tanstack Router, CSS'
+            os: ubuntu-latest
             router: 'tanstack-router'
             styles: 'css'
             db_opts: ''
             orm_opts: ''
           - name: 'Tanstack Router, CSS, SQLite, Drizzle'
+            os: ubuntu-latest
             router: 'tanstack-router'
             styles: 'css'
             db_opts: '--database=sqlite'
@@ -107,21 +108,25 @@ jobs:
 
           # 2. React Router
           - name: 'React Router, Tailwind'
+            os: ubuntu-latest
             router: 'react-router'
             styles: 'tailwind'
             db_opts: ''
             orm_opts: ''
           - name: 'React Router, CSS'
+            os: ubuntu-latest
             router: 'react-router'
             styles: 'css'
             db_opts: ''
             orm_opts: ''
           - name: 'React Router, Tailwind, SQLite, Drizzle'
+            os: ubuntu-latest
             router: 'react-router'
             styles: 'tailwind'
             db_opts: '--database=sqlite'
             orm_opts: '--orm=drizzle'
           - name: 'React Router, CSS, SQLite, Drizzle'
+            os: ubuntu-latest
             router: 'react-router'
             styles: 'css'
             db_opts: '--database=sqlite'
@@ -158,7 +163,7 @@ jobs:
       # ⭐️⭐️
       # Step 5: Scaffold a test project using the CLI.
       #########################################################
-      - name: Scaffold Test Project (using ${{ matrix.name }})
+      - name: Scaffold Test Project (using ${{ matrix.config.name }})
         run: |
           set -x
 
@@ -166,18 +171,18 @@ jobs:
           mkdir temp-scaffolded-project
 
           # Construct the project name for uniqueness.
-          project_name="test-proj-${{ matrix.router }}-${{ matrix.styles }}"
-          if [[ -n "${{ matrix.db_opts }}" ]]; then
+          project_name="test-proj-${{ matrix.config.router }}-${{ matrix.config.styles }}"
+          if [[ -n "${{ matrix.config.db_opts }}" ]]; then
             project_name+="-db"
           fi
-          if [[ -n "${{ matrix.orm_opts }}" ]]; then
+          if [[ -n "${{ matrix.config.orm_opts }}" ]]; then
             project_name+="-orm"
           fi
 
           echo "PROJECT_NAME=$project_name" >> $GITHUB_ENV
 
           # Execute the CLI to scaffold a new project.
-          node cli/dist/index.js "./temp-scaffolded-project/$project_name" --router="${{ matrix.router }}" --styles="${{ matrix.styles }}" ${{ matrix.db_opts }} ${{ matrix.orm_opts }} --yes --ci
+          node cli/dist/index.js "./temp-scaffolded-project/$project_name" --router="${{ matrix.config.router }}" --styles="${{ matrix.config.styles }}" ${{ matrix.config.db_opts }} ${{ matrix.config.orm_opts }} --yes --ci
 
       #########################################################
       # ⭐️⭐️⭐️
@@ -186,36 +191,36 @@ jobs:
       #########################################################
       - name: Verify Project Structure
         run: |
-          echo "Verifying project structure for ${{ matrix.name }}..."
+          echo "Verifying project structure for ${{ matrix.config.name }}..."
 
           # Generic file checks
           test -f "temp-scaffolded-project/$PROJECT_NAME/vite.config.ts" || (echo "vite.config.ts not found!" && exit 1)
           test -f "temp-scaffolded-project/$PROJECT_NAME/index.css" || (echo "index.css not found!" && exit 1)
 
           # Router checks
-          if [[ "${{ matrix.router }}" == "tanstack-router" ]]; then
+          if [[ "${{ matrix.config.router }}" == "tanstack-router" ]]; then
             test -f "temp-scaffolded-project/$PROJECT_NAME/src/routes/__root.tsx" || (echo "src/routes/__root.tsx not found for TanStack Router!" && exit 1)
             test -f "temp-scaffolded-project/$PROJECT_NAME/src/routes/index.tsx" || (echo "src/routes/index.tsx not found for TanStack Router!" && exit 1)
           fi
 
-          if [[ "${{ matrix.router }}" == "react-router" ]]; then
+          if [[ "${{ matrix.config.router }}" == "react-router" ]]; then
             test -f "temp-scaffolded-project/$PROJECT_NAME/src/App.tsx" || (echo "src/App.tsx not found for React Router!" && exit 1)
             test -d "temp-scaffolded-project/$PROJECT_NAME/src/routes" || (echo "src/routes directory not found for React Router!" && exit 1)
             test -f "temp-scaffolded-project/$PROJECT_NAME/src/routes/index.tsx" || (echo "src/routes/index.tsx not found for React Router!" && exit 1)
           fi
 
           # Style checks
-          if [[ "${{ matrix.styles }}" == "tailwind" ]]; then
+          if [[ "${{ matrix.config.styles }}" == "tailwind" ]]; then
             test -f "temp-scaffolded-project/$PROJECT_NAME/tailwind.config.js" || (echo "tailwind.config.js not found for Tailwind!" && exit 1)
           fi
 
           # # Database checks
-          # if [[ "${{ matrix.db_opts }}" == *sqlite* ]]; then
+          # if [[ "${{ matrix.config.db_opts }}" == *sqlite* ]]; then
           #   test -f "temp-scaffolded-project/$PROJECT_NAME/src/db/db.ts" || (echo "src/db/db.ts not found for SQLite!" && exit 1)
           # fi
 
           # ORM checks
-          if [[ "${{ matrix.orm_opts }}" == *drizzle* ]]; then
+          if [[ "${{ matrix.config.orm_opts }}" == *drizzle* ]]; then
             test -f "temp-scaffolded-project/$PROJECT_NAME/drizzle.config.ts" || (echo "drizzle.config.ts not found for Drizzle!" && exit 1)
             test -f "temp-scaffolded-project/$PROJECT_NAME/src/api/useResource.ts" || (echo "src/api/useResource.ts not found for Drizzle!" && exit 1)
           fi
