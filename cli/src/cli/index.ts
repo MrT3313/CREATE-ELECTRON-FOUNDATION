@@ -188,11 +188,13 @@ export const runUserPromptCli = async (
       (cliArgs.styles === undefined &&
         (cliArgs.skipPrompts ? true : (group.useTailwind ?? true)))
     const initializeGit =
-      cliArgs.initialize_git !== undefined
-        ? cliArgs.initialize_git
-        : cliArgs.skipPrompts
-          ? false
-          : (group.initializeGit ?? false)
+      cliArgs.ci
+        ? false
+        : cliArgs.initialize_git !== undefined
+          ? cliArgs.initialize_git
+          : cliArgs.skipPrompts
+            ? false
+            : (group.initializeGit ?? false)
     const installDependencies =
       cliArgs.install_dependencies !== undefined
         ? cliArgs.install_dependencies
