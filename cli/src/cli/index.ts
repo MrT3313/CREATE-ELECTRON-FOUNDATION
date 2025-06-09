@@ -1,13 +1,16 @@
 import { setTimeout } from 'node:timers/promises'
 import color from 'picocolors'
+import chalk from 'chalk'
 
 // TERMINAL > user prompting
 import * as p from '@clack/prompts'
 
 // CONSTS
 import { DEFAULT_APP_NAME } from '../consts.js'
+
 // TYPES
-import type { CLIDefaults, CLIResults, CLIArgs } from '../types/CLI.js'
+import type { Yargs, CLIResults } from '../types/CLI.js'
+import { defaultCLIConfig } from '../types/CLI.js'
 import type {
   DatabasePackages,
   ORMPackages,
@@ -17,25 +20,11 @@ import type {
 // UTILS
 import { logger } from '../utils/logger.js'
 
-const defaultConfig: CLIDefaults = {
-  pkgManager: 'npm',
-  initializeGit: false,
-  installDependencies: true,
-  runMigrations: true,
-  packages: {
-    router: ['tanstack-router'],
-    styles: ['tailwind'],
-    database: ['sqlite'],
-    orm: ['drizzle'],
-    // tables: ["tanstack-table"],
-    // forms: ["tanstack-forms"],
-  },
-  ci: false,
-}
+export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
+  logger.info(
+    chalk.red(`runUserPromptCli - cliArgs: ${JSON.stringify(cliArgs, null, 2)}`)
+  )
 
-export const runUserPromptCli = async (
-  cliArgs: CLIArgs = {}
-): Promise<CLIResults> => {
   p.intro(`${color.bgCyan(color.black('create-electron-foundation'))}`)
 
   try {
@@ -58,7 +47,7 @@ export const runUserPromptCli = async (
     }
 
     // Skip other prompts only if -y is passed
-    if (!cliArgs.skipPrompts) {
+    if (!cliArgs.y) {
       if (!cliArgs.router) {
         prompts.router = () =>
           p.select({
@@ -77,13 +66,13 @@ export const runUserPromptCli = async (
           })
       }
 
-      prompts.initialize_database = () =>
-        p.confirm({
-          message: 'Should we initialize a database?',
-          initialValue: true,
-        })
-
       if (!cliArgs.database) {
+        prompts.initialize_database = () =>
+          p.confirm({
+            message: 'Should we initialize a database?',
+            initialValue: true,
+          })
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         prompts.database = ({ results }: { results: any }) => {
           if (results.initialize_database) {
@@ -171,51 +160,49 @@ export const runUserPromptCli = async (
     const project_name =
       cliArgs.project_name || group.project_name || DEFAULT_APP_NAME
     const router = cliArgs.router || group.router || 'tanstack-router'
-    const initialize_database = cliArgs.skipPrompts
+    const initialize_database = cliArgs.y
       ? true
       : (group.initialize_database ?? false)
     const database =
       cliArgs.database ||
       (initialize_database ? group.database || 'sqlite' : null)
-    const initializeORM = cliArgs.skipPrompts
-      ? true
-      : (group.initializeORM ?? false)
+    const initializeORM = cliArgs.y ? true : (group.initializeORM ?? false)
     const orm =
       cliArgs.orm ||
       (initialize_database && initializeORM ? group.orm || 'drizzle' : null)
     const useTailwind =
       cliArgs.styles === 'tailwind' ||
       (cliArgs.styles === undefined &&
-        (cliArgs.skipPrompts ? true : (group.useTailwind ?? true)))
+        (cliArgs.y ? true : (group.useTailwind ?? true)))
     const initializeGit = cliArgs.ci
       ? false
       : cliArgs.initialize_git !== undefined
         ? cliArgs.initialize_git
-        : cliArgs.skipPrompts
+        : cliArgs.y
           ? false
           : (group.initializeGit ?? false)
     const installDependencies =
       cliArgs.install_dependencies !== undefined
         ? cliArgs.install_dependencies
-        : cliArgs.skipPrompts
+        : cliArgs.y
           ? true
           : (group.installDependencies ?? true)
     const runMigrations =
       cliArgs.run_migrations !== undefined
         ? cliArgs.run_migrations
-        : cliArgs.skipPrompts
+        : cliArgs.y
           ? true
           : (group.runMigrations ?? true)
 
     const config: CLIResults = {
       project_name,
       projectDir: `./${project_name}`,
-      ...defaultConfig,
+      ...defaultCLIConfig,
       initializeGit,
       installDependencies,
       runMigrations,
       packages: {
-        ...defaultConfig.packages,
+        ...defaultCLIConfig.packages,
         router: [router as RouterPackages],
         styles: useTailwind ? ['tailwind'] : ['css'],
         database: database ? [database as DatabasePackages] : [],
@@ -244,7 +231,7 @@ export const runUserPromptCli = async (
       'Summary of your choices:'
     )
 
-    if (!cliArgs.skipPrompts || !cliArgs.project_name) {
+    if (!cliArgs.y || !cliArgs.project_name) {
       const s = p.spinner()
       s.start('Processing your choices')
       await setTimeout(1000)

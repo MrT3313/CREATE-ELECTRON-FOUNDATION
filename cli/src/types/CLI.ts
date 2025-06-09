@@ -7,20 +7,22 @@ import type {
   // AvailablePackages,
 } from './Packages.js'
 
-export interface CLIArgs {
-  project_name?: string
-  initialize_git?: boolean
-  install_dependencies?: boolean
-  run_migrations?: boolean
-  router?: RouterPackages
-  styles?: StylePackages
-  database?: DatabasePackages | null
-  orm?: ORMPackages | null
-  skipPrompts?: boolean
-  ci?: boolean
+export interface Yargs {
+  ci: boolean | undefined
+  y: boolean | undefined
+  project_name: string | undefined
+  project_dir: string | undefined
+  router: string | undefined
+  styles: string | undefined
+  database: string | undefined
+  run_migrations: boolean | undefined
+  orm: string | undefined
+  pkg_manager: string | undefined
+  initialize_git: boolean | undefined
+  install_dependencies: boolean | undefined
 }
 
-export interface CLIDefaults {
+interface CLIDefaults {
   pkgManager: PackageManager // "npm"
   initializeGit: boolean
   installDependencies: boolean
@@ -31,7 +33,19 @@ export interface CLIDefaults {
     database: DatabasePackages[] // Correct: array, can be empty, works with .includes()
     orm: ORMPackages[] // Correct: array, can be empty, works with .includes()
   }
-  ci: boolean
+}
+
+export const defaultCLIConfig: CLIDefaults = {
+  pkgManager: 'npm',
+  initializeGit: false,
+  installDependencies: true,
+  runMigrations: true,
+  packages: {
+    router: ['tanstack-router'],
+    styles: ['tailwind'],
+    database: ['sqlite'],
+    orm: ['drizzle'],
+  },
 }
 
 export interface CLIResults extends CLIDefaults {
