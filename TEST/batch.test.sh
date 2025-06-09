@@ -34,8 +34,7 @@ log_and_run() {
 }
 
 echo "🧪 Starting test suite for create-electron-foundation..."
-log_and_run "ts-router-with-tailwind" "tanstack-router" "tailwind" # should use the defaults (which will create sqlite & drizzle)
-# log_and_run "ts-router-with-tailwind" "tanstack-router" "tailwind" "none" "none" # should NOT create a database or ORM
-# log_and_run "ts-router-with-tailwind" "tanstack-router" "tailwind" "sqlite" "drizzle" # should create sqlite & drizzle
+# log_and_run "ts-router-with-tailwind" "tanstack-router" "tailwind" 
+log_and_run "rr-router-with-tailwind" "react-router" "tailwind" 
 
 echo "🎉 All test projects created successfully!"

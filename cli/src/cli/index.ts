@@ -39,7 +39,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         This is useful for CI/CD pipelines, etc.
       ######################################################################## */
 
-      const config_key: ConfigKey = `${cliArgs.router as RouterPackage}-${cliArgs.styles as StylePackage}-${cliArgs.database as DatabasePackage | 'none'}-${cliArgs.orm as ORMPackage | 'none'}`
+      const config_key: ConfigKey = `${cliArgs.router as RouterPackage}-${cliArgs.styles as StylePackage}-${(cliArgs.database as DatabasePackage) || 'none'}-${(cliArgs.orm as ORMPackage) || 'none'}`
 
       config = {
         config_key,
@@ -237,7 +237,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         const orm = group.orm || cliArgs.orm
         console.log('BLARG - 8', orm)
 
-        const config_key: ConfigKey = `${router as RouterPackage}-${styles as StylePackage}-${database as DatabasePackage | 'none'}-${orm as ORMPackage | 'none'}`
+        const config_key: ConfigKey = `${router as RouterPackage}-${styles as StylePackage}-${(database as DatabasePackage) || 'none'}-${(orm as ORMPackage) || 'none'}`
 
         config = {
           config_key,
