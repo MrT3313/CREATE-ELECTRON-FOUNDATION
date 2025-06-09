@@ -33,13 +33,11 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
       type: 'string',
       choices: ['tanstack-router', 'react-router'],
       description: 'Router to use',
-      default: 'tanstack-router',
     })
     .option('styles', {
       type: 'string',
       choices: ['tailwind', 'css'],
       description: 'Styles to use',
-      default: 'tailwind',
     })
     .option('database', {
       type: 'string',
