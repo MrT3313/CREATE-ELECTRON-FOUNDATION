@@ -79,11 +79,11 @@ runs:
         restore-keys: |
           ${{ runner.os }}-${{ inputs.cache-key-prefix }}-
 
-    # # Step 3: Install dependencies using npm.
-    # - name: Install dependencies
-    #   shell: bash
-    #   # Runs 'npm ci'.
-    #   # 'npm ci' (clean install) is the recommended command for CI environments.
-    #   # It installs dependencies based strictly on 'package-lock.json' and is generally faster and more reliable for CI.
-    #   # It requires a 'package-lock.json' file to be present.
-    #   run: npm ci
+    # Step 3: Install dependencies using npm.
+    - name: Install dependencies
+      shell: bash
+      # Runs 'npm ci'.
+      # 'npm ci' (clean install) is the recommended command for CI environments.
+      # It installs dependencies based strictly on 'package-lock.json' and is generally faster and more reliable for CI.
+      # It requires a 'package-lock.json' file to be present.
+      run: npm ci
