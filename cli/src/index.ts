@@ -48,11 +48,11 @@ const main = async () => {
     })
     .option('database', {
       type: 'string',
-      choices: ['sqlite', 'null'],
+      choices: ['sqlite', 'none'],
       description:
-        "Database to use (e.g., 'sqlite'). Pass 'null' for no database.",
-      default: 'null',
-      coerce: (arg: string) => (arg.toLowerCase() === 'null' ? null : arg),
+        "Database to use (e.g., 'sqlite'). Pass 'none' for no database.",
+      default: 'none',
+      coerce: (arg: string) => (arg.toLowerCase() === 'none' ? null : arg),
     })
     .option('run_migrations', {
       type: 'boolean',
@@ -61,10 +61,10 @@ const main = async () => {
     })
     .option('orm', {
       type: 'string',
-      choices: ['drizzle', 'null'],
-      description: "ORM to use (e.g., 'drizzle'). Pass 'null' for no ORM.",
-      default: 'null',
-      coerce: (arg: string) => (arg.toLowerCase() === 'null' ? null : arg),
+      choices: ['drizzle', 'none'],
+      description: "ORM to use (e.g., 'drizzle'). Pass 'none' for no ORM.",
+      default: 'none',
+      coerce: (arg: string) => (arg.toLowerCase() === 'none' ? null : arg),
     })
     .option('styles', {
       type: 'string',
@@ -99,7 +99,7 @@ const main = async () => {
         )
       }
       if (argv.database === null && argv.orm !== null) {
-        throw new Error("If no database is selected, ORM must also be 'null'.")
+        throw new Error("If no database is selected, ORM must also be 'none'.")
       }
       if (
         argv.database === null &&
