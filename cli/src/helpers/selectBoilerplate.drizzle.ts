@@ -27,23 +27,16 @@ export const selectBoilerplateDrizzle = (config: CLIResults) => {
   )
 
   const drizzleScripts = {
-    'drizzle:rebuild': 'npm rebuild better-sqlite3',
-    'drizzle:generate': 'drizzle-kit generate',
-    'drizzle:migrate': 'drizzle-kit migrate',
-    'drizzle:studio': 'drizzle-kit studio',
-  }
-
-  const workflowScripts = {
-    'db:setup':
-      'npm run drizzle:rebuild && npm run drizzle:generate && npm run drizzle:migrate',
+    'drizzle:generate':
+      'npm run drizzle:rebuild:sqlite && drizzle-kit generate',
+    'drizzle:migrate': 'npm run drizzle:rebuild:sqlite && drizzle-kit migrate',
+    'drizzle:studio': 'npm run drizzle:rebuild:sqlite && drizzle-kit studio',
   }
 
   const pkgJson = fs.readJSONSync(path.join(config.project_dir, 'package.json'))
   pkgJson.scripts = {
     ...pkgJson.scripts,
-    // "postinstall": "electron-rebuild -f -w better-sqlite3",
     ...drizzleScripts,
-    ...workflowScripts,
   }
 
   const sortedPkgJson = sort(pkgJson)

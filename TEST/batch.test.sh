@@ -35,6 +35,9 @@ log_and_run() {
 
 echo "🧪 Starting test suite for create-electron-foundation..."
 # log_and_run "ts-router-with-tailwind" "tanstack-router" "tailwind" 
-log_and_run "rr-router-with-tailwind" "react-router" "tailwind" 
+# log_and_run "ts-router-with-tailwind-false-false" "tanstack-router" "tailwind" "false" "false"
+log_and_run "ts-router-with-tailwind-false-false" "tanstack-router" "tailwind" "sqlite" "drizzle"
+# log_and_run "rr-router-with-tailwind" "react-router" "tailwind" 
+# log_and_run "rr-router-with-tailwind" "react-router" "tailwind" "false" "false"
 
 echo "🎉 All test projects created successfully!"

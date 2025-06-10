@@ -20,6 +20,8 @@ ri:
 	rm -rf node_modules package-lock.json
 	$(MAKE) i
 
+kac: ri dev
+
 dev: 
 	@$(NVM_SETUP) && npm run dev
 

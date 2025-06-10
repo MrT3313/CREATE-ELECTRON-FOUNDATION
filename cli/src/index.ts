@@ -10,7 +10,6 @@ import { buildPkgInstallerMap } from './installers/buildPkgInstallerMap.js'
 import { scaffoldProject } from './helpers/scaffoldProject.js'
 import { installPackages } from './helpers/installPackages.js'
 import { selectBoilerplate } from './helpers/selectBoilerplate.js'
-import { installDependencies } from './helpers/installDependencies.js'
 import { parseCliArgs } from './helpers/parseCliArgs.js'
 
 // UTILS
@@ -30,6 +29,7 @@ const main = async () => {
   // Parse command line arguments
   logger.info(`process.argv: ${JSON.stringify(process.argv, null, 2)}`)
   const cliArgs: Yargs = await parseCliArgs(process.argv)
+  console.log('!!--!! FUCK ME HERE', cliArgs)
 
   // INJECT ENV VARIABLES ######################################################
   // Set APP_NAME early if project_name is available from args.
@@ -71,57 +71,7 @@ const main = async () => {
     spaces: 2,
   })
 
-  // 7. install dependencies ##################################################
-  if (config.install_dependencies) {
-    await installDependencies({
-      pkg_manager: config.pkg_manager,
-      project_dir: config.project_dir,
-    })
-  }
-
-  // 8. migrations #########################################################
-  if (
-    config.install_dependencies &&
-    config.run_migrations &&
-    config.packages.database?.includes('sqlite') &&
-    config.packages.orm?.includes('drizzle')
-  ) {
-    const migrationsSpinner = ora({
-      text: 'Setting up database...',
-      spinner: 'dots',
-    })
-    migrationsSpinner.start()
-
-    let command = `cd "${config.project_name}"`
-    command += ` && npm run db:setup`
-
-    try {
-      execaSync(command, {
-        shell: true,
-      })
-      migrationsSpinner.succeed(
-        chalk.green('Database setup completed successfully!')
-      )
-    } catch (err) {
-      logger.error(`Failed to execute: ${command}`)
-      logger.error(err)
-      migrationsSpinner.fail(chalk.red('Database setup failed!'))
-    }
-  } else if (
-    config.run_migrations &&
-    !(
-      config.packages.database?.includes('sqlite') &&
-      config.packages.orm?.includes('drizzle')
-    )
-  ) {
-    if (config.run_migrations) {
-      logger.info(
-        'Skipping database migrations as database/ORM requirements are not met or migrations disabled.'
-      )
-    }
-  }
-
-  // 9. initialize git ########################################################
+  // 7. initialize git ########################################################
   if (config.initialize_git && !cliArgs.ci) {
     const initializeGitSpinner = ora({
       text: 'Initializing Git...',
@@ -144,7 +94,7 @@ const main = async () => {
     }
   }
 
-  // 10. open in ide ##########################################################
+  // 8. open in ide ##########################################################
   if (ide && !cliArgs.ci) {
     // Do not open IDE in CI mode
     let command = `cd "${config.project_name}"`

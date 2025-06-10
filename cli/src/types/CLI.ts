@@ -16,9 +16,8 @@ export interface Yargs {
   project_dir: string | undefined
   router: string | undefined
   styles: string | undefined
-  database: string | undefined
-  run_migrations: boolean | undefined
-  orm: string | undefined
+  database: string | undefined | false
+  orm: string | undefined | false
   pkg_manager: string | undefined
   initialize_git: boolean | undefined
   install_dependencies: boolean | undefined
@@ -28,7 +27,6 @@ export interface CLIDefaults {
   pkg_manager: PackageManager // "npm"
   initialize_git: boolean
   install_dependencies: boolean
-  run_migrations: boolean
   packages: {
     router: RouterPackage
     styles: StylePackage
@@ -41,7 +39,6 @@ export const defaultCLIConfig: CLIDefaults = {
   pkg_manager: 'npm',
   initialize_git: false,
   install_dependencies: true,
-  run_migrations: true,
   packages: {
     router: 'tanstack-router',
     styles: 'tailwind',

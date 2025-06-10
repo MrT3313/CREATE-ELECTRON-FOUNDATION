@@ -14,15 +14,15 @@ import {
   validDatabases,
   validORMs,
 } from '../types/Packages.js'
-import type {
-  StylePackage,
-  RouterPackage,
-  DatabasePackage,
-  ORMPackage,
-} from '../types/Packages.js'
 
 export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
-  logger.info(`argv: ${JSON.stringify(argv, null, 2)}`)
+  logger.info(
+    `FUCK ME HERE AT THE VERY BEGINNING OF PARSINE CLI ARGS: argv: ${JSON.stringify(
+      argv,
+      null,
+      2
+    )}`
+  )
 
   const args = await yargs(hideBin(argv))
     .option('ci', {
@@ -48,31 +48,26 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     })
     .option('styles', {
       type: 'string',
-      choices: ['tailwind', 'css'],
+      choices: ['tailwind'],
       description: 'Styles to use',
     })
     .option('database', {
       type: 'string',
-      choices: ['sqlite'],
+      choices: ['sqlite', 'false'],
       description:
         "Database to use (e.g., 'sqlite'). Empty String or non-existent param === ''",
+    })
+    .option('orm', {
+      type: 'string',
+      choices: ['drizzle', 'false'],
+      description:
+        "ORM to use (e.g., 'drizzle'). Empty String or non-existent param === ''",
     })
     .option('pkg_manager', {
       type: 'string',
       choices: ['npm'],
       description: 'Package manager to use',
       default: 'npm',
-    })
-    .option('run_migrations', {
-      type: 'boolean',
-      description: 'Run migrations',
-      default: true,
-    })
-    .option('orm', {
-      type: 'string',
-      choices: ['drizzle'],
-      description:
-        "ORM to use (e.g., 'drizzle'). Empty String or non-existent param === ''",
     })
     .option('install_dependencies', {
       type: 'boolean',
@@ -91,20 +86,31 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
         logger.error(`Invalid router: ${argv.router}. Setting to undefined.`)
         argv.router = undefined
       }
+
       if (argv.styles && !validStyles.includes(argv.styles)) {
         logger.error(`Invalid styles: ${argv.styles}. Setting to undefined.`)
         argv.styles = undefined
       }
-      if (argv.database && !validDatabases.includes(argv.database)) {
-        logger.error(
-          `Invalid database: ${argv.database}. Setting to undefined.`
-        )
-        argv.database = undefined
+
+      if (argv.database) {
+        if (
+          argv.database !== 'false' &&
+          !validDatabases.includes(argv.database)
+        ) {
+          logger.error(
+            `Invalid database: ${argv.database}. Setting to undefined.`
+          )
+          argv.database = undefined
+        }
       }
-      if (argv.orm && !validORMs.includes(argv.orm)) {
-        logger.error(`Invalid ORM: ${argv.orm}. Setting to undefined.`)
-        argv.orm = undefined
+
+      if (argv.orm) {
+        if (argv.orm !== 'false' && !validORMs.includes(argv.orm)) {
+          logger.error(`Invalid ORM: ${argv.orm}. Setting to undefined.`)
+          argv.orm = undefined
+        }
       }
+
       if (
         (argv.database && argv.database.length > 0 && !argv.orm) ||
         (!argv.database && argv.orm && argv.orm.length > 0)
@@ -118,7 +124,9 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     .version(false)
     .parse()
 
-  logger.info(chalk.red(`args: ${JSON.stringify(args, null, 2)}`))
+  logger.info(
+    chalk.red(`PARSE CLI ARGS : args: ${JSON.stringify(args, null, 2)}`)
+  )
 
   const project_name = (args.project_name as string) || (args._[0] as string)
   if (!project_name) {
@@ -132,11 +140,20 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     y: args.y || undefined,
     project_name: project_name || undefined,
     project_dir: project_name ? path.resolve(project_name) : undefined,
-    router: (args.router as RouterPackage) || undefined,
-    styles: (args.styles as StylePackage) || undefined,
-    database: (args.database as DatabasePackage) || undefined,
-    orm: (args.orm as ORMPackage) || undefined,
-    run_migrations: args.run_migrations || undefined,
+    router: args.router || undefined,
+    styles: args.styles || undefined,
+    database:
+      args.database === undefined
+        ? undefined
+        : args.database === 'false'
+          ? false
+          : args.database,
+    orm:
+      args.orm === undefined
+        ? undefined
+        : args.orm === 'false'
+          ? false
+          : args.orm,
     pkg_manager: args.pkg_manager || undefined,
     initialize_git: args.initialize_git || undefined,
     install_dependencies: args.install_dependencies || undefined,

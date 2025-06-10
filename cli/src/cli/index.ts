@@ -28,6 +28,8 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
 
   p.intro(`${color.bgCyan(color.black('create-electron-foundation'))}`)
 
+  console.log('!!!!!!!!!!!!!!!!!cliArgs', cliArgs)
+
   try {
     let config: CLIResults
 
@@ -122,7 +124,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
             })
         }
 
-        if (!cliArgs.database) {
+        if (cliArgs.database === undefined) {
           prompts.initialize_database = () =>
             p.confirm({
               message: 'Should we initialize a database?',
@@ -147,7 +149,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
           }
         }
 
-        if (!cliArgs.orm) {
+        if (cliArgs.orm === undefined) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           prompts.initializeORM = ({ results }: { results: any }) => {
             if (results.initialize_database) {
@@ -219,9 +221,6 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
           group.install_dependencies || cliArgs.install_dependencies
         console.log('BLARG - 2', install_dependencies)
 
-        const run_migrations = group.run_migrations || cliArgs.run_migrations
-        console.log('BLARG - 3', run_migrations)
-
         const router = group.router || cliArgs.router
         console.log('BLARG - 4', router)
 
@@ -246,7 +245,6 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
           pkg_manager: 'npm',
           initialize_git,
           install_dependencies,
-          run_migrations,
           packages: {
             router,
             styles,
@@ -267,10 +265,8 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
       Project Name: ${config.project_name}
       Router: ${config?.packages?.router}
       Styles: ${config?.packages?.styles}
-      Database: ${config?.packages?.database}
-      \tORM: ${config?.packages?.orm}
+      Database: ${config?.packages?.database}\n\tORM: ${config?.packages?.orm}
       Install Dependencies: ${config.install_dependencies}
-      Run Migrations: ${config.run_migrations}
       Initialize Git: ${config.initialize_git}`,
       'Summary of your choices:'
     )
