@@ -39,9 +39,9 @@ log_and_run() {
 echo "🧪 Starting test suite for create-electron-foundation..."
 # TANSTACK ROUTER
 log_and_run "z-ts-router" "tanstack-router" 
-# ✅ # log_and_run "z-ts-router-with-tailwind" "tanstack-router" "tailwind" 
-# ✅ # log_and_run "z-ts-router-with-tailwind-false-false" "tanstack-router" "tailwind" "false" "false"
-# ✅ # log_and_run "z-ts-router-with-tailwind-sqlite-drizzle" "tanstack-router" "tailwind" "sqlite" "drizzle"
+log_and_run "z-ts-router-with-tailwind" "tanstack-router" "tailwind" 
+log_and_run "z-ts-router-with-tailwind-false-false" "tanstack-router" "tailwind" "false" "false"
+log_and_run "z-ts-router-with-tailwind-sqlite-drizzle" "tanstack-router" "tailwind" "sqlite" "drizzle"
 
 # REACT ROUTER
 # log_and_run "z-rr-router-with-tailwind" "react-router"
