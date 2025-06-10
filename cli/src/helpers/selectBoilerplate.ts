@@ -28,6 +28,25 @@ export const selectBoilerplate = (config: CLIResults) => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updateMap: any = {
+    'tanstack-router-none-none-none': () => {
+      // TANSTACK ROUTER > base (no tailwind) #################################
+      fs.copySync(
+        path.join(srcDir, 'tanstackRouter', 'base', 'routes'),
+        path.join(config.project_dir, 'src', 'routes')
+      )
+
+      // STYLES > css #########################################################
+      fs.copySync(
+        path.join(srcDir, 'styles', 'index.css'),
+        path.join(config.project_dir, 'index.css')
+      )
+
+      // VITE > with tanstack (no tailwind) ###################################
+      fs.copySync(
+        path.join(srcDir, 'tanstackRouter', 'base', 'config', 'vite.config.ts'),
+        path.join(config.project_dir, 'vite.config.ts')
+      )
+    },
     'tanstack-router-tailwind-none-none': () => {
       // TANSTACK ROUTER > base (with tailwind) ###############################
       fs.copySync(

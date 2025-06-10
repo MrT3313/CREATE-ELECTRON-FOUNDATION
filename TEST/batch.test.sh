@@ -11,9 +11,12 @@ log_and_run() {
     echo "🚀 Creating project: $project_name"
     
     # Build command with required args
-    local command="create-electron-foundation \"$project_name\" --router=\"$router\" --styles=\"$styles\""
+    local command="create-electron-foundation \"$project_name\" --router=\"$router\""
     
     # Add optional args only if they're not empty
+    if [ -n "$styles" ]; then
+        command+=" --styles=\"$styles\""
+    fi
     if [ -n "$database" ]; then
         command+=" --database=\"$database\""
     fi
@@ -34,10 +37,16 @@ log_and_run() {
 }
 
 echo "🧪 Starting test suite for create-electron-foundation..."
-log_and_run "z-ts-router-with-tailwind" "tanstack-router" "tailwind" 
-log_and_run "z-ts-router-with-tailwind-false-false" "tanstack-router" "tailwind" "false" "false"
-log_and_run "z-ts-router-with-tailwind-sqlite-drizzle" "tanstack-router" "tailwind" "sqlite" "drizzle"
+# TANSTACK ROUTER
+log_and_run "z-ts-router" "tanstack-router" 
+# ✅ # log_and_run "z-ts-router-with-tailwind" "tanstack-router" "tailwind" 
+# ✅ # log_and_run "z-ts-router-with-tailwind-false-false" "tanstack-router" "tailwind" "false" "false"
+# ✅ # log_and_run "z-ts-router-with-tailwind-sqlite-drizzle" "tanstack-router" "tailwind" "sqlite" "drizzle"
+
+# REACT ROUTER
+# log_and_run "z-rr-router-with-tailwind" "react-router"
 # log_and_run "z-rr-router-with-tailwind" "react-router" "tailwind" 
 # log_and_run "z-rr-router-with-tailwind" "react-router" "tailwind" "false" "false"
+# log_and_run "z-rr-router-with-tailwind" "react-router" "tailwind" "sqlite" "drizzle"
 
 echo "🎉 All test projects created successfully!"
