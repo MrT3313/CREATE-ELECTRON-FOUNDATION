@@ -123,7 +123,7 @@ export default defineConfig(async ({ command }) => {
           },
         },
       ]),
-      copyMigrationsPlugin()
+      copyMigrationsPlugin(),
     ],
     clearScreen: false,
   }

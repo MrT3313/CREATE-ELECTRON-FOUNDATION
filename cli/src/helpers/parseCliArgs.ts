@@ -143,7 +143,7 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
           ? false
           : args.orm,
     pkg_manager: args.pkg_manager || undefined,
-    initialize_git: args.initialize_git || undefined
+    initialize_git: args.initialize_git || undefined,
   }
 
   return result

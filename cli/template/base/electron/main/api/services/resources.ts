@@ -1,7 +1,7 @@
 import { response } from '../../utils/response'
 
 // TYPES
-import { PlaceholderJsonPosts, PlaceholderJsonPost, PlaceholderJsonUser, PlaceholderJsonUsers } from '../types'
+import { PlaceholderJsonPosts, PlaceholderJsonPost } from '../types'
 
 export class resourceServices {
   static async getResourceList() {
@@ -16,10 +16,12 @@ export class resourceServices {
       return response.error({ msg: `Error getting resource: ${error.message}` })
     }
   }
-  
+
   static async getResourceById(id: string) {
     try {
-      const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`)
+      const res = await fetch(
+        `https://jsonplaceholder.typicode.com/posts/${id}`
+      )
       if (!res.ok) {
         return response.error({ msg: `Resource with id ${id} not found` })
       }

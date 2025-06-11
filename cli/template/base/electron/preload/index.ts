@@ -25,7 +25,8 @@ import { ipcRenderer, contextBridge } from 'electron'
 //   },
 // })
 contextBridge.exposeInMainWorld('api', {
-  getResource: (id: number) => ipcRenderer.invoke('api/resource/getResource', { id }),
+  getResource: (id: number) =>
+    ipcRenderer.invoke('api/resource/getResource', { id }),
   getResources: () => ipcRenderer.invoke('api/resource/getList'),
 })
 

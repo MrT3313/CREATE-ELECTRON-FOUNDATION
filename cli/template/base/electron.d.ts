@@ -1,5 +1,3 @@
-import { IpcRenderer } from 'electron'
-
 declare global {
   interface Window {
     // ipcRenderer: IpcRenderer
@@ -16,4 +14,4 @@ declare global {
       NODE_ENV: string
     }
   }
-} 
+}
