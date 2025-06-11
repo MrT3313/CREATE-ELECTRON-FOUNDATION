@@ -211,9 +211,9 @@ jobs:
 
           # Style checks
           if [[ "${{ matrix.config.styles }}" == "tailwind" ]]; then
-            test -f "temp-scaffolded-project/$PROJECT_NAME/tailwind.config.js" || (echo "tailwind.config.js not found for Tailwind!" && exit 1)
+            test -f "temp-scaffolded-project/$PROJECT_NAME/tailwind.config.ts" || (echo "tailwind.config.ts not found for Tailwind!" && exit 1)
           elif [[ "${{ matrix.config.styles }}" == "false" ]]; then
-            test ! -f "temp-scaffolded-project/$PROJECT_NAME/tailwind.config.js" || (echo "tailwind.config.js should not exist for No Styles option!" && exit 1)
+            test ! -f "temp-scaffolded-project/$PROJECT_NAME/tailwind.config.ts" || (echo "tailwind.config.ts should not exist for No Styles option!" && exit 1)
           fi
 
           # # Database checks

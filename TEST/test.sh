@@ -18,9 +18,9 @@ echo "Creating TanStack Router examples..."
 
 # echo "Creating React Router examples..."
 # create-electron-foundation z-rr                           --router=react-router     --styles=false      --database=false    --orm=false
-# create-electron-foundation z-rr-tailwind                  --router=react-router     --styles=tailwind   --database=false    --orm=false
+create-electron-foundation z-rr-tailwind                  --router=react-router     --styles=tailwind   --database=false    --orm=false
 # create-electron-foundation z-rr-tailwind-sqlite-drizzle   --router=react-router     --styles=tailwind   --database=sqlite   --orm=drizzle
-create-electron-foundation z-rr-sqlite-drizzle            --router=react-router     --styles=false      --database=sqlite   --orm=drizzle
+# create-electron-foundation z-rr-sqlite-drizzle            --router=react-router     --styles=false      --database=sqlite   --orm=drizzle
 
 echo "All examples created successfully!"
 cd "$CURRENT_DIR"
