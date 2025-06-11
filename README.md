@@ -10,98 +10,60 @@
   Interactive CLI (inspired by <a href="https://github.com/t3-oss/create-t3-app">create-t3-app</a>) to scaffold an Electron application.
 </p>
 
-<p align="center">
-  Get started by running: <code>npx create-electron-foundation@alpha</code>
-</p>
-
 <div align="center">
-  <h2 align="center">
-    Configuration Options
-  </h2>
+  <h3 align="center">
+    Get started by running:
+  </h3>
 
-  <table>
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>router</th>
-        <th>styles</th>
-        <th>database</th>
-        <th>orm</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>1</td>
-        <td><span style="color: green;">Tanstack Query</span></td>
-        <td><span style="color: green;">Tailwind</span></td>
-        <td></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td><span style="color: green;">Tanstack Query</span></td>
-        <td><span style="color: green;">Tailwind</span></td>
-        <td>sqlite</td>
-        <td>drizzle</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td><span style="color: green;">Tanstack Query</span></td>
-        <td>CSS</td>
-        <td></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td><span style="color: green;">Tanstack Query</span></td>
-        <td>CSS</td>
-        <td>sqlite</td>
-        <td>drizzle</td>
-      </tr>
-      <tr>
-        <td>5</td>
-        <td>React Router</td>
-        <td><span style="color: green;">Tailwind</span></td>
-        <td></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>6</td>
-        <td>React Router</td>
-        <td><span style="color: green;">Tailwind</span></td>
-        <td>sqlite</td>
-        <td>drizzle</td>
-      </tr>
-      <tr>
-        <td>7</td>
-        <td>React Router</td>
-        <td>CSS</td>
-        <td></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>8</td>
-        <td>React Router</td>
-        <td>CSS</td>
-        <td>sqlite</td>
-        <td>drizzle</td>
-      </tr>
-    </tbody>
-  </table>
-  <div style="width: full;">
-    <span>fuck</span>
-  </div>
+```bash
+npx create-electron-foundation@alpha
+```
 
-  <h2 align="center">
-    Command Line Arguments
-  </h2>
+</div>
 
-| argument           | options                             |
-| ------------------ | ----------------------------------- |
-| _first positional_ | project name string                 |
-| --router=          | 'tanstack-router' or 'react-router' |
-| --styles=          | 'tailwind' or 'css'                 |
-| --database=        | 'sqlite' or null                    |
-| --orm=             | 'drizzle' or null                   |
+<h2 align="center">
+  Configuration Options
+</h2>
+
+### Defaults
+
+```bash
+npx create-electron-foundation@alpha -y
+```
+
+- ✅ Framework: Electron (main + render processes)
+- ✅ Router: Tanstack Router
+- ✅ Styling: Tailwind
+- ✅ Database: SQLite
+- ✅ ORM: Drizzle
+
+### Available Configurations
+
+| is default | router              | styling      | database   | orm         |
+| ---------- | ------------------- | ------------ | ---------- | ----------- |
+| ✅         | **Tanstack Router** | **Tailwind** | **SQLite** | **Drizzle** |
+|            | React Router        | Tailwind     | SQLite     | Drizzle     |
+|            | Tanstack Router     | Tailwind     |            |             |
+|            | React Router        | Tailwind     |            |             |
+|            | Tanstack Router     |              | SQLite     | Drizzle     |
+|            | React Router        |              | SQLite     | Drizzle     |
+|            | Tanstack Router     |              |            |             |
+|            | React Router        |              |            |             |
+
+### Command Line Arguments
+
+| Argument           | Alias    | Description                      | Options                               | Default                                      |
+| ------------------ | -------- | -------------------------------- | ------------------------------------- | -------------------------------------------- |
+| `[project_name]`   |          | Name of the project (positional) | string                                | -                                            |
+| `--project_name`   |          | Name of the project (option)     | string                                | `[project_name]` \|\| `process.env.APP_NAME` |
+| `--router`         |          | Router to use                    | `'tanstack-router'`, `'react-router'` | -                                            |
+| `--styles`         |          | Styles to use                    | `'tailwind'`, `'false'`               | -                                            |
+| `--database`       |          | Database to use                  | `'sqlite'`, `'false'`                 | -                                            |
+| `--orm`            |          | ORM to use                       | `'drizzle'`, `'false'`                | -                                            |
+| `--ci`             |          | Run in CI mode                   | boolean                               | `false`                                      |
+| `-y`               | `--yes`  | Skip prompts and use defaults    | boolean                               | `false`                                      |
+| `--pkg_manager`    |          | Package manager to use           | `'npm'`                               | `'npm'`                                      |
+| `--initialize_git` | `--git`  | Initialize Git repository        | boolean                               | `true`                                       |
+| `-h`               | `--help` | Show help                        | -                                     | -                                            |
 
 </div>

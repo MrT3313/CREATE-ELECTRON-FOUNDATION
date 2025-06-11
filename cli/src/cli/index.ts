@@ -67,10 +67,6 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
           config.packages.orm = cliArgs.orm as ORMPackage
         }
 
-        if (cliArgs.install_dependencies) {
-          config.install_dependencies = cliArgs.install_dependencies
-        }
-
         if (cliArgs.initialize_git) {
           config.initialize_git = cliArgs.initialize_git
         }
@@ -179,7 +175,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
           }
         }
 
-        if (!cliArgs.styles) {
+        if (cliArgs.styles === undefined) {
           prompts.useTailwind = () =>
             p.confirm({
               message: 'Will you be using Tailwind CSS for styling?',
@@ -196,14 +192,6 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
             })
         }
 
-        if (cliArgs.install_dependencies === undefined) {
-          prompts.install_dependencies = () =>
-            p.confirm({
-              message: 'Should we install dependencies after scaffolding?',
-              initialValue: true,
-            })
-        }
-
         // Run prompts if any exist
         if (Object.keys(prompts).length > 0) {
           group = await p.group(prompts, {
@@ -215,36 +203,20 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }
 
         const initialize_git = group.initialize_git || cliArgs.initialize_git
-        console.log('BLARG - 1', initialize_git)
-
-        const install_dependencies =
-          group.install_dependencies || cliArgs.install_dependencies
-        console.log('BLARG - 2', install_dependencies)
-
         const router = group.router || cliArgs.router
-        console.log('BLARG - 4', router)
-
         const styles = group.styles || cliArgs.styles
-        console.log('BLARG - 5', styles)
-
         const database = group.database || cliArgs.database
-        console.log('BLARG - 6', database)
-
         const project_name = group.project_name || cliArgs.project_name
-        console.log('BLARG - 7', project_name)
-
         const orm = group.orm || cliArgs.orm
-        console.log('BLARG - 8', orm)
 
         const config_key: ConfigKey = `${router as RouterPackage}-${(styles as StylePackage) || 'none'}-${(database as DatabasePackage) || 'none'}-${(orm as ORMPackage) || 'none'}`
 
         config = {
           config_key,
-          project_name: cliArgs.project_name || DEFAULT_APP_NAME,
-          project_dir: `./${cliArgs.project_name || DEFAULT_APP_NAME}`,
+          project_name: project_name || DEFAULT_APP_NAME,
+          project_dir: `./${project_name || DEFAULT_APP_NAME}`,
           pkg_manager: 'npm',
           initialize_git,
-          install_dependencies,
           packages: {
             router,
             styles,
@@ -266,7 +238,6 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
       Router: ${config?.packages?.router}
       Styles: ${config?.packages?.styles}
       Database: ${config?.packages?.database}\n\tORM: ${config?.packages?.orm}
-      Install Dependencies: ${config.install_dependencies}
       Initialize Git: ${config.initialize_git}`,
       'Summary of your choices:'
     )

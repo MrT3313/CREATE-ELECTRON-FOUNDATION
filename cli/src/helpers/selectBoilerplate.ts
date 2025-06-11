@@ -81,8 +81,46 @@ export const selectBoilerplate = (config: CLIResults) => {
       // DRIZZLE ##############################################################
       selectBoilerplateDrizzle(config)
     },
-    'react-router-tailwind-none-none': () => {
+    'tanstack-router-none-sqlite-drizzle': () => {
+      updateMap['tanstack-router-none-none-none']()
+
+      // DATABASE #############################################################
+      selectBoilerplateElectronDatabase(config)
+
+      // DRIZZLE ##############################################################
+      selectBoilerplateDrizzle(config)
+    },
+    'react-router-none-none-none': () => {
       // REACT ROUTER > base (no tailwind) ####################################
+      fs.copySync(
+        path.join(srcDir, 'reactRouter', 'base', 'routes'),
+        path.join(config.project_dir, 'src', 'routes')
+      )
+
+      fs.copySync(
+        path.join(srcDir, 'reactRouter', 'base', 'App.tsx'),
+        path.join(config.project_dir, 'src', 'App.tsx')
+      )
+
+      fs.copySync(
+        path.join(srcDir, 'reactRouter', 'base', 'main.tsx'),
+        path.join(config.project_dir, 'src', 'main.tsx')
+      )
+
+      // STYLES ###############################################################
+      fs.copySync(
+        path.join(srcDir, 'styles', 'index.css'),
+        path.join(config.project_dir, 'index.css')
+      )
+
+      // VITE #################################################################
+      fs.copySync(
+        path.join(srcDir, 'reactRouter', 'base', 'config', 'vite.config.ts'),
+        path.join(config.project_dir, 'vite.config.ts')
+      )
+    },
+    'react-router-tailwind-none-none': () => {
+      // REACT ROUTER > tailwind (with tailwind) ##############################
       fs.copySync(
         path.join(srcDir, 'reactRouter', 'with-tailwind', 'routes'),
         path.join(config.project_dir, 'src', 'routes')
@@ -98,13 +136,13 @@ export const selectBoilerplate = (config: CLIResults) => {
         path.join(config.project_dir, 'src', 'main.tsx')
       )
 
-      // STYLES
+      // STYLES ###############################################################
       fs.copySync(
         path.join(srcDir, 'styles', 'tailwind-index.css'),
         path.join(config.project_dir, 'index.css')
       )
 
-      // VITE
+      // VITE #################################################################
       fs.copySync(
         path.join(
           srcDir,
@@ -118,6 +156,15 @@ export const selectBoilerplate = (config: CLIResults) => {
     },
     'react-router-tailwind-sqlite-drizzle': () => {
       updateMap['react-router-tailwind-none-none']()
+
+      // DATABASE #############################################################
+      selectBoilerplateElectronDatabase(config)
+
+      // DRIZZLE ##############################################################
+      selectBoilerplateDrizzle(config)
+    },
+    'react-router-none-sqlite-drizzle': () => {
+      updateMap['react-router-none-none-none']()
 
       // DATABASE #############################################################
       selectBoilerplateElectronDatabase(config)

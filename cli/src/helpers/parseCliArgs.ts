@@ -1,7 +1,6 @@
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import path from 'path'
-import chalk from 'chalk'
 
 // UTILS
 import { logger } from '../utils/logger.js'
@@ -16,14 +15,6 @@ import {
 } from '../types/Packages.js'
 
 export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
-  logger.info(
-    `FUCK ME HERE AT THE VERY BEGINNING OF PARSINE CLI ARGS: argv: ${JSON.stringify(
-      argv,
-      null,
-      2
-    )}`
-  )
-
   const args = await yargs(hideBin(argv))
     .option('ci', {
       type: 'boolean',
@@ -48,7 +39,7 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     })
     .option('styles', {
       type: 'string',
-      choices: ['tailwind'],
+      choices: ['tailwind', 'false'],
       description: 'Styles to use',
     })
     .option('database', {
@@ -68,12 +59,6 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
       choices: ['npm'],
       description: 'Package manager to use',
       default: 'npm',
-    })
-    .option('install_dependencies', {
-      type: 'boolean',
-      alias: 'install',
-      description: 'Install dependencies',
-      default: true,
     })
     .option('initialize_git', {
       type: 'boolean',
@@ -124,10 +109,6 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     .version(false)
     .parse()
 
-  logger.info(
-    chalk.red(`PARSE CLI ARGS : args: ${JSON.stringify(args, null, 2)}`)
-  )
-
   const project_name = (args.project_name as string) || (args._[0] as string)
   if (!project_name) {
     throw new Error(
@@ -155,8 +136,7 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
           ? false
           : args.orm,
     pkg_manager: args.pkg_manager || undefined,
-    initialize_git: args.initialize_git || undefined,
-    install_dependencies: args.install_dependencies || undefined,
+    initialize_git: args.initialize_git || undefined
   }
 
   return result

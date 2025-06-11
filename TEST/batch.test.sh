@@ -2,11 +2,47 @@
 set -e  # Exit on any error
 
 log_and_run() {
-    local project_name="$1" # required
-    local router="$2" # required
-    local styles="$3" # required
-    local database="$4" # optional
-    local orm="$5" # optional
+    local project_name=""
+    local router=""
+    local styles=""
+    local database=""
+    local orm=""
+    
+    # Parse named arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --project-name=*|--name=*)
+                project_name="${1#*=}"
+                shift
+                ;;
+            --router=*)
+                router="${1#*=}"
+                shift
+                ;;
+            --styles=*)
+                styles="${1#*=}"
+                shift
+                ;;
+            --database=*)
+                database="${1#*=}"
+                shift
+                ;;
+            --orm=*)
+                orm="${1#*=}"
+                shift
+                ;;
+            *)
+                echo "Unknown option $1"
+                exit 1
+                ;;
+        esac
+    done
+    
+    # Validate required parameters
+    if [ -z "$project_name" ] || [ -z "$router" ]; then
+        echo "❌ Error: --project-name and --router are required"
+        exit 1
+    fi
     
     echo "🚀 Creating project: $project_name"
     
@@ -37,16 +73,19 @@ log_and_run() {
 }
 
 echo "🧪 Starting test suite for create-electron-foundation..."
-# TANSTACK ROUTER
-log_and_run "z-ts-router" "tanstack-router" 
-log_and_run "z-ts-router-with-tailwind" "tanstack-router" "tailwind" 
-log_and_run "z-ts-router-with-tailwind-false-false" "tanstack-router" "tailwind" "false" "false"
-log_and_run "z-ts-router-with-tailwind-sqlite-drizzle" "tanstack-router" "tailwind" "sqlite" "drizzle"
 
-# REACT ROUTER
-# log_and_run "z-rr-router-with-tailwind" "react-router"
-# log_and_run "z-rr-router-with-tailwind" "react-router" "tailwind" 
-# log_and_run "z-rr-router-with-tailwind" "react-router" "tailwind" "false" "false"
-# log_and_run "z-rr-router-with-tailwind" "react-router" "tailwind" "sqlite" "drizzle"
+## TANSTACK ROUTER
+log_and_run --name="z-ts-router"                                --router="tanstack-router"
+log_and_run --name="z-ts-router-with-tailwind-no-db-no-orm"     --router="tanstack-router" --styles="tailwind"  --database="false"  --orm="false"
+log_and_run --name="z-ts-router-with-tailwind-sqlite-drizzle"   --router="tanstack-router" --styles="tailwind"  --database="sqlite" --orm="drizzle"
+log_and_run --name="z-ts-router-no-styles-no-db-no-orm"         --router="tanstack-router" --styles="false"     --database="false"  --orm="false"
+log_and_run --name="z-ts-router-no-styles-with-sqlite-drizzle"  --router="tanstack-router" --styles="false"     --database="sqlite" --orm="drizzle"
+
+## REACT ROUTER
+# log_and_run --name="z-rr-router" --router="react-router"
+# log_and_run --name="z-rr-router-with-tailwind" --router="react-router" --styles="tailwind"
+# log_and_run --name="z-rr-router-no-styles-no-db-no-orm" --router="react-router"
+# log_and_run --name="z-rr-router-with-tailwind-sqlite-drizzle" --router="react-router" --styles="tailwind" --database="sqlite" --orm="drizzle"
+# log_and_run --name="z-rr-router-no-styles-with-sqlite-drizzle" --router="react-router" --database="sqlite" --orm="drizzle"
 
 echo "🎉 All test projects created successfully!"
