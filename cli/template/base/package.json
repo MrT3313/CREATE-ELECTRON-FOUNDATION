@@ -22,7 +22,7 @@
   "devDependencies": {
     "@tanstack/react-query-devtools": "~5.80.6",
     "electron": "36.4.0",
-    "electron-rebuild": "~3.2.9",
+    "@electron/rebuild": "4.0.1",
     "electron-log": "5.4.0",
     "@vitejs/plugin-react": "~4.5.1",
     "vite-plugin-electron": "~0.29.0"

@@ -176,7 +176,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }
 
         if (cliArgs.styles === undefined) {
-          prompts.useTailwind = () =>
+          prompts.styles = () =>
             p.confirm({
               message: 'Will you be using Tailwind CSS for styling?',
               initialValue: true,
@@ -204,7 +204,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
 
         const initialize_git = group.initialize_git || cliArgs.initialize_git
         const router = group.router || cliArgs.router
-        const styles = group.styles || cliArgs.styles
+        const styles = group.styles ? 'tailwind' : cliArgs.styles
         const database = group.database || cliArgs.database
         const project_name = group.project_name || cliArgs.project_name
         const orm = group.orm || cliArgs.orm
@@ -219,7 +219,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
           initialize_git,
           packages: {
             router,
-            styles,
+            styles: styles as StylePackage,
             database,
             orm,
           },
