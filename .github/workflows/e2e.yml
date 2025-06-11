@@ -91,18 +91,18 @@ jobs:
             os: ubuntu-latest
             router: 'tanstack-router'
             styles: 'tailwind'
-            db_opts: ''
-            orm_opts: ''
-          - name: 'Tanstack Router, CSS'
+            db_opts: 'false'
+            orm_opts: 'false'
+          - name: 'Tanstack Router, No Styles'
             os: ubuntu-latest
             router: 'tanstack-router'
-            styles: 'css'
-            db_opts: ''
-            orm_opts: ''
-          - name: 'Tanstack Router, CSS, SQLite, Drizzle'
+            styles: 'false'
+            db_opts: 'false'
+            orm_opts: 'false'
+          - name: 'Tanstack Router, No Styles, SQLite, Drizzle'
             os: ubuntu-latest
             router: 'tanstack-router'
-            styles: 'css'
+            styles: 'false'
             db_opts: '--database=sqlite'
             orm_opts: '--orm=drizzle'
 
@@ -111,24 +111,24 @@ jobs:
             os: ubuntu-latest
             router: 'react-router'
             styles: 'tailwind'
-            db_opts: ''
-            orm_opts: ''
-          - name: 'React Router, CSS'
+            db_opts: 'false'
+            orm_opts: 'false'
+          - name: 'React Router, No Styles'
             os: ubuntu-latest
             router: 'react-router'
-            styles: 'css'
-            db_opts: ''
-            orm_opts: ''
+            styles: 'false'
+            db_opts: 'false'
+            orm_opts: 'false'
           - name: 'React Router, Tailwind, SQLite, Drizzle'
             os: ubuntu-latest
             router: 'react-router'
             styles: 'tailwind'
             db_opts: '--database=sqlite'
             orm_opts: '--orm=drizzle'
-          - name: 'React Router, CSS, SQLite, Drizzle'
+          - name: 'React Router, No Styles, SQLite, Drizzle'
             os: ubuntu-latest
             router: 'react-router'
-            styles: 'css'
+            styles: 'false'
             db_opts: '--database=sqlite'
             orm_opts: '--orm=drizzle'
 
@@ -212,6 +212,8 @@ jobs:
           # Style checks
           if [[ "${{ matrix.config.styles }}" == "tailwind" ]]; then
             test -f "temp-scaffolded-project/$PROJECT_NAME/tailwind.config.js" || (echo "tailwind.config.js not found for Tailwind!" && exit 1)
+          elif [[ "${{ matrix.config.styles }}" == "false" ]]; then
+            test ! -f "temp-scaffolded-project/$PROJECT_NAME/tailwind.config.js" || (echo "tailwind.config.js should not exist for No Styles option!" && exit 1)
           fi
 
           # # Database checks
