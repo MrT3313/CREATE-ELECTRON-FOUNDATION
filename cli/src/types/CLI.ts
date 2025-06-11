@@ -1,40 +1,51 @@
 import type {
-  StylePackages,
-  RouterPackages,
+  StylePackage,
+  RouterPackage,
   PackageManager,
-  DatabasePackages,
-  ORMPackages,
-  // AvailablePackages,
+  DatabasePackage,
+  ORMPackage,
 } from './Packages.js'
 
-export interface CLIArgs {
-  project_name?: string
-  initialize_git?: boolean
-  install_dependencies?: boolean
-  run_migrations?: boolean
-  router?: RouterPackages
-  styles?: StylePackages
-  database?: DatabasePackages | null
-  orm?: ORMPackages | null
-  skipPrompts?: boolean
-  ci?: boolean
+export type ConfigKey =
+  `${RouterPackage}-${StylePackage}-${DatabasePackage | 'none'}-${ORMPackage | 'none'}`
+
+export interface Yargs {
+  ci: boolean | undefined
+  y: boolean | undefined
+  project_name: string | undefined
+  project_dir: string | undefined
+  router: string | undefined
+  styles: string | undefined | false
+  database: string | undefined | false
+  orm: string | undefined | false
+  pkg_manager: string | undefined
+  initialize_git: boolean | undefined
 }
 
 export interface CLIDefaults {
-  pkgManager: PackageManager // "npm"
-  initializeGit: boolean
-  installDependencies: boolean
-  runMigrations: boolean
+  pkg_manager: PackageManager // "npm"
+  initialize_git: boolean
   packages: {
-    router: [RouterPackages] // Correct: always one router
-    styles: [StylePackages] // Corrected: always one style, like router
-    database: DatabasePackages[] // Correct: array, can be empty, works with .includes()
-    orm: ORMPackages[] // Correct: array, can be empty, works with .includes()
+    router: RouterPackage
+    styles: StylePackage
+    database: DatabasePackage
+    orm: ORMPackage
   }
-  ci: boolean
+}
+
+export const defaultCLIConfig: CLIDefaults = {
+  pkg_manager: 'npm',
+  initialize_git: false,
+  packages: {
+    router: 'tanstack-router',
+    styles: 'tailwind',
+    database: 'sqlite',
+    orm: 'drizzle',
+  },
 }
 
 export interface CLIResults extends CLIDefaults {
   project_name: string
-  projectDir: string
+  project_dir: string
+  config_key: ConfigKey
 }

@@ -4,7 +4,8 @@ import path from 'node:path'
 import fs from 'fs'
 import dotenv from 'dotenv'
 import log from './logger/index'
-import { dbInit } from './db/dbInit'
+
+import './api/controller'
 
 const mainLogger = log.scope('main/index.ts')
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -125,9 +126,6 @@ async function createWindow() {
 app.whenReady().then(async () => {
   mainLogger.info('🎉🎉 App is ready')
   try {
-    // INITIALIZE: database ###################################################
-    await dbInit()
-
     // Creates the main application window after the database is initialized.
     await createWindow()
   } catch (error) {

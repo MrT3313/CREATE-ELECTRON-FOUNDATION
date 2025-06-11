@@ -45,10 +45,6 @@ export const buildPkgInstallerMap = (
       inUse: packages.includes('tailwind'),
       installer: tailwindInstaller,
     },
-    css: {
-      inUse: packages.includes('css'),
-      installer: () => {},
-    },
   }
 
   if (debug) {

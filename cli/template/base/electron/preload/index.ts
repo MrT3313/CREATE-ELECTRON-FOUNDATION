@@ -6,29 +6,28 @@ import { ipcRenderer, contextBridge } from 'electron'
 // Exposes a controlled subset of the `ipcRenderer` module to the renderer process.
 // This allows the renderer to send and receive messages to/from the main process
 // without having full access to the `ipcRenderer` object, which is a security best practice.
-contextBridge.exposeInMainWorld('ipcRenderer', {
-  on(...args: Parameters<typeof ipcRenderer.on>) {
-    const [channel, listener] = args
-    return ipcRenderer.on(channel, (event, ...args) => listener(event, ...args))
-  },
-  off(...args: Parameters<typeof ipcRenderer.off>) {
-    const [channel, ...omit] = args
-    return ipcRenderer.off(channel, ...omit)
-  },
-  send(...args: Parameters<typeof ipcRenderer.send>) {
-    const [channel, ...omit] = args
-    return ipcRenderer.send(channel, ...omit)
-  },
-  invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
-    const [channel, ...omit] = args
-    return ipcRenderer.invoke(channel, ...omit)
-  },
-})
-
-// Exposes a custom API `electronAPI` to the renderer process.
-contextBridge.exposeInMainWorld('electronAPI', {
-  launchCounterUtility: () => ipcRenderer.invoke('launch-counter-utility'),
-  launchRngUtility: () => ipcRenderer.invoke('launch-rng-utility'),
+// contextBridge.exposeInMainWorld('ipcRenderer', {
+//   on(...args: Parameters<typeof ipcRenderer.on>) {
+//     const [channel, listener] = args
+//     return ipcRenderer.on(channel, (event, ...args) => listener(event, ...args))
+//   },
+//   off(...args: Parameters<typeof ipcRenderer.off>) {
+//     const [channel, ...omit] = args
+//     return ipcRenderer.off(channel, ...omit)
+//   },
+//   send(...args: Parameters<typeof ipcRenderer.send>) {
+//     const [channel, ...omit] = args
+//     return ipcRenderer.send(channel, ...omit)
+//   },
+//   invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
+//     const [channel, ...omit] = args
+//     return ipcRenderer.invoke(channel, ...omit)
+//   },
+// })
+contextBridge.exposeInMainWorld('api', {
+  getResource: (id: number) =>
+    ipcRenderer.invoke('api/resource/getResource', { id }),
+  getResources: () => ipcRenderer.invoke('api/resource/getList'),
 })
 
 // Exposes specific environment variables to the renderer process.

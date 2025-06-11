@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import log from '../lib/logger'
 const homepageLogger = log.scope('homepage')
-import { useGetResource } from '../api/index'
+import { useGetResources } from '../api/index'
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -12,10 +12,10 @@ export function Index() {
   // HOOKS
   const router = useRouter()
   const {
-    data: usersResponse,
+    data: resources,
     isLoading,
     error: fetchError,
-  } = useGetResource({
+  } = useGetResources({
     enabled: true,
   })
   // STATE
@@ -49,19 +49,19 @@ export function Index() {
           <h2>User List</h2>
           {isLoading ? (
             <div className="loading-message">Loading users...</div>
-          ) : usersResponse ? (
-            <div className="user-info">
-              <h3>{usersResponse.userId}</h3>
-              <div className="user-details">
-                <p>ID: {usersResponse.id}</p>
-                <p>Title: {usersResponse.title}</p>
-                <p>Body: {usersResponse.body}</p>
+          ) : resources ? (
+            resources?.map((resource) => (
+              <div>
+                <p className="font-medium">{resource.user_id}</p>
+                <p className="text-sm text-gray-600">{resource.id}</p>
+                <p className="text-sm text-gray-600">{resource.title}</p>
+                <p className="text-sm text-gray-600">{resource.body}</p>
               </div>
-            </div>
+            ))
           ) : (
-            <div className="no-data-message">
+            <p className="text-gray-500">
               No users found. Add your first user above!
-            </div>
+            </p>
           )}
         </div>
 

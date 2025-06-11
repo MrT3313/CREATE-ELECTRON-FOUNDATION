@@ -1,17 +1,29 @@
 import { Installer } from './Installers.js'
 
+// PACKAGE MANAGER
 export type PackageManager = 'npm'
 
-export type StylePackages = 'tailwind' | 'css'
-export type RouterPackages = 'tanstack-router' | 'react-router'
-export type DatabasePackages = 'sqlite'
-export type ORMPackages = 'drizzle'
-export type AvailablePackages =
-  | StylePackages
-  | RouterPackages
-  | DatabasePackages
-  | ORMPackages
+// STYLES
+export const validRouters = ['tanstack-router', 'react-router']
+export type RouterPackage = 'tanstack-router' | 'react-router'
 
+export const validStyles = ['tailwind']
+export type StylePackage = 'tailwind'
+
+// DATABASE & ORM
+export const validDatabases = ['sqlite']
+export type DatabasePackage = 'sqlite'
+
+export const validORMs = ['drizzle']
+export type ORMPackage = 'drizzle'
+
+export type AvailablePackages =
+  | StylePackage
+  | RouterPackage
+  | DatabasePackage
+  | ORMPackage
+
+// PACKAGE INSTALLER MAP
 export type PkgInstallerMap = Record<
   AvailablePackages,
   {

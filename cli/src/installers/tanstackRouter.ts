@@ -4,9 +4,9 @@ import { addPackageDependency } from '../utils/addPackageDependency.js'
 // TYPES
 import type { Installer } from '../types/Installers.js'
 
-export const tanstackRouterInstaller: Installer = ({ projectDir }) => {
+export const tanstackRouterInstaller: Installer = ({ project_dir }) => {
   addPackageDependency({
-    projectDir,
+    project_dir,
     dependencies: [
       '@tanstack/react-router',
       '@tanstack/react-router-devtools',

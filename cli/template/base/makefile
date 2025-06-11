@@ -14,15 +14,13 @@ node-version:
 	fi
 
 i: 
-	@$(NVM_SETUP) && npm install
+	$(NVM_SETUP) && npm install
 
 ri: 
 	rm -rf node_modules package-lock.json
 	$(MAKE) i
 
-setup: 
-	@$(NVM_SETUP) && npm run setup
+kac: ri dev
 
-dev: 
-	@$(NVM_SETUP) && npm run dev
-
+dev:
+	$(NVM_SETUP) && npm run dev
