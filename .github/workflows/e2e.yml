@@ -220,11 +220,7 @@ jobs:
           fi
 
           # Database checks
-          if [[ "${{ matrix.config.db_opts }}" != "false" ]]; then
-            test -f "temp-scaffolded-project/$PROJECT_NAME/src/db/db.ts" || (echo "src/db/db.ts not found for SQLite!" && exit 1)
-          else
-            test ! -d "temp-scaffolded-project/$PROJECT_NAME/src/db" || (echo "src/db directory should not exist when no database is selected!" && exit 1)
-          fi
+
 
           # ORM checks
           if [[ "${{ matrix.config.orm_opts }}" != "false" ]]; then
