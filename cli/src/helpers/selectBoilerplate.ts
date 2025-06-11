@@ -169,6 +169,12 @@ export const selectBoilerplate = (config: CLIResults) => {
         path.join(srcDir, 'configs', 'vite', 'vite.config.withReactRouter.ts'),
         path.join(config.project_dir, 'vite.config.ts')
       )
+
+      // MAKEFILE ##############################################################
+      fs.copySync(
+        path.join(srcDir, 'configs', 'makefiles', 'makefile.withTanstack.sh'),
+        path.join(config.project_dir, 'makefile')
+      )
     },
     'react-router-tailwind-none-none': () => {
       // REACT ROUTER > tailwind (with tailwind) ##############################
@@ -208,6 +214,12 @@ export const selectBoilerplate = (config: CLIResults) => {
         ),
         path.join(config.project_dir, 'vite.config.ts')
       )
+
+      // MAKEFILE ##############################################################
+      fs.copySync(
+        path.join(srcDir, 'configs', 'makefiles', 'makefile.withTanstack.sh'),
+        path.join(config.project_dir, 'makefile')
+      )
     },
     'react-router-tailwind-sqlite-drizzle': () => {
       updateMap['react-router-tailwind-none-none']()
@@ -217,6 +229,18 @@ export const selectBoilerplate = (config: CLIResults) => {
 
       // DRIZZLE ##############################################################
       selectBoilerplateDrizzle(config)
+
+      // MAKEFILE ##############################################################
+      // overwriting version from 'tanstack-router-tailwind-none-none'
+      fs.copySync(
+        path.join(
+          srcDir,
+          'configs',
+          'makefiles',
+          'makefile.withTanstack.withDatabase.sh'
+        ),
+        path.join(config.project_dir, 'makefile')
+      )
     },
     'react-router-none-sqlite-drizzle': () => {
       updateMap['react-router-none-none-none']()
@@ -226,6 +250,18 @@ export const selectBoilerplate = (config: CLIResults) => {
 
       // DRIZZLE ##############################################################
       selectBoilerplateDrizzle(config)
+
+      // MAKEFILE ##############################################################
+      // overwriting version from 'tanstack-router-none-none-none'
+      fs.copySync(
+        path.join(
+          srcDir,
+          'configs',
+          'makefiles',
+          'makefile.withTanstack.withDatabase.sh'
+        ),
+        path.join(config.project_dir, 'makefile')
+      )
     },
   }
 
