@@ -204,17 +204,6 @@ export const selectBoilerplate = (config: CLIResults) => {
         path.join(config.project_dir, 'tailwind.config.ts')
       )
 
-      // STYLES ###############################################################
-      fs.copySync(
-        path.join(srcDir, 'configs', 'tailwind', 'tailwind-index.css'),
-        path.join(config.project_dir, 'index.css')
-      )
-
-      fs.copySync(
-        path.join(srcDir, 'configs', 'tailwind', 'tailwind.config.ts'),
-        path.join(config.project_dir, 'tailwind.config.ts')
-      )
-
       // VITE #################################################################
       fs.copySync(
         path.join(
