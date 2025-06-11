@@ -13,8 +13,8 @@ node-version:
 		echo "Already using correct Node version"; \
 	fi
 
-i: node-version
-	npm install
+i: 
+	$(NVM_SETUP) && npm install
 
 ri: 
 	rm -rf node_modules package-lock.json
@@ -22,6 +22,5 @@ ri:
 
 kac: ri dev
 
-dev: node-version
-	npm run dev
-
+dev:
+	$(NVM_SETUP) && npm run dev
