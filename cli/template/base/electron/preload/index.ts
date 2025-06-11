@@ -25,12 +25,6 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   },
 })
 
-// Exposes a custom API `electronAPI` to the renderer process.
-contextBridge.exposeInMainWorld('electronAPI', {
-  launchCounterUtility: () => ipcRenderer.invoke('launch-counter-utility'),
-  launchRngUtility: () => ipcRenderer.invoke('launch-rng-utility'),
-})
-
 // Exposes specific environment variables to the renderer process.
 contextBridge.exposeInMainWorld('env', {
   CUSTOM_ENV_VAR: process.env.CUSTOM_ENV_VAR,

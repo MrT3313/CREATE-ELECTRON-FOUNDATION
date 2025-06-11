@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { Resource } from '../../types/resource'
 
-export const useGetResource = ({ enabled = true }: { enabled?: boolean }) => {
+export const useGetResource = ({ id }: { id: string }) => {
   return useQuery<Resource>({
     queryKey: ['resource'],
     queryFn: async () => {
@@ -10,12 +10,12 @@ export const useGetResource = ({ enabled = true }: { enabled?: boolean }) => {
         const response = await window.ipcRenderer.invoke(
           'db/resource/getResource'
         )
-        return response
+        return response.data
       } catch (err) {
         throw err
       }
     },
-    enabled: !!enabled,
+    enabled: !!id,
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: 2, // retry 2 times
     refetchOnWindowFocus: false, // don't refetch when window regains focus
@@ -32,7 +32,7 @@ export const useGetResources = ({ enabled = true }: { enabled?: boolean }) => {
     queryFn: async () => {
       try {
         const response = await window.ipcRenderer.invoke('db/resource/getList')
-        return response
+        return response.data
       } catch (err) {
         throw err
       }
