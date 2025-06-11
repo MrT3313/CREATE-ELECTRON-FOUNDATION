@@ -9,21 +9,11 @@ import { CLIResults } from '../types/CLI.js'
 import { PKG_ROOT } from '../consts.js'
 
 export const selectBoilerplateDrizzle = (config: CLIResults) => {
-  const srcDir = path.join(PKG_ROOT, 'template/extras')
+  const srcDir = path.join(PKG_ROOT, 'template')
 
   fs.copySync(
-    path.join(srcDir, 'drizzle', 'config', 'vite.config.tsr-withtailwind.ts'),
-    path.join(config.project_dir, 'vite.config.ts')
-  )
-
-  fs.copySync(
-    path.join(srcDir, 'drizzle', 'config', 'drizzle.config.ts'),
+    path.join(srcDir, 'configs', 'drizzle', 'drizzle.config.ts'),
     path.join(config.project_dir, 'drizzle.config.ts')
-  )
-
-  fs.copySync(
-    path.join(srcDir, 'drizzle', 'api'),
-    path.join(config.project_dir, 'src', 'api')
   )
 
   const drizzleScripts = {

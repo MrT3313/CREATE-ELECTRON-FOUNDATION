@@ -29,7 +29,6 @@ export default defineConfig(async ({ command }) => {
         output: {
           manualChunks: {
             'react-vendor': ['react', 'react-dom'],
-            'tanstack-router': ['@tanstack/react-router'],
           },
         },
       },
@@ -44,12 +43,12 @@ export default defineConfig(async ({ command }) => {
       },
     },
     plugins: [
+      tailwindcss(),
       TanStackRouterVite({
         target: 'react',
         autoCodeSplitting: true,
         generatedRouteTree: './src/routeTree.gen.ts',
       }),
-      tailwindcss(),
       react(),
       electron([
         {

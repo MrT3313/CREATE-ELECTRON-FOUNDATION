@@ -22,7 +22,7 @@ export const selectBoilerplate = (config: CLIResults) => {
   const spinner = ora(
     `${config.project_name} ${chalk.bold('Selecting Boilerplate')}...`
   ).start()
-  const srcDir = path.join(PKG_ROOT, 'template/extras')
+  const srcDir = path.join(PKG_ROOT, 'template')
 
   console.log('THE CONFIG KEY', config.config_key)
 
@@ -31,45 +31,72 @@ export const selectBoilerplate = (config: CLIResults) => {
     'tanstack-router-none-none-none': () => {
       // TANSTACK ROUTER > base (no tailwind) #################################
       fs.copySync(
-        path.join(srcDir, 'tanstackRouter', 'base', 'routes'),
+        path.join(srcDir, 'extras', 'tanstackRouter', 'base', 'routes'),
         path.join(config.project_dir, 'src', 'routes')
       )
 
       // STYLES > css #########################################################
       fs.copySync(
-        path.join(srcDir, 'styles', 'index.css'),
+        path.join(srcDir, 'configs', 'styles', 'index.css'),
         path.join(config.project_dir, 'index.css')
       )
 
       // VITE > with tanstack (no tailwind) ###################################
       fs.copySync(
-        path.join(srcDir, 'tanstackRouter', 'base', 'config', 'vite.config.ts'),
+        path.join(
+          srcDir,
+          'configs',
+          'vite',
+          'vite.config.withTanstackRouter.ts'
+        ),
         path.join(config.project_dir, 'vite.config.ts')
+      )
+
+      // MAKEFILE ##############################################################
+      fs.copySync(
+        path.join(srcDir, 'configs', 'makefiles', 'makefile.withTanstack.sh'),
+        path.join(config.project_dir, 'makefile')
       )
     },
     'tanstack-router-tailwind-none-none': () => {
       // TANSTACK ROUTER > base (with tailwind) ###############################
       fs.copySync(
-        path.join(srcDir, 'tanstackRouter', 'with-tailwind', 'routes'),
+        path.join(
+          srcDir,
+          'extras',
+          'tanstackRouter',
+          'with-tailwind',
+          'routes'
+        ),
         path.join(config.project_dir, 'src', 'routes')
       )
 
       // STYLES > tailwind ####################################################
       fs.copySync(
-        path.join(srcDir, 'styles', 'tailwind-index.css'),
+        path.join(srcDir, 'configs', 'tailwind', 'tailwind-index.css'),
         path.join(config.project_dir, 'index.css')
+      )
+
+      fs.copySync(
+        path.join(srcDir, 'configs', 'tailwind', 'tailwind.config.ts'),
+        path.join(config.project_dir, 'tailwind.config.ts')
       )
 
       // VITE > with tanstack (with tailwind) #################################
       fs.copySync(
         path.join(
           srcDir,
-          'tanstackRouter',
-          'with-tailwind',
-          'config',
-          'vite.config.ts'
+          'configs',
+          'vite',
+          'vite.config.withTanstackRouter.withTailwind.ts'
         ),
         path.join(config.project_dir, 'vite.config.ts')
+      )
+
+      // MAKEFILE ##############################################################
+      fs.copySync(
+        path.join(srcDir, 'configs', 'makefiles', 'makefile.withTanstack.sh'),
+        path.join(config.project_dir, 'makefile')
       )
     },
     'tanstack-router-tailwind-sqlite-drizzle': () => {
@@ -80,6 +107,18 @@ export const selectBoilerplate = (config: CLIResults) => {
 
       // DRIZZLE ##############################################################
       selectBoilerplateDrizzle(config)
+
+      // MAKEFILE ##############################################################
+      // overwriting version from 'tanstack-router-tailwind-none-none'
+      fs.copySync(
+        path.join(
+          srcDir,
+          'configs',
+          'makefiles',
+          'makefile.withTanstack.withDatabase.sh'
+        ),
+        path.join(config.project_dir, 'makefile')
+      )
     },
     'tanstack-router-none-sqlite-drizzle': () => {
       updateMap['tanstack-router-none-none-none']()
@@ -89,67 +128,83 @@ export const selectBoilerplate = (config: CLIResults) => {
 
       // DRIZZLE ##############################################################
       selectBoilerplateDrizzle(config)
+
+      // MAKEFILE ##############################################################
+      // overwriting version from 'tanstack-router-none-none-none'
+      fs.copySync(
+        path.join(
+          srcDir,
+          'configs',
+          'makefiles',
+          'makefile.withTanstack.withDatabase.sh'
+        ),
+        path.join(config.project_dir, 'makefile')
+      )
     },
     'react-router-none-none-none': () => {
       // REACT ROUTER > base (no tailwind) ####################################
       fs.copySync(
-        path.join(srcDir, 'reactRouter', 'base', 'routes'),
+        path.join(srcDir, 'extras', 'reactRouter', 'base', 'routes'),
         path.join(config.project_dir, 'src', 'routes')
       )
 
       fs.copySync(
-        path.join(srcDir, 'reactRouter', 'base', 'App.tsx'),
+        path.join(srcDir, 'extras', 'reactRouter', 'base', 'App.tsx'),
         path.join(config.project_dir, 'src', 'App.tsx')
       )
 
       fs.copySync(
-        path.join(srcDir, 'reactRouter', 'base', 'main.tsx'),
+        path.join(srcDir, 'extras', 'reactRouter', 'base', 'main.tsx'),
         path.join(config.project_dir, 'src', 'main.tsx')
       )
 
       // STYLES ###############################################################
       fs.copySync(
-        path.join(srcDir, 'styles', 'index.css'),
+        path.join(srcDir, 'configs', 'styles', 'index.css'),
         path.join(config.project_dir, 'index.css')
       )
 
       // VITE #################################################################
       fs.copySync(
-        path.join(srcDir, 'reactRouter', 'base', 'config', 'vite.config.ts'),
+        path.join(srcDir, 'configs', 'vite', 'vite.config.withReactRouter.ts'),
         path.join(config.project_dir, 'vite.config.ts')
       )
     },
     'react-router-tailwind-none-none': () => {
       // REACT ROUTER > tailwind (with tailwind) ##############################
       fs.copySync(
-        path.join(srcDir, 'reactRouter', 'with-tailwind', 'routes'),
+        path.join(srcDir, 'extras', 'reactRouter', 'with-tailwind', 'routes'),
         path.join(config.project_dir, 'src', 'routes')
       )
 
       fs.copySync(
-        path.join(srcDir, 'reactRouter', 'with-tailwind', 'App.tsx'),
+        path.join(srcDir, 'extras', 'reactRouter', 'with-tailwind', 'App.tsx'),
         path.join(config.project_dir, 'src', 'App.tsx')
       )
 
       fs.copySync(
-        path.join(srcDir, 'reactRouter', 'with-tailwind', 'main.tsx'),
+        path.join(srcDir, 'extras', 'reactRouter', 'with-tailwind', 'main.tsx'),
         path.join(config.project_dir, 'src', 'main.tsx')
       )
 
       // STYLES ###############################################################
       fs.copySync(
-        path.join(srcDir, 'styles', 'tailwind-index.css'),
+        path.join(srcDir, 'configs', 'tailwind', 'tailwind-index.css'),
         path.join(config.project_dir, 'index.css')
+      )
+
+      fs.copySync(
+        path.join(srcDir, 'configs', 'tailwind', 'tailwind.config.ts'),
+        path.join(config.project_dir, 'tailwind.config.ts')
       )
 
       // VITE #################################################################
       fs.copySync(
         path.join(
           srcDir,
-          'reactRouter',
-          'with-tailwind',
-          'config',
-          'vite.config.ts'
+          'configs',
+          'vite',
+          'vite.config.withReactRouter.withTailwind.ts'
         ),
         path.join(config.project_dir, 'vite.config.ts')
       )

@@ -74,34 +74,6 @@ export default defineConfig(async ({ command }) => {
             },
           },
         },
-        // {
-        //   // Utility process entry point
-        //   entry: 'electron/utility/utilityCounter.ts',
-        //   vite: {
-        //     build: {
-        //       sourcemap,
-        //       minify: isBuild,
-        //       outDir: 'dist-electron/main', // Output to the same directory as main.js
-        //       rollupOptions: {
-        //         external: Object.keys(pkg.dependencies || {}),
-        //       },
-        //     },
-        //   },
-        // },
-        // {
-        //   // Utility process entry point for RNG
-        //   entry: 'electron/utility/utilityRng.ts',
-        //   vite: {
-        //     build: {
-        //       sourcemap,
-        //       minify: isBuild,
-        //       outDir: 'dist-electron/main', // Output to the same directory as main.js
-        //       rollupOptions: {
-        //         external: Object.keys(pkg.dependencies || {}),
-        //       },
-        //     },
-        //   },
-        // },
         {
           entry: 'electron/preload/index.ts',
           onstart(args) {

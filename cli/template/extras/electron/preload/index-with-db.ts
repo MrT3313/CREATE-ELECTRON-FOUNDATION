@@ -25,8 +25,15 @@ import { ipcRenderer, contextBridge } from 'electron'
 //   },
 // })
 contextBridge.exposeInMainWorld('api', {
-  getResource: (id: number) => ipcRenderer.invoke('api/resource/getResource', { id }),
+  getResource: (id: number) =>
+    ipcRenderer.invoke('api/resource/getResource', { id }),
   getResources: () => ipcRenderer.invoke('api/resource/getList'),
+})
+
+contextBridge.exposeInMainWorld('db', {
+  getResource: (id: number) =>
+    ipcRenderer.invoke('db/resource/getResource', { id }),
+  getResources: () => ipcRenderer.invoke('db/resource/getList'),
 })
 
 // Exposes specific environment variables to the renderer process.

@@ -11,9 +11,9 @@ rm -rf z-tsr z-tsr-tailwind z-tsr-tailwind-sqlite-drizzle z-tsr-sqlite-drizzle z
 
 # Create new examples with different configurations
 echo "Creating TanStack Router examples..."
-create-electron-foundation z-tsr                          --router=tanstack-router  --styles=false      --database=false    --orm=false
+# create-electron-foundation z-tsr                          --router=tanstack-router  --styles=false      --database=false    --orm=false
 # create-electron-foundation z-tsr-tailwind                 --router=tanstack-router  --styles=tailwind   --database=false    --orm=false
-# create-electron-foundation z-tsr-tailwind-sqlite-drizzle  --router=tanstack-router  --styles=tailwind   --database=sqlite   --orm=drizzle
+create-electron-foundation z-tsr-tailwind-sqlite-drizzle  --router=tanstack-router  --styles=tailwind   --database=sqlite   --orm=drizzle
 # create-electron-foundation z-tsr-sqlite-drizzle           --router=tanstack-router  --styles=false      --database=sqlite   --orm=drizzle
 
 # echo "Creating React Router examples..."

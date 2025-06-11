@@ -17,13 +17,23 @@ export const tailwindInstaller: Installer = ({ project_dir }) => {
     devMode: true,
   })
 
-  const extrasDir = path.join(PKG_ROOT, 'template/extras')
+  const templateDir = path.join(PKG_ROOT, 'template')
 
-  const cssSrc = path.join(extrasDir, 'styles/tailwind-index.css')
+  const cssSrc = path.join(
+    templateDir,
+    'configs',
+    'tailwind',
+    'tailwind-index.css'
+  )
   const cssDest = path.join(project_dir, 'src/styles/index.css')
   fs.copySync(cssSrc, cssDest)
 
-  const tailwindConfigSrc = path.join(extrasDir, 'styles/tailwind.config.ts')
+  const tailwindConfigSrc = path.join(
+    templateDir,
+    'configs',
+    'tailwind',
+    'tailwind.config.ts'
+  )
   const tailwindConfigDest = path.join(project_dir, 'tailwind.config.ts')
   fs.copySync(tailwindConfigSrc, tailwindConfigDest)
 }

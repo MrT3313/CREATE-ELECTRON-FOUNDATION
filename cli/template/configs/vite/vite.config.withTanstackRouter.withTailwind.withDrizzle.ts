@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 import react from '@vitejs/plugin-react'
 import electron from 'vite-plugin-electron'
 import fs from 'node:fs'
@@ -7,6 +8,8 @@ import pkg from './package.json'
 
 // https://vite.dev/config/
 export default defineConfig(async ({ command }) => {
+  const tailwindcss = (await import('@tailwindcss/vite')).default
+
   if (fs.existsSync('dist-electron')) {
     fs.rmSync('dist-electron', { recursive: true, force: true })
   }
@@ -26,7 +29,6 @@ export default defineConfig(async ({ command }) => {
         output: {
           manualChunks: {
             'react-vendor': ['react', 'react-dom'],
-            'react-router': ['react-router'],
           },
         },
       },
@@ -41,6 +43,12 @@ export default defineConfig(async ({ command }) => {
       },
     },
     plugins: [
+      tailwindcss(),
+      TanStackRouterVite({
+        target: 'react',
+        autoCodeSplitting: true,
+        generatedRouteTree: './src/routeTree.gen.ts',
+      }),
       react(),
       electron([
         {
@@ -115,7 +123,7 @@ export default defineConfig(async ({ command }) => {
           },
         },
       ]),
-      copyMigrationsPlugin(),
+      copyMigrationsPlugin()
     ],
     clearScreen: false,
   }

@@ -1,5 +1,8 @@
 import { response } from '../../utils/response'
 
+// TYPES
+import { PlaceholderJsonPosts, PlaceholderJsonPost, PlaceholderJsonUser, PlaceholderJsonUsers } from '../types'
+
 export class resourceServices {
   static async getResourceList() {
     try {
@@ -7,7 +10,7 @@ export class resourceServices {
       if (!res.ok) {
         return response.error({ msg: 'Failed to fetch resources' })
       }
-      const data = await res.json()
+      const data: PlaceholderJsonPosts = await res.json()
       return response.ok({ data })
     } catch (error) {
       return response.error({ msg: `Error getting resource: ${error.message}` })
@@ -20,7 +23,7 @@ export class resourceServices {
       if (!res.ok) {
         return response.error({ msg: `Resource with id ${id} not found` })
       }
-      const data = await res.json()
+      const data: PlaceholderJsonPost = await res.json()
       return response.ok({ data })
     } catch (error) {
       return response.error({ msg: `Error getting resource: ${error.message}` })

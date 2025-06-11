@@ -9,21 +9,26 @@ import { CLIResults } from '../types/CLI.js'
 import { PKG_ROOT } from '../consts.js'
 
 export const selectBoilerplateElectronDatabase = (config: CLIResults) => {
-  const srcDir = path.join(PKG_ROOT, 'template/extras')
+  const srcDir = path.join(PKG_ROOT, 'template')
 
   fs.copySync(
-    path.join(srcDir, 'electron', 'db'),
+    path.join(srcDir, 'extras', 'electron', 'main', 'db'),
     path.join(config.project_dir, 'electron', 'main', 'db')
   )
 
   fs.copySync(
-    path.join(srcDir, 'electron', 'index-db.ts'),
+    path.join(srcDir, 'extras', 'electron', 'main', 'index-db.ts'),
     path.join(config.project_dir, 'electron', 'main', 'index.ts')
   )
 
   fs.copySync(
-    path.join(srcDir, 'config', 'makefile-db.sh'),
-    path.join(config.project_dir, 'makefile')
+    path.join(srcDir, 'extras', 'electron', 'preload', 'index-with-db.ts'),
+    path.join(config.project_dir, 'electron', 'preload', 'index.ts')
+  )
+
+  fs.copySync(
+    path.join(srcDir, 'extras', 'src', 'api'),
+    path.join(config.project_dir, 'src', 'api')
   )
 
   /**
