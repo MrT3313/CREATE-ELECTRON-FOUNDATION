@@ -5,6 +5,8 @@ import fs from 'fs'
 import dotenv from 'dotenv'
 import log from './logger/index'
 
+import './api/controller'
+
 const mainLogger = log.scope('main/index.ts')
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 import assert from 'node:assert'
