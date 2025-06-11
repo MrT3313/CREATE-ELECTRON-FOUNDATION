@@ -196,17 +196,20 @@ jobs:
           # Generic file checks
           test -f "temp-scaffolded-project/$PROJECT_NAME/vite.config.ts" || (echo "vite.config.ts not found!" && exit 1)
           test -f "temp-scaffolded-project/$PROJECT_NAME/index.css" || (echo "index.css not found!" && exit 1)
+          test -f "temp-scaffolded-project/$PROJECT_NAME/makefile" || (echo "makefile not found!" && exit 1)
 
           # Router checks
           if [[ "${{ matrix.config.router }}" == "tanstack-router" ]]; then
             test -f "temp-scaffolded-project/$PROJECT_NAME/src/routes/__root.tsx" || (echo "src/routes/__root.tsx not found for TanStack Router!" && exit 1)
             test -f "temp-scaffolded-project/$PROJECT_NAME/src/routes/index.tsx" || (echo "src/routes/index.tsx not found for TanStack Router!" && exit 1)
+            test ! -f "temp-scaffolded-project/$PROJECT_NAME/src/App.tsx" || (echo "src/App.tsx should not exist for TanStack Router!" && exit 1)
           fi
 
           if [[ "${{ matrix.config.router }}" == "react-router" ]]; then
             test -f "temp-scaffolded-project/$PROJECT_NAME/src/App.tsx" || (echo "src/App.tsx not found for React Router!" && exit 1)
             test -d "temp-scaffolded-project/$PROJECT_NAME/src/routes" || (echo "src/routes directory not found for React Router!" && exit 1)
             test -f "temp-scaffolded-project/$PROJECT_NAME/src/routes/index.tsx" || (echo "src/routes/index.tsx not found for React Router!" && exit 1)
+            test ! -f "temp-scaffolded-project/$PROJECT_NAME/src/routes/__root.tsx" || (echo "src/routes/__root.tsx should not exist for React Router!" && exit 1)
           fi
 
           # Style checks
@@ -216,13 +219,18 @@ jobs:
             test ! -f "temp-scaffolded-project/$PROJECT_NAME/tailwind.config.ts" || (echo "tailwind.config.ts should not exist for No Styles option!" && exit 1)
           fi
 
-          # # Database checks
-          # if [[ "${{ matrix.config.db_opts }}" == *sqlite* ]]; then
-          #   test -f "temp-scaffolded-project/$PROJECT_NAME/src/db/db.ts" || (echo "src/db/db.ts not found for SQLite!" && exit 1)
-          # fi
+          # Database checks
+          if [[ "${{ matrix.config.db_opts }}" != "false" ]]; then
+            test -f "temp-scaffolded-project/$PROJECT_NAME/src/db/db.ts" || (echo "src/db/db.ts not found for SQLite!" && exit 1)
+          else
+            test ! -d "temp-scaffolded-project/$PROJECT_NAME/src/db" || (echo "src/db directory should not exist when no database is selected!" && exit 1)
+          fi
 
           # ORM checks
-          if [[ "${{ matrix.config.orm_opts }}" == *drizzle* ]]; then
+          if [[ "${{ matrix.config.orm_opts }}" != "false" ]]; then
             test -f "temp-scaffolded-project/$PROJECT_NAME/drizzle.config.ts" || (echo "drizzle.config.ts not found for Drizzle!" && exit 1)
             test -f "temp-scaffolded-project/$PROJECT_NAME/src/api/useResource.ts" || (echo "src/api/useResource.ts not found for Drizzle!" && exit 1)
+          else
+            test ! -f "temp-scaffolded-project/$PROJECT_NAME/drizzle.config.ts" || (echo "drizzle.config.ts should not exist when no ORM is selected!" && exit 1)
+            test ! -d "temp-scaffolded-project/$PROJECT_NAME/src/api" || (echo "src/api directory should not exist when no ORM is selected!" && exit 1)
           fi
