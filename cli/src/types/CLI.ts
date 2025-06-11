@@ -15,7 +15,7 @@ export interface Yargs {
   project_name: string | undefined
   project_dir: string | undefined
   router: string | undefined
-  styles: string | undefined
+  styles: string | undefined | false
   database: string | undefined | false
   orm: string | undefined | false
   pkg_manager: string | undefined

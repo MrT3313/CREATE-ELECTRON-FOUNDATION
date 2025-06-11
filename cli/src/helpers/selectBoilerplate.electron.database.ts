@@ -44,7 +44,7 @@ export const selectBoilerplateElectronDatabase = (config: CLIResults) => {
 
   const workflowScripts = {
     dev: 'npm run electron:rebuild && vite',
-    'db:setup': 'npm run drizzle:generate',
+    'db:setup': 'npm run drizzle:generate && npm run drizzle:migrate',
   }
 
   const pkgJson = fs.readJSONSync(path.join(config.project_dir, 'package.json'))

@@ -72,9 +72,11 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
         argv.router = undefined
       }
 
-      if (argv.styles && !validStyles.includes(argv.styles)) {
-        logger.error(`Invalid styles: ${argv.styles}. Setting to undefined.`)
-        argv.styles = undefined
+      if (argv.styles) {
+        if (argv.styles !== 'false' && !validStyles.includes(argv.styles)) {
+          logger.error(`Invalid styles: ${argv.styles}. Setting to undefined.`)
+          argv.styles = undefined
+        }
       }
 
       if (argv.database) {
@@ -122,7 +124,12 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     project_name: project_name || undefined,
     project_dir: project_name ? path.resolve(project_name) : undefined,
     router: args.router || undefined,
-    styles: args.styles || undefined,
+    styles:
+      args.styles === undefined
+        ? undefined
+        : args.styles === 'false'
+          ? false
+          : args.styles,
     database:
       args.database === undefined
         ? undefined
