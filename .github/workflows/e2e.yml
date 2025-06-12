@@ -193,6 +193,9 @@ jobs:
         run: |
           echo "Verifying project structure for ${{ matrix.config.name }}..."
 
+          # Debug: List all files in the generated project directory
+          ls -laR "temp-scaffolded-project/$PROJECT_NAME"
+
           # Generic file checks
           test -f "temp-scaffolded-project/$PROJECT_NAME/vite.config.ts" || (echo "vite.config.ts not found!" && exit 1)
           test -f "temp-scaffolded-project/$PROJECT_NAME/index.css" || (echo "index.css not found!" && exit 1)
