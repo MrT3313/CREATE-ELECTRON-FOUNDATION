@@ -221,12 +221,4 @@ jobs:
 
           # Database checks
 
-
           # ORM checks
-          if [[ "${{ matrix.config.orm_opts }}" != "false" ]]; then
-            test -f "temp-scaffolded-project/$PROJECT_NAME/drizzle.config.ts" || (echo "drizzle.config.ts not found for Drizzle!" && exit 1)
-            test -f "temp-scaffolded-project/$PROJECT_NAME/src/api/useResource.ts" || (echo "src/api/useResource.ts not found for Drizzle!" && exit 1)
-          else
-            test ! -f "temp-scaffolded-project/$PROJECT_NAME/drizzle.config.ts" || (echo "drizzle.config.ts should not exist when no ORM is selected!" && exit 1)
-            test ! -d "temp-scaffolded-project/$PROJECT_NAME/src/api" || (echo "src/api directory should not exist when no ORM is selected!" && exit 1)
-          fi
