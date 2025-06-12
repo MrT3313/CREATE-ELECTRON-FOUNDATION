@@ -55,15 +55,15 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
           config.packages.router = cliArgs.router as RouterPackage
         }
 
-        if (cliArgs.styles) {
+        if (cliArgs.styles !== undefined) {
           config.packages.styles = cliArgs.styles as StylePackage
         }
 
-        if (cliArgs.database) {
+        if (cliArgs.database !== undefined) {
           config.packages.database = cliArgs.database as DatabasePackage
         }
 
-        if (cliArgs.orm) {
+        if (cliArgs.orm !== undefined) {
           config.packages.orm = cliArgs.orm as ORMPackage
         }
 
