@@ -1,6 +1,5 @@
 declare global {
   interface Window {
-    // ipcRenderer: IpcRenderer
     api: {
       getResource: (id: number) => Promise<Resource>
       getResources: () => Promise<{ data: Resource[] }>

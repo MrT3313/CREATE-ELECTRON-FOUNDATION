@@ -31,12 +31,6 @@ export const selectBoilerplateElectronDatabase = (config: CLIResults) => {
     path.join(config.project_dir, 'src', 'api')
   )
 
-  /**
-    setup: 'npm install && npm run rebuild:electron',
-    'clean:rebuild':
-      'rm -rf node_modules package-lock.json && npm install && npm run rebuild:electron'
-   */
-
   const betterSqliteScripts = {
     'electron:rebuild': 'electron-rebuild -f -w better-sqlite3',
     'electron:check':

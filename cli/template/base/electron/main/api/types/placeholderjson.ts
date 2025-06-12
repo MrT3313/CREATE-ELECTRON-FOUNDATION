@@ -7,7 +7,7 @@ export type PlaceholderJsonPost = {
 export type PlaceholderJsonPosts = PlaceholderJsonPost[]
 
 export type PlaceholderJsonUser = {
-  id: number // UNIQUE
+  id: number
   name: string
   username: string
   email: string
