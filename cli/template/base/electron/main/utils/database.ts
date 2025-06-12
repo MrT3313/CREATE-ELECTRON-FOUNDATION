@@ -3,16 +3,7 @@ import os from 'os'
 import { existsSync, mkdirSync } from 'fs'
 import { getDbConfig, APP_NAME } from './consts'
 
-// Safely try to import Electron app module
-let electronApp: any = null
-try {
-  const electron = require('electron')
-  electronApp = electron.app
-} catch (error) {
-  console.log(
-    'Running in non-Electron environment, using fallbacks for app APIs'
-  )
-}
+import { app } from 'electron'
 
 /**
  * Get the appropriate database directory based on the platform
@@ -20,8 +11,8 @@ try {
 export function getDatabaseDir(): string {
   try {
     // Try Electron's app.getPath if available
-    if (electronApp) {
-      return electronApp.getPath('userData')
+    if (app) {
+      return app.getPath('userData')
     }
     throw new Error('Not in Electron context')
   } catch {

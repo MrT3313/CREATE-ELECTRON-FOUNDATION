@@ -1,0 +1,227 @@
+# ==================================================================================================
+# SUMMARY
+# ==================================================================================================
+# This file defines the End-to-End (E2E) testing workflow for the CLI project.
+#
+# Purpose:
+#   To test the complete functionality of the CLI tool. This is done by running the CLI to
+#   scaffold new projects with various feature combinations and then validating the
+#   integrity and structure of these scaffolded projects.
+#
+# Triggers:
+#   - Pull Requests: Activates on pull requests to the 'main' branch that modify files within
+#     the 'cli/**' directory or this workflow file itself.
+#   - Manual Dispatch: Can be triggered manually from the GitHub Actions UI via 'workflow_dispatch'.
+#
+# Job: e2e-test
+#   The workflow consists of a single job, 'e2e-test', which runs on 'ubuntu-latest'.
+#   It leverages a matrix strategy to execute tests across 8 different configurations,
+#   covering combinations of routers, styling options, databases, and ORMs.
+#
+# Key Steps for each matrix combination:
+#   1. Setup Environment: Checks out the repository, sets up the Node.js environment based on
+#      the '.nvmrc' file, and installs dependencies for the CLI.
+#   2. Build CLI: Compiles the CLI tool by running the 'npm run build' command.
+#   3. Scaffold Test Project: Executes the compiled CLI with flags corresponding to the
+#      current matrix configuration (e.g., router, styles). This generates a new project
+#      in a temporary directory.
+#   4. Validate Scaffolded Project: A series of checks are performed to ensure the
+#      scaffolded project has the correct file structure based on the selected options.
+#      Key files verified include:
+#        - TanStack Router: 'src/routes/__root.tsx', 'src/routes/index.tsx'
+#        - React Router:    'src/App.tsx', 'src/routes/index.tsx'
+#        - Tailwind CSS:    'tailwind.config.js'
+#        - Drizzle ORM:     'drizzle.config.ts', 'src/api/useResource.ts'
+#
+# This E2E setup ensures that the CLI can reliably generate valid project structures for
+# all supported feature combinations.
+# ==================================================================================================
+
+name: E2E Tests # displayed on the GitHub Actions UI.
+
+# 1. 👀 CONFIGURE: workflow triggers
+on:
+  # 1.
+  # Allows manual triggering of the workflow from the GitHub Actions UI.
+  workflow_dispatch:
+
+  # 2. Pull Requests | branches: [main]
+  pull_request:
+    branches:
+      - main # ONLY run on PRs targeting the main branch
+    # ONLY trigger if files change in CLI code.
+    paths:
+      - 'cli/**' # matches the directory of your CLI source code.
+      - '.github/workflows/e2e.yml' # Also run if the E2E workflow file itself changes.
+
+  # 3. Scheduled CRON
+  # schedule:
+  #   - cron: '0 0 * * *' # Example: Runs every day at midnight UTC.
+
+# 2. 👀 Defines the jobs for this workflow.
+jobs:
+  e2e-test:
+    name: E2E Test - ${{ matrix.config.name }}
+    # Specifies the type of runner for this job, using a matrix variable.
+    runs-on: ${{ matrix.config.os }}
+
+    ###########################################################################
+    # ⭐️
+    # CONFIGURE: workflow strategy for running the job multiple times with different configurations.
+    ###########################################################################
+    strategy:
+      # If true: GitHub cancels all in-progress jobs in the matrix if any job fails.
+      # if false: allows all jobs to complete.
+      fail-fast: true
+
+      # CONFIGURE: matrix of run configurations.
+      matrix:
+        # Defines the specific CLI feature combinations to test.
+        config:
+          # 0. DEFAULT
+          - name: 'Tanstack Router, Tailwind, SQLite, Drizzle'
+            os: ubuntu-latest
+            router: 'tanstack-router'
+            styles: 'tailwind'
+            db_opts: '--database=sqlite'
+            orm_opts: '--orm=drizzle'
+
+          # 1. Tanstack Router
+          - name: 'Tanstack Router, Tailwind'
+            os: ubuntu-latest
+            router: 'tanstack-router'
+            styles: 'tailwind'
+            db_opts: 'false'
+            orm_opts: 'false'
+          - name: 'Tanstack Router, No Styles'
+            os: ubuntu-latest
+            router: 'tanstack-router'
+            styles: 'false'
+            db_opts: 'false'
+            orm_opts: 'false'
+          - name: 'Tanstack Router, No Styles, SQLite, Drizzle'
+            os: ubuntu-latest
+            router: 'tanstack-router'
+            styles: 'false'
+            db_opts: '--database=sqlite'
+            orm_opts: '--orm=drizzle'
+
+          # 2. React Router
+          - name: 'React Router, Tailwind'
+            os: ubuntu-latest
+            router: 'react-router'
+            styles: 'tailwind'
+            db_opts: 'false'
+            orm_opts: 'false'
+          - name: 'React Router, No Styles'
+            os: ubuntu-latest
+            router: 'react-router'
+            styles: 'false'
+            db_opts: 'false'
+            orm_opts: 'false'
+          - name: 'React Router, Tailwind, SQLite, Drizzle'
+            os: ubuntu-latest
+            router: 'react-router'
+            styles: 'tailwind'
+            db_opts: '--database=sqlite'
+            orm_opts: '--orm=drizzle'
+          - name: 'React Router, No Styles, SQLite, Drizzle'
+            os: ubuntu-latest
+            router: 'react-router'
+            styles: 'false'
+            db_opts: '--database=sqlite'
+            orm_opts: '--orm=drizzle'
+
+    ###########################################################################
+    # ⭐️
+    # CONFIGURE: individual job steps to execute for each matrix combination.
+    ###########################################################################
+    steps:
+      # 1. Check out the repository code.
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Read Node.js version from .nvmrc file
+      - name: Read .nvmrc
+        id: nvm
+        run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+
+      # 3. Setup the environment using the local composite action (./github/actions/setup/action.yml).
+      - name: Setup Environment
+        uses: ./.github/actions/setup # Path to your local composite action.
+        with:
+          # Input: Specify the Node.js version for the setup action, read from .nvmrc
+          node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
+
+      # 4. Build the CLI.
+      # Run the "build" script from your root package.json.
+      # job will target the cli/dist/index.js file later.
+      - name: Build CLI
+        run: npm run build
+
+      #########################################################
+      # ⭐️⭐️
+      # Step 5: Scaffold a test project using the CLI.
+      #########################################################
+      - name: Scaffold Test Project (using ${{ matrix.config.name }})
+        run: |
+          set -x
+
+          # Create a temporary directory for the scaffolded project.
+          mkdir temp-scaffolded-project
+
+          # Construct the project name for uniqueness.
+          project_name="test-proj-${{ matrix.config.router }}-${{ matrix.config.styles }}"
+          if [[ -n "${{ matrix.config.db_opts }}" ]]; then
+            project_name+="-db"
+          fi
+          if [[ -n "${{ matrix.config.orm_opts }}" ]]; then
+            project_name+="-orm"
+          fi
+
+          echo "PROJECT_NAME=$project_name" >> $GITHUB_ENV
+
+          # Execute the CLI to scaffold a new project.
+          node cli/dist/index.js "./temp-scaffolded-project/$project_name" --router="${{ matrix.config.router }}" --styles="${{ matrix.config.styles }}" ${{ matrix.config.db_opts }} ${{ matrix.config.orm_opts }} --yes --ci
+
+      #########################################################
+      # ⭐️⭐️⭐️
+      # Step 6+: Validate the scaffolded project.
+      # These are placeholder commands. You need to implement actual validation steps based on your CLI's output for each configuration.
+      #########################################################
+      - name: Verify Project Structure
+        run: |
+          echo "Verifying project structure for ${{ matrix.config.name }}..."
+
+          # Debug: List all files in the generated project directory
+          ls -laR "temp-scaffolded-project/$PROJECT_NAME"
+
+          # Generic file checks
+          test -f "temp-scaffolded-project/$PROJECT_NAME/vite.config.ts" || (echo "vite.config.ts not found!" && exit 1)
+          test -f "temp-scaffolded-project/$PROJECT_NAME/index.css" || (echo "index.css not found!" && exit 1)
+          test -f "temp-scaffolded-project/$PROJECT_NAME/makefile" || (echo "makefile not found!" && exit 1)
+
+          # Router checks
+          if [[ "${{ matrix.config.router }}" == "tanstack-router" ]]; then
+            test -f "temp-scaffolded-project/$PROJECT_NAME/src/routes/__root.tsx" || (echo "src/routes/__root.tsx not found for TanStack Router!" && exit 1)
+            test -f "temp-scaffolded-project/$PROJECT_NAME/src/routes/index.tsx" || (echo "src/routes/index.tsx not found for TanStack Router!" && exit 1)
+            test ! -f "temp-scaffolded-project/$PROJECT_NAME/src/App.tsx" || (echo "src/App.tsx should not exist for TanStack Router!" && exit 1)
+          fi
+
+          if [[ "${{ matrix.config.router }}" == "react-router" ]]; then
+            test -f "temp-scaffolded-project/$PROJECT_NAME/src/App.tsx" || (echo "src/App.tsx not found for React Router!" && exit 1)
+            test -d "temp-scaffolded-project/$PROJECT_NAME/src/routes" || (echo "src/routes directory not found for React Router!" && exit 1)
+            test -f "temp-scaffolded-project/$PROJECT_NAME/src/routes/index.tsx" || (echo "src/routes/index.tsx not found for React Router!" && exit 1)
+            test ! -f "temp-scaffolded-project/$PROJECT_NAME/src/routes/__root.tsx" || (echo "src/routes/__root.tsx should not exist for React Router!" && exit 1)
+          fi
+
+          # Style checks
+          if [[ "${{ matrix.config.styles }}" == "tailwind" ]]; then
+            test -f "temp-scaffolded-project/$PROJECT_NAME/tailwind.config.ts" || (echo "tailwind.config.ts not found for Tailwind!" && exit 1)
+          elif [[ "${{ matrix.config.styles }}" == "false" ]]; then
+            test ! -f "temp-scaffolded-project/$PROJECT_NAME/tailwind.config.ts" || (echo "tailwind.config.ts should not exist for No Styles option!" && exit 1)
+          fi
+
+          # Database checks
+
+          # ORM checks

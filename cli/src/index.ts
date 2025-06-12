@@ -10,7 +10,7 @@ import { buildPkgInstallerMap } from './installers/buildPkgInstallerMap.js'
 import { scaffoldProject } from './helpers/scaffoldProject.js'
 import { installPackages } from './helpers/installPackages.js'
 import { selectBoilerplate } from './helpers/selectBoilerplate.js'
-import { installDependencies } from './helpers/installDependencies.js'
+import { parseCliArgs } from './helpers/parseCliArgs.js'
 
 // UTILS
 import { logger } from './utils/logger.js'
@@ -19,78 +19,23 @@ import { logger } from './utils/logger.js'
 import { execaSync } from 'execa'
 import ora from 'ora'
 import chalk from 'chalk'
-import yargs from 'yargs'
-import { hideBin } from 'yargs/helpers'
 
 // TYPES
-import type { CLIResults, CLIArgs } from './types/CLI.js'
+import type { Yargs, CLIResults } from './types/CLI.js'
 
 const main = async () => {
   const ide = process.env.IDE || 'cursor'
 
   // Parse command line arguments
-  const argv = await yargs(hideBin(process.argv))
-    .option('projectName', {
-      type: 'string',
-      description: 'Name of the project',
-    })
-    .option('router', {
-      type: 'string',
-      choices: ['tanstack-router', 'react-router'],
-      description: 'Router to use',
-    })
-    .option('database', {
-      type: 'string',
-      choices: ['sqlite'],
-      description: 'Database to use',
-    })
-    .option('runMigrations', {
-      type: 'boolean',
-      description: 'Run migrations',
-    })
-    .option('orm', {
-      type: 'string',
-      choices: ['drizzle'],
-      description: 'ORM to use',
-    })
-    .option('styles', {
-      type: 'string',
-      choices: ['tailwind', 'css'],
-      description: 'Styles to use',
-    })
-    .option('initializeGit', {
-      type: 'boolean',
-      description: 'Initialize Git repository',
-    })
-    .option('installDependencies', {
-      type: 'boolean',
-      description: 'Install dependencies',
-    })
-    .option('y', {
-      type: 'boolean',
-      alias: 'yes',
-      description: 'Skip prompts and use defaults',
-    })
-    .help()
-    .alias('help', 'h')
-    .version(false)
-    .parse()
-
-  // Extract named options and positional arguments
-  const cliArgs: CLIArgs = {
-    projectName: (argv.projectName as string) || (argv._[0] as string),
-    router: argv.router as any,
-    database: argv.database as any,
-    orm: argv.orm as any,
-    styles: argv.styles as any,
-    initializeGit: argv.initializeGit as boolean,
-    installDependencies: argv.installDependencies as boolean,
-    runMigrations: argv.runMigrations as boolean,
-    skipPrompts: argv.y as boolean,
-  }
+  logger.info(`process.argv: ${JSON.stringify(process.argv, null, 2)}`)
+  const cliArgs: Yargs = await parseCliArgs(process.argv)
 
   // INJECT ENV VARIABLES ######################################################
-  process.env.APP_NAME = cliArgs.projectName
+  // Set APP_NAME early if project_name is available from args.
+  // runUserPromptCli will use this or prompt if necessary, then set config.project_name
+  if (cliArgs.project_name) {
+    process.env.APP_NAME = cliArgs.project_name
+  }
 
   // START ####################################################################
   renderTitle()
@@ -104,7 +49,7 @@ const main = async () => {
 
   // 2. configure packages ####################################################
   const inUsePackages = Object.values(config.packages).flat()
-  const usePackages = buildPkgInstallerMap(config.projectName, inUsePackages)
+  const usePackages = buildPkgInstallerMap(config.project_name, inUsePackages)
 
   // 3. scaffold base project #################################################
   scaffoldProject(config)
@@ -119,76 +64,25 @@ const main = async () => {
   selectBoilerplate(config)
 
   // 6. update package.json ###################################################
-  const pkgJson = fs.readJSONSync(path.join(config.projectDir, 'package.json'))
-  pkgJson.name = config.projectName
-  fs.writeJSONSync(path.join(config.projectDir, 'package.json'), pkgJson, {
+  const pkgJson = fs.readJSONSync(path.join(config.project_dir, 'package.json'))
+  pkgJson.name = config.project_name
+  fs.writeJSONSync(path.join(config.project_dir, 'package.json'), pkgJson, {
     spaces: 2,
   })
 
-  // const NewPkgJson = fs.readJSONSync(
-  //   path.join(config.projectDir, "package.json")
-  // );
-  // logger.info(JSON.stringify(NewPkgJson, null, 2));
-
-  // 7. install dependencies ##################################################
-  if (config.installDependencies) {
-    await installDependencies({
-      pkgManager: config.pkgManager,
-      projectDir: config.projectDir,
-    })
-  }
-
-  // 8. migrations #########################################################
-  // TODO: move to its own helper function
-  if (
-    config.installDependencies &&
-    // @ts-ignore
-    config.packages.database.includes('sqlite') &&
-    // @ts-ignore
-    config.packages.orm.includes('drizzle')
-  ) {
-    const migrationsSpinner = ora({
-      text: 'Setting up database...',
-      spinner: 'dots',
-    })
-    migrationsSpinner.start()
-
-    let command = `cd "${config.projectName}"`
-    if (config.runMigrations) {
-      command += ` && npm run db:setup`
-    } else {
-      command += ` && npm run db:generate && npm run rebuild`
-    }
-
-    try {
-      execaSync(command, {
-        // stdio: 'inherit',
-        shell: true,
-      })
-      migrationsSpinner.succeed(
-        chalk.green('Database setup completed successfully!')
-      )
-    } catch (err) {
-      logger.error(`Failed to execute: ${command}`)
-      logger.error(err)
-      migrationsSpinner.fail(chalk.red('Database setup failed!'))
-    }
-  }
-
-  // 9. initialize git ########################################################
-  if (config.initializeGit) {
+  // 7. initialize git ########################################################
+  if (config.initialize_git && !cliArgs.ci) {
     const initializeGitSpinner = ora({
       text: 'Initializing Git...',
       spinner: 'dots',
     })
     initializeGitSpinner.start()
 
-    let command = `cd "${config.projectName}"`
+    let command = `cd "${config.project_name}"`
     command += ` && git init && git add . && git commit -m "Initial Scaffolding : create-electron-foundation"`
 
     try {
       execaSync(command, {
-        // stdio: 'inherit',
         shell: true,
       })
       initializeGitSpinner.succeed(chalk.green('Git initialized successfully!'))
@@ -199,14 +93,14 @@ const main = async () => {
     }
   }
 
-  // 10. open in ide ##########################################################
-  if (ide) {
-    let command = `cd "${config.projectName}"`
+  // 8. open in ide ##########################################################
+  if (ide && !cliArgs.ci) {
+    // Do not open IDE in CI mode
+    let command = `cd "${config.project_name}"`
     command += ` && ${ide} .`
 
     try {
       execaSync(command, {
-        // stdio: 'inherit',
         shell: true,
       })
     } catch (err) {
@@ -216,8 +110,19 @@ const main = async () => {
   }
 
   logger.success(
-    `${config.projectName} ${chalk.bold.green('Project Initialized Successfully with create-electron-foundation!')}`
+    `${config.project_name} ${chalk.bold.green('Project Initialized Successfully with create-electron-foundation!')}`
   )
 }
 
-main()
+main().catch((error) => {
+  logger.error('An unexpected error occurred:')
+  if (error instanceof Error) {
+    logger.error(error.message)
+    if (error.stack) {
+      logger.error(error.stack)
+    }
+  } else {
+    logger.error(String(error))
+  }
+  process.exit(1)
+})

@@ -1,37 +1,69 @@
 <h1 align="center">
-  🚧 UNDER CONSTRUCTION 🚧
+  🚧 UNDER CONSTRUCTION : ALPHA 🚧
 </h1>
 
 <h1 align="center">
-  create-electron-foundation
+  Create Electron Foundation
 </h1>
 
 <p align="center">
   Interactive CLI (inspired by <a href="https://github.com/t3-oss/create-t3-app">create-t3-app</a>) to scaffold an Electron application.
 </p>
 
-<p align="center">
-  Get started by running: <code>npx create-electron-foundation@alpha</code>
-</p>
+<div align="center">
+  <h3 align="center">
+    Get started by running:
+  </h3>
 
-## 🛠️ Customizable Setup
+```bash
+npx create-electron-foundation@alpha
+```
 
-> [!WARNING]
->
-> the npm package / command is NOT published yet  
-> you will need to clone the repo and symlink the command to the cli ./dist directory
+</div>
 
-`create-electron-foundation` allows you to tailor your new Electron project. During the interactive setup, you'll be able to choose:
+<h2 align="center">
+  Configuration Options
+</h2>
 
-- **Routing:**
-  - TanStack Router
-  - React Router
-  - None (no router will be pre-configured)
-- **Styling:**
-  - Tailwind CSS
-  - Basic CSS (e.g., CSS Modules, plain CSS files)
-  - None (no specific styling library will be pre-configured)
-- **Git Initialization:**
-  - Whether to initialize a new Git repository in your project.
-- **Dependency Installation:**
-  - Whether to automatically install dependencies (using your detected package manager) after project scaffolding.
+### Defaults
+
+```bash
+npx create-electron-foundation@alpha -y
+```
+
+- ✅ Framework: Electron (main + render processes)
+- ✅ Router: Tanstack Router
+- ✅ Styling: Tailwind
+- ✅ Database: SQLite
+- ✅ ORM: Drizzle
+
+### Available Configurations
+
+| is default | router              | styling      | database   | orm         |
+| ---------- | ------------------- | ------------ | ---------- | ----------- |
+| ✅         | **Tanstack Router** | **Tailwind** | **SQLite** | **Drizzle** |
+|            | React Router        | Tailwind     | SQLite     | Drizzle     |
+|            | Tanstack Router     | Tailwind     |            |             |
+|            | React Router        | Tailwind     |            |             |
+|            | Tanstack Router     |              | SQLite     | Drizzle     |
+|            | React Router        |              | SQLite     | Drizzle     |
+|            | Tanstack Router     |              |            |             |
+|            | React Router        |              |            |             |
+
+### Command Line Arguments
+
+| Argument           | Alias    | Description                      | Options                               | Default                                      |
+| ------------------ | -------- | -------------------------------- | ------------------------------------- | -------------------------------------------- |
+| `[project_name]`   |          | Name of the project (positional) | string                                | -                                            |
+| `--project_name`   |          | Name of the project (option)     | string                                | `[project_name]` \|\| `process.env.APP_NAME` |
+| `--router`         |          | Router to use                    | `'tanstack-router'`, `'react-router'` | -                                            |
+| `--styles`         |          | Styles to use                    | `'tailwind'`, `'false'`               | -                                            |
+| `--database`       |          | Database to use                  | `'sqlite'`, `'false'`                 | -                                            |
+| `--orm`            |          | ORM to use                       | `'drizzle'`, `'false'`                | -                                            |
+| `--ci`             |          | Run in CI mode                   | boolean                               | `false`                                      |
+| `-y`               | `--yes`  | Skip prompts and use defaults    | boolean                               | `false`                                      |
+| `--pkg_manager`    |          | Package manager to use           | `'npm'`                               | `'npm'`                                      |
+| `--initialize_git` | `--git`  | Initialize Git repository        | boolean                               | `true`                                       |
+| `-h`               | `--help` | Show help                        | -                                     | -                                            |
+
+</div>

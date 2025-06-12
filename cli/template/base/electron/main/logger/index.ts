@@ -1,7 +1,7 @@
-import { app, ipcMain } from 'electron'
+import { app } from 'electron'
 import log from 'electron-log/main'
 import path from 'path'
-import { APP_NAME, SESSION_ID, electronLogMessageFormat } from '../utils/consts'
+import { SESSION_ID, electronLogMessageFormat } from '../utils/consts'
 import moment from 'moment'
 
 // Initialize electron-log. This is optional but recommended if you also log from renderer processes.
@@ -20,6 +20,7 @@ try {
       log.transports.file.level = 'info'
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     log.transports.file.resolvePathFn = (variables: any, message: any) => {
       const now = moment().utc()
       const year = now.year().toString()

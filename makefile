@@ -15,6 +15,11 @@ build:
 	@echo "Making cli/dist/index.js executable..."
 	@chmod +x cli/dist/index.js
 
+# LINTING & FORMATTING
+laf:
+	npm run lint
+	npm run format
+
 # PUBLISHING ##################################################################
 pack:
 	npm pack
@@ -41,22 +46,19 @@ link: build
 
 unlink:
 	@echo "Removing global symlink for create-electron-foundation..."
-	npm unlink
+	npm unlink $(command)
 	@echo "Symlink '$(command)' should now be unlinked."
 	@echo "Run 'make check-link' or 'which create-electron-foundation' to verify (it should ideally not be found, or report an error)."
 
 check-link:
 	@echo "-----------------------------------------------------"
 	@echo "Checking symlink status for '$(command)':"
-	@echo "Attempting to locate symlink at /Users/mrt/.nvm/versions/node/v20.17.0/bin/$(command)"
-	@if [ -L "/Users/mrt/.nvm/versions/node/v20.17.0/bin/$(command)" ]; then \
-		echo "> Symlink found at absolute path."; \
-		echo "Details:"; \
-		ls -l /Users/mrt/.nvm/versions/node/v20.17.0/bin/create-electron-foundation; \
+	@if command -v $(command) >/dev/null 2>&1; then \
+		echo "✅ '$(command)' is in your PATH at: $$(which $(command))"; \
+		echo "   It links to: $$(readlink $$(which $(command)))"; \
+		echo "   The global package links to: $$(readlink $$(npm root -g)/$(command))"; \
 	else \
-		echo "> Symlink NOT found at /Users/mrt/.nvm/versions/node/v20.17.0/bin/$(command)"; \
-		echo "Fallback: Checking 'which $(command)' (PATH check)..."; \
-		which $(command) || echo "> '$(command)' not found in PATH via 'which'"; \
+		echo "❌ '$(command)' not found in your PATH."; \
 	fi
 	@echo "-----------------------------------------------------"
 

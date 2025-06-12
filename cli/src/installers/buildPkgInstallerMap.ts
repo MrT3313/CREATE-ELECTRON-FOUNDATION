@@ -15,13 +15,13 @@ import { logger } from '../utils/logger.js'
 import type { AvailablePackages, PkgInstallerMap } from '../types/Packages.js'
 
 export const buildPkgInstallerMap = (
-  projectName: string,
+  project_name: string,
   packages: AvailablePackages[],
   // databaseProvider: DatabaseProvider
   debug: boolean = false
 ): PkgInstallerMap => {
   const spinner = ora(
-    `${projectName} ${chalk.bold('Building')} ${chalk.bold('PkgInstallerMap')}...`
+    `${project_name} ${chalk.bold('Building')} ${chalk.bold('PkgInstallerMap')}...`
   ).start()
 
   const map: PkgInstallerMap = {
@@ -45,17 +45,13 @@ export const buildPkgInstallerMap = (
       inUse: packages.includes('tailwind'),
       installer: tailwindInstaller,
     },
-    css: {
-      inUse: packages.includes('css'),
-      installer: () => {},
-    },
   }
 
   if (debug) {
     logger.debug('🧯🧯 PkgInstallerMap', JSON.stringify(map, null, 2))
   }
   spinner.succeed(
-    `${projectName} ${chalk.bold.green('pkgInstallerMap built')} successfully`
+    `${project_name} ${chalk.bold.green('pkgInstallerMap built')} successfully`
   )
   return map
 }

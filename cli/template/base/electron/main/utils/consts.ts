@@ -9,10 +9,11 @@ export const electronLogMessageFormat =
 
 export function getDbName() {
   try {
-    return app?.isPackaged
-      ? `${process.env.APP_NAME}.db`
-      : `${process.env.APP_NAME}.dev.db`
-  } catch (error) {
+    if (app && app.isPackaged) {
+      return `${process.env.APP_NAME}.db`
+    }
+    return `${process.env.APP_NAME}.dev.db`
+  } catch {
     // Fallback for when app is not initialized or not in Electron context
     return process.env.NODE_ENV === 'production'
       ? `${process.env.APP_NAME}.db`

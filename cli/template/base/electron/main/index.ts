@@ -1,14 +1,11 @@
-import { app, BrowserWindow, shell, ipcMain, utilityProcess } from 'electron'
-import { createRequire } from 'node:module'
+import { app, BrowserWindow, shell, ipcMain } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import fs from 'fs'
-import os from 'node:os'
 import dotenv from 'dotenv'
 import log from './logger/index'
-import { SESSION_ID } from './utils/consts'
-import { nanoid } from 'nanoid'
-import { dbInit } from './db/dbInit'
+
+import './api/controller'
 
 const mainLogger = log.scope('main/index.ts')
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -18,17 +15,12 @@ import assert from 'node:assert'
 const isProd = app?.isPackaged
 const envPath = isProd ? `.env.production` : `.env.development`
 
-// Attempts to load an environment file from the paths determined by getEnvPaths.
-// It stops at the first valid .env file found.
-let envLoaded = false
-
 try {
   if (fs.existsSync(envPath)) {
     dotenv.config({ path: envPath })
-    envLoaded = true
   }
 } catch (err) {
-  mainLogger.error(`No environment file found at:`, envPath)
+  mainLogger.error(`No environment file found at:`, envPath, err)
   process.exit(1)
 }
 
@@ -134,9 +126,6 @@ async function createWindow() {
 app.whenReady().then(async () => {
   mainLogger.info('🎉🎉 App is ready')
   try {
-    // INITIALIZE: database ###################################################
-    await dbInit()
-
     // Creates the main application window after the database is initialized.
     await createWindow()
   } catch (error) {
