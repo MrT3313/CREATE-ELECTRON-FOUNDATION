@@ -24,8 +24,6 @@ export const selectBoilerplate = (config: CLIResults) => {
   ).start()
   const srcDir = path.join(PKG_ROOT, 'template')
 
-  console.log('THE CONFIG KEY', config.config_key)
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updateMap: any = {
     'tanstack-router-none-none-none': () => {
@@ -266,7 +264,6 @@ export const selectBoilerplate = (config: CLIResults) => {
   }
 
   try {
-    console.log('NOW PLEASE FUCK ME HERE', config.config_key)
     updateMap[config.config_key]()
 
     spinner.succeed(

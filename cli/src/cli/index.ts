@@ -28,8 +28,6 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
 
   p.intro(`${color.bgCyan(color.black('create-electron-foundation'))}`)
 
-  console.log('!!!!!!!!!!!!!!!!!cliArgs', cliArgs)
-
   try {
     let config: CLIResults
 
@@ -229,8 +227,6 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         process.exit(1)
       }
     }
-
-    console.log('FUCK ME RIGHT HERE!!! config', config)
 
     p.note(
       `

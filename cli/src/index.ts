@@ -29,7 +29,6 @@ const main = async () => {
   // Parse command line arguments
   logger.info(`process.argv: ${JSON.stringify(process.argv, null, 2)}`)
   const cliArgs: Yargs = await parseCliArgs(process.argv)
-  console.log('!!--!! FUCK ME HERE', cliArgs)
 
   // INJECT ENV VARIABLES ######################################################
   // Set APP_NAME early if project_name is available from args.

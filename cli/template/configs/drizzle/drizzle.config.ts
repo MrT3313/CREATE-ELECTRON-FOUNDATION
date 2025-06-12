@@ -4,7 +4,6 @@ import { existsSync, mkdirSync } from 'fs'
 import { dirname } from 'path'
 
 const databasePath = getDatabasePath()
-console.log('🔍 drizzle.config.ts : DATABASE PATH', databasePath)
 
 // Ensure the directory exists
 const dbDir = dirname(databasePath)
