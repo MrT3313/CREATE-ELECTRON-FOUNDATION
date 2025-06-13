@@ -1,7 +1,13 @@
 import { setTimeout } from 'node:timers/promises'
 import color from 'picocolors'
+
+// TERMINAL > user prompting
 import * as p from '@clack/prompts'
+
+// CONSTS
 import { DEFAULT_APP_NAME } from '../consts.js'
+
+// TYPES
 import type { ConfigKey, Yargs, CLIResults } from '../types/CLI.js'
 import { defaultCLIConfig } from '../types/CLI.js'
 import type {
@@ -10,6 +16,8 @@ import type {
   ORMPackage,
   StylePackage,
 } from '../types/Packages.js'
+
+// UTILS
 import { logger } from '../utils/logger.js'
 
 export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
