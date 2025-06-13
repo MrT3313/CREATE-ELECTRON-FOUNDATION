@@ -67,6 +67,7 @@ export function Root() {
     <QueryClientProvider client={queryClient}>
       <div className={cx('app-layout', 'border-2 border-black')}>
         <Header />
+        <br />
         <Outlet />
       </div>
       <TanStackRouterDevtools position="bottom-right" />

@@ -31,19 +31,24 @@ export function Resources() {
         </div>
       )}
 
+      <div className={cx('hero')}>
+        <h1>Resource List</h1>
+      </div>
+
+      <br />
+
       <div className={cx(
           "container scrollable", 
           'justify-start','bg-white', 
           'max-h-[400px]'
         )}
       >
-        <h2 className="text-xl font-semibold mb-4">Resource List</h2>
         {isLoading ? (
           <p>Loading resources...</p>
         ) : resources ? (
           resources?.length > 0 ? resources?.map((resource) => (
-            <div className={cx('flex flex-col')}>
-              <p className="font-medium">{`IDs : ${resource.user_id} - ${resource.id}`}</p>
+            <div className={cx('item')}>
+              <p className="font-medium">{`IDs : ${resource.userId} - ${resource.id}`}</p>
               <p className="text-sm text-gray-600">{`Title: ${resource.title}`}</p>
               <p className="text-sm text-gray-600">{`Body: ${resource.body}`}</p>
             </div>

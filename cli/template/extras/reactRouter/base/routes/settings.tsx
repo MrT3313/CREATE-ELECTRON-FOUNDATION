@@ -5,9 +5,13 @@ export function Settings() {
 
   return (
     <div className={cx('page')}>
-      <h1>Settings</h1>
+      <div className={cx('hero')}>
+        <h1>Settings</h1>
+      </div>
 
-      <div>
+      <br />
+
+      <div className={cx('env-vars')}>
         <p>CUSTOM_ENV_VAR: {window.env.CUSTOM_ENV_VAR}</p>
         <p>NODE_ENV: {window.env.NODE_ENV}</p>
       </div>

@@ -68,6 +68,7 @@ const RootLayout = () => {
     <QueryClientProvider client={queryClient}>
       <div className={cx("app-layout")}>
         <Header />
+        <br />
         <Outlet />
       </div>
       <ReactQueryDevtools initialIsOpen={false} />

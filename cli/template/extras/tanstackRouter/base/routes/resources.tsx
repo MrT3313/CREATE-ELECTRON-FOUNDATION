@@ -34,15 +34,27 @@ export function Resources() {
     <div className="page">
       {error && <div className="error-message">{error}</div>}
 
+      <div className={cx('hero')}>
+        <h1>Resource List</h1>
+      </div>
+
+      <br />
+
       {/* Resource List */}
-      <div className="container scrollable" style={{ maxHeight: '400px', justifyContent: 'flex-start' }}>
-        <h2>Resource List</h2>
+      <div 
+        className="container scrollable" 
+        style={{ 
+          justifyContent: 'flex-start', 
+          backgroundColor: 'white',
+          maxHeight: '400px', 
+        }}
+      >
         {isLoading ? (
           <div className="loading-message">Loading resources...</div>
         ) : resources ? (
           resources?.length > 0 ? resources?.map((resource) => (
-            <div className={cx('flex flex-col')}>
-              <p className="font-medium">{`IDs : ${resource.user_id} - ${resource.id}`}</p>
+            <div className={cx('item')}>
+              <p className="font-medium">{`IDs : ${resource.userId} - ${resource.id}`}</p>
               <p className="text-sm text-gray-600">{`Title: ${resource.title}`}</p>
               <p className="text-sm text-gray-600">{`Body: ${resource.body}`}</p>
             </div>

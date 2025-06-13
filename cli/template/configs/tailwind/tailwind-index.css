@@ -23,8 +23,7 @@
     @apply
       flex flex-col 
       items-center justify-center
-      w-full max-w-[800px] h-full 
-      gap-4
+      w-full max-w-[800px] h-full
   }
 
   .container {
@@ -33,11 +32,61 @@
       items-center justify-center
       w-full
       rounded-lg
+      max-w-[90%]
   }
 
   .scrollable {
     @apply
-      overflow-y-auto
+    overflow-y-auto
+  }
+  
+  .hero {
+    @apply
+      flex flex-col 
+      items-center justify-center
+      w-full
+      rounded-lg
+      max-w-[90%]
+      bg-orange-500
+  }
+
+  .cef-config {
+    @apply 
+      flex flex-col 
+      items-center justify-center 
+      w-full 
+      rounded-lg 
+      text-[#9333ea]
+      bg-white
+      p-2
+      max-w-[90%] 
+      gap-1;
+   }
+   
+   .cef-config span {
+    @apply 
+      text-sm 
+      p-0 
+      m-0;
+   }
+
+  .item {
+    @apply
+      flex flex-col
+      border-b-2 border-gray-200
+      last:border-b-0
+      p-2
+      gap-1
+  }
+
+  .env-vars {
+    @apply
+      flex flex-col
+      items-center justify-center
+      rounded-lg
+      text-[#9333ea]
+      bg-white
+      p-4
   }
 
   /* Base button with CSS custom properties */
@@ -107,6 +156,8 @@
 
   p {
     @apply
-      text-sm;
+      text-sm
+      p-0
+      m-0
   }
 }
