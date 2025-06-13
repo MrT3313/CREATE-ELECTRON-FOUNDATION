@@ -13,7 +13,7 @@ export function Settings() {
   const router = useRouter()
   return (
     <div className={cx('page')}>
-      <div className={cx('hero')}>
+      <div className={cx('hero', 'glass')}>
         <h1>Settings</h1>
       </div>
 

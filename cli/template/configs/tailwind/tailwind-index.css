@@ -35,39 +35,67 @@
     @apply overflow-y-auto;
   }
 
+  .glass {
+    @apply relative border border-white/80 rounded-[2rem] p-5;
+    background: rgba(255, 255, 255, 0.15);
+    -webkit-backdrop-filter: blur(2px) saturate(180%);
+    backdrop-filter: blur(2px) saturate(180%);
+    box-shadow:
+      0 8px 32px rgba(31, 38, 135, 0.2),
+      inset 0 4px 20px rgba(255, 255, 255, 0.3);
+  }
+
+  .glass::after {
+    content: '';
+    @apply pointer-events-none absolute inset-0 -z-10 rounded-[2rem] opacity-60;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(1px);
+    box-shadow:
+      inset -10px -8px 0px -11px rgb(255 255 255),
+      inset 0px -9px 0px -8px rgb(255 255 255);
+    filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
+  }
+
   .hero {
-    @apply flex flex-col 
-      items-center justify-center
-      w-full
-      rounded-lg
-      max-w-[90%]
-      bg-orange-500;
+    @apply flex w-full max-w-[90%] flex-col items-center justify-center;
   }
 
-  .cef-config {
-    @apply flex flex-col 
-      items-center justify-center 
-      w-full 
-      rounded-lg 
-      text-[#9333ea]
-      bg-white
-      p-2
-      max-w-[90%] 
-      gap-1;
+  .reminders {
+    @apply 
+      flex
+      flex-col 
+      items-start justify-start 
+      w-full max-w-[90%] 
+      text-white
+      gap-4;
   }
 
-  .cef-config span {
-    @apply text-sm 
-      p-0 
-      m-0;
+  .card-header {
+    @apply flex items-center gap-4;
+  }
+
+  .icon {
+    @apply relative flex h-10 w-10 items-center justify-center rounded-xl text-2xl;
+  }
+
+  .icon::after {
+    @apply rounded-xl;
+  }
+
+  .card-title {
+    @apply m-0 text-2xl font-semibold text-white;
+  }
+
+  .card-subtitle {
+    @apply m-0 mt-1 text-lg text-white;
+  }
+
+  .card-content {
+    @apply text-white;
   }
 
   .item {
-    @apply flex flex-col
-      border-b-2 border-gray-200
-      last:border-b-0
-      p-2
-      gap-1;
+    @apply flex flex-col gap-1 border-b-2 border-gray-200 p-2 last:border-b-0;
   }
 
   .env-vars {

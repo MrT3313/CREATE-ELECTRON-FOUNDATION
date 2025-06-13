@@ -38,7 +38,7 @@ export function Resources() {
         </div>
       )}
 
-      <div className={cx('hero')}>
+      <div className={cx('hero', 'glass')}>
         <h1>Resource List</h1>
       </div>
 

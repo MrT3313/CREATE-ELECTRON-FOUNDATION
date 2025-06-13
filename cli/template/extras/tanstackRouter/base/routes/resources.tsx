@@ -34,7 +34,7 @@ export function Resources() {
     <div className="page">
       {error && <div className="error-message">{error}</div>}
 
-      <div className={cx('hero')}>
+      <div className={cx('hero', 'glass')}>
         <h1>Resource List</h1>
       </div>
 
