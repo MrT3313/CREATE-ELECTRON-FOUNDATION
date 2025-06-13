@@ -67,7 +67,8 @@ body {
   backdrop-filter: blur(2px) saturate(180%);
   border: 1px solid rgb(255 255 255 / 0.8);
   border-radius: 2rem;
-  box-shadow: 0 8px 32px rgb(31 38 135 / 0.2),
+  box-shadow:
+    0 8px 32px rgb(31 38 135 / 0.2),
     inset 0 4px 20px rgb(255 255 255 / 0.3);
 }
 
@@ -83,7 +84,8 @@ body {
   border-radius: 2rem;
   -webkit-backdrop-filter: blur(1px);
   backdrop-filter: blur(1px);
-  box-shadow: inset -10px -8px 0 -11px rgb(255 255 255),
+  box-shadow:
+    inset -10px -8px 0 -11px rgb(255 255 255),
     inset 0 -9px 0 -8px rgb(255 255 255);
   opacity: 0.6;
   z-index: -1;

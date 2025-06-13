@@ -2,15 +2,26 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import fs from 'fs'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+// TESTING
+import assert from 'node:assert'
+
+// ENV
 import dotenv from 'dotenv'
+
+// LOGGING
 import log from './logger/index'
+const mainLogger = log.scope('main/index.ts')
+
+// DATABASE
 import { dbInit } from './db/dbInit'
 
+// REGISTER: controllers ######################################################
+// this is where the .handle() function pairings for the render process
+// .invoke() function calls
 import './api/controller'
-
-const mainLogger = log.scope('main/index.ts')
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-import assert from 'node:assert'
 
 // CONFIGURE: environment variables ###########################################
 const isProd = app?.isPackaged
@@ -25,19 +36,19 @@ try {
   process.exit(1)
 }
 
-// Sets up essential environment variables for paths used throughout the application.
 // APP_ROOT: The root directory of the application.
+process.env.APP_ROOT = path.join(__dirname, '../..')
+assert(!!process.env.APP_ROOT, 'APP_ROOT is not set')
+
 // DIST: The directory containing the bundled front-end code for the renderer process.
+process.env.DIST = path.join(process.env.APP_ROOT, 'dist')
+assert(!!process.env.DIST, 'DIST is not set')
+
 // VITE_PUBLIC: The directory for static public assets. In development, this points to 'public',
 //              and in production, it points to the 'dist' directory.
-process.env.APP_ROOT = path.join(__dirname, '../..')
-process.env.DIST = path.join(process.env.APP_ROOT, 'dist')
 process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
   ? path.join(process.env.APP_ROOT, 'public')
   : process.env.DIST
-
-assert(!!process.env.APP_ROOT, 'APP_ROOT is not set')
-assert(!!process.env.DIST, 'DIST is not set')
 assert(!!process.env.VITE_PUBLIC, 'VITE_PUBLIC is not set')
 
 // CONFIGURE: preload script ##################################################
@@ -138,7 +149,7 @@ app.whenReady().then(async () => {
   }
 })
 
-// CONFIGRE: app events #######################################################
+// CONFIGURE: app events #######################################################
 
 // Handles the 'activate' event, which is typically triggered when the application's
 // icon is clicked in the dock (macOS) and there are no windows open.
@@ -173,7 +184,7 @@ app.on('second-instance', () => {
   }
 })
 
-// CONFIGURE: IPC HANDLERS ####################################################
+// CONFIGURE: SINGLE / ORPHAN IPC HANDLERS ####################################
 
 // Sets up an IPC (Inter-Process Communication) handler for the 'open-win' channel.
 // This allows the renderer process to request the main process to open a new window.

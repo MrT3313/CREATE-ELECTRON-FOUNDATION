@@ -1,4 +1,5 @@
 export const response = {
+  // TODO: fix typing
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ok: (data?: { code?: number; msg?: string; data?: any }) => {
     return {
@@ -8,6 +9,7 @@ export const response = {
       ...data,
     }
   },
+  // TODO: fix typing
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error: (data?: { code?: number; msg?: string; data?: any }) => {
     return {

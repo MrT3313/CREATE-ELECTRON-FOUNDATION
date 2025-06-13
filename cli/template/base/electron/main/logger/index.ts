@@ -54,9 +54,4 @@ log.transports.console.format = electronLogMessageFormat
 
 log.scope.labelPadding = false
 
-// Example of a preprocess hook if needed, for now, it's not set.
-// log.hooks.preprocess = (message: any): any => {
-//   return message;
-// };
-
 export default log

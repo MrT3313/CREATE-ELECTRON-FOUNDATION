@@ -1,6 +1,9 @@
 import chalk from 'chalk'
 
 export const logger = {
+  /**
+   * Logs a message to the console with the given color
+   * ####################################################################### */
   error(...args: unknown[]) {
     console.log(chalk.red(...args))
   },

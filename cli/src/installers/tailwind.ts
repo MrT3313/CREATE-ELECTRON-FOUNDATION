@@ -11,6 +11,13 @@ import { addPackageDependency } from '../utils/addPackageDependency.js'
 import type { Installer } from '../types/Installers.js'
 
 export const tailwindInstaller: Installer = ({ project_dir }) => {
+  /**
+   * Updates the project package.json with relevant package(s) and script(s)
+   * for TailwindCSS
+   *
+   * This does NOT 'npm i' any packages.
+   * ####################################################################### */
+
   addPackageDependency({
     project_dir,
     dependencies: ['tailwindcss', '@tailwindcss/vite'],

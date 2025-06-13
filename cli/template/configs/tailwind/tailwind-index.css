@@ -61,8 +61,7 @@
   }
 
   .reminders {
-    @apply 
-      flex
+    @apply flex
       flex-col 
       items-start justify-start 
       w-full max-w-[90%] 

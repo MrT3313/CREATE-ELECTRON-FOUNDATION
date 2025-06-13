@@ -24,53 +24,77 @@ import chalk from 'chalk'
 import type { Yargs, CLIResults } from './types/CLI.js'
 
 const main = async () => {
+  /**
+   * ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️
+   * Main entry point for the Create Electron Foundation CLI
+   *
+   * Steps:
+   * 1. PARSE command line arguments for configurations
+   * 2. PROMPT user to fill configurations
+   * 3. CONFIGURE inUse packages & custom installers
+   * 4. SCAFFOLD base project (configuration agnostic files)
+   * 5. INSTALL packages (update the package.json - not 'npm i')
+   * 6. SELECT boilerplate (⭐️ most important file -- copies the configuration specific files into the users project)
+   * 7. UPDATE package.json
+   * 8. INITIALIZE git
+   * 9. OPEN in IDE
+   * ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️
+   * ####################################################################### */
+
   const ide = process.env.IDE || 'cursor'
 
-  // Parse command line arguments
+  // 1. PARSE: command line arguments #########################################
   logger.info(`process.argv: ${JSON.stringify(process.argv, null, 2)}`)
   const cliArgs: Yargs = await parseCliArgs(process.argv)
 
   // INJECT ENV VARIABLES ######################################################
-  // Set APP_NAME early if project_name is available from args.
-  // runUserPromptCli will use this or prompt if necessary, then set config.project_name
   if (cliArgs.project_name) {
     process.env.APP_NAME = cliArgs.project_name
+    process.env.CEF_FRAMEWORK = 'Electron'
+    process.env.CEF_ROUTER = cliArgs.router
+    process.env.CEF_STYLES = cliArgs.styles || 'CSS'
+    if (cliArgs.database) {
+      process.env.CEF_DATABASE = cliArgs.database
+    }
+    if (cliArgs.orm) {
+      process.env.CEF_ORM = cliArgs.orm
+    }
   }
 
-  // START ####################################################################
   renderTitle()
 
   // Log current Node.js version
   logger.info(`Node.js version: ${process.version}`)
   assert(process.version === 'v22.15.1', 'Node.js version must be 22.15.1')
 
-  // 1. run the user prompt cli ###############################################
+  // 2. PROMPT: user to fill configurations ###################################
   const config: CLIResults = await runUserPromptCli(cliArgs)
 
-  // 2. configure packages ####################################################
+  // 3. CONFIGURE: inUse packages & custom installers #########################
   const inUsePackages = Object.values(config.packages).flat()
   const usePackages = buildPkgInstallerMap(config.project_name, inUsePackages)
 
-  // 3. scaffold base project #################################################
+  // 4. SCAFFOLD: base project (configuration agnostic files) ##################
   scaffoldProject(config)
 
-  // 4. install packages ######################################################
+  // 5. INSTALL: packages (update the package.json - not 'npm i') #############
   installPackages({
     ...config,
     packages: usePackages,
   })
 
-  // 5. select boilerplate ####################################################
+  // 6. SELECT: boilerplate ###################################################
+  // ⭐️ most important file -- copies the configuration specific files into the users project ⭐️
   selectBoilerplate(config)
 
-  // 6. update package.json ###################################################
+  // 7. UPDATE: package.json ###################################################
   const pkgJson = fs.readJSONSync(path.join(config.project_dir, 'package.json'))
   pkgJson.name = config.project_name
   fs.writeJSONSync(path.join(config.project_dir, 'package.json'), pkgJson, {
     spaces: 2,
   })
 
-  // 7. initialize git ########################################################
+  // 8. INITIALIZE: git #######################################################
   if (config.initialize_git && !cliArgs.ci) {
     const initializeGitSpinner = ora({
       text: 'Initializing Git...',
@@ -93,9 +117,8 @@ const main = async () => {
     }
   }
 
-  // 8. open in ide ##########################################################
+  // 9. OPEN: in IDE ##########################################################
   if (ide && !cliArgs.ci) {
-    // Do not open IDE in CI mode
     let command = `cd "${config.project_name}"`
     command += ` && ${ide} .`
 

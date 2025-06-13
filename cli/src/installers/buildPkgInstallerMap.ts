@@ -8,18 +8,18 @@ import { reactRouterInstaller } from './reactRouter.js'
 import { sqliteInstaller } from './sqlite.js'
 import { drizzleInstaller } from './drizzle.js'
 
-// UTILS
-import { logger } from '../utils/logger.js'
-
 // TYPES
 import type { AvailablePackages, PkgInstallerMap } from '../types/Packages.js'
 
 export const buildPkgInstallerMap = (
   project_name: string,
-  packages: AvailablePackages[],
-  // databaseProvider: DatabaseProvider
-  debug: boolean = false
+  packages: AvailablePackages[]
 ): PkgInstallerMap => {
+  /**
+   * Builds a map of the packages that are inUse in the current configuration
+   * and their custom installers.
+   * ####################################################################### */
+
   const spinner = ora(
     `${project_name} ${chalk.bold('Building')} ${chalk.bold('PkgInstallerMap')}...`
   ).start()
@@ -47,9 +47,6 @@ export const buildPkgInstallerMap = (
     },
   }
 
-  if (debug) {
-    logger.debug('🧯🧯 PkgInstallerMap', JSON.stringify(map, null, 2))
-  }
   spinner.succeed(
     `${project_name} ${chalk.bold.green('pkgInstallerMap built')} successfully`
   )

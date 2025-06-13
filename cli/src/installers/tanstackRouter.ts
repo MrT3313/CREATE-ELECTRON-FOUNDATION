@@ -5,6 +5,13 @@ import { addPackageDependency } from '../utils/addPackageDependency.js'
 import type { Installer } from '../types/Installers.js'
 
 export const tanstackRouterInstaller: Installer = ({ project_dir }) => {
+  /**
+   * Updates the project package.json with relevant package(s) and script(s)
+   * for Tanstack Router
+   *
+   * This does NOT 'npm i' any packages.
+   * ####################################################################### */
+
   addPackageDependency({
     project_dir,
     dependencies: [
