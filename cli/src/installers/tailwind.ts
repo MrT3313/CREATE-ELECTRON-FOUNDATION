@@ -25,7 +25,7 @@ export const tailwindInstaller: Installer = ({ project_dir }) => {
     'tailwind',
     'tailwind-index.css'
   )
-  const cssDest = path.join(project_dir, 'src/styles/index.css')
+  const cssDest = path.join(project_dir, 'index.css')
   fs.copySync(cssSrc, cssDest)
 
   const tailwindConfigSrc = path.join(

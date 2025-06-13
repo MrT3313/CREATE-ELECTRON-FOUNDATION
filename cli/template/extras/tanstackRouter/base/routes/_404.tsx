@@ -11,10 +11,15 @@ function NotFoundRoute() {
       <div className="page">
         <div className="container">
           <h1>Page Not Found</h1>
+          
           <p>The requested page could not be found.</p>
-          <a href="/" className="nav-link">
-            Go to Home
-          </a>
+          
+          <div className="btn">
+            <a href="/" className="nav-link">
+              Go to Home
+            </a>
+          </div>
+          
           <div className="debug-info">
             <h3>Debug Info:</h3>
             <p>Current URL: {window.location.href}</p>
