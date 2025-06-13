@@ -3,9 +3,6 @@ import fs from 'fs-extra'
 import sortPackageJson from 'sort-package-json'
 import { type PackageJson } from 'type-fest'
 
-// UTILS
-import { logger } from './logger.js'
-
 // INSTALLERS
 import {
   dependencyVersionMap,
@@ -18,7 +15,7 @@ export const addPackageDependency = (opts: {
   project_dir: string
   debug?: boolean
 }) => {
-  const { dependencies, devMode, project_dir, debug = false } = opts
+  const { dependencies, devMode, project_dir } = opts
 
   const pkgJson = fs.readJSONSync(
     path.join(project_dir, 'package.json')

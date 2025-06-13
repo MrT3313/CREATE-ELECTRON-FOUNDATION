@@ -1,6 +1,5 @@
 import { setTimeout } from 'node:timers/promises'
 import color from 'picocolors'
-import chalk from 'chalk'
 
 // TERMINAL > user prompting
 import * as p from '@clack/prompts'
