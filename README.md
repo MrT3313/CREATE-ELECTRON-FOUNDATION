@@ -94,6 +94,8 @@ You can also customize your project setup directly via command-line arguments.
 
 This project was built to accelerate my own learning and hopefully help others. Contributions, feedback, and suggestions are highly encouraged!
 
+Please see our [Contributing Guide](CONTRIBUTING.md) for more details on how to get started.
+
 If you have an idea for an improvement or find a bug, please **open an issue** or **submit a pull request**. Your interaction is greatly appreciated.
 
 ## License
