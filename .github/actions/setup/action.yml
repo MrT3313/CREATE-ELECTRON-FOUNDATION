@@ -9,17 +9,14 @@
 #   jobs and workflows within the repository, ensuring consistency and reducing duplication.
 #
 # Key Steps:
-#   1. Set up Node.js: Installs a specified version of Node.js (and thereby npm).
-#   2. Cache NPM dependencies: Configures caching for the global npm cache directory (~/.npm).
-#      This speeds up subsequent workflow runs by reusing previously downloaded packages if the
-#      package-lock.json hasn't significantly changed.
-#   3. Install dependencies: Runs 'npm ci' to perform a clean and reproducible installation of
+#   1. Set up Node.js and Cache Dependencies: Installs a specified version of Node.js and configures
+#      caching for the global npm cache directory (~/.npm). This speeds up subsequent workflow runs
+#      by reusing previously downloaded packages if the package-lock.json has not changed.
+#   2. Install dependencies: Runs 'npm ci' to perform a clean and reproducible installation of
 #      project dependencies based on the 'package-lock.json' file.
 #
 # Inputs:
 #   - node-version: (Optional) The version of Node.js to install. Defaults to '20'.
-#   - cache-key-prefix: (Optional) A prefix for the cache key, allowing for more specific cache
-#     management if needed (e.g., differentiating caches by OS or branch). Defaults to 'npm-deps'.
 #
 # Usage:
 #   This action is intended to be called from other workflow files using:
@@ -41,49 +38,21 @@ inputs:
     required: false # This input is optional.
     default: '20' # Default value if not provided by the caller.
 
-  # Input for a cache key prefix.
-  cache-key-prefix:
-    description: 'Prefix for the cache key to ensure uniqueness if needed (e.g., for different OS or branches)'
-    required: false # Optional input.
-    default: 'npm-deps' # Default prefix for the NPM dependency cache key.
-
 # Defines the execution logic for this composite action.
 runs:
   # Specifies that this is a composite action, meaning its steps run directly on the runner machine.
   using: 'composite'
   # Sequence of steps to execute when this action runs.
   steps:
-    # Step 1: Setup Node.js.
-    # Uses the official 'actions/setup-node' action. This will also make npm available.
+    # Uses the official 'actions/setup-node' action.
+    # This will also make npm available and handle caching.
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        # Passes the 'node-version' input from this composite action to the 'setup-node' action.
         node-version: ${{ inputs.node-version }}
+        cache: 'npm'
 
-    # Step 2: Setup NPM cache.
-    # Uses the official 'actions/cache' action to cache the npm cache directory (~/.npm).
-    # This speeds up dependency installation in subsequent runs.
-    - name: Setup NPM cache
-      uses: actions/cache@v4
-      with:
-        # Path to the directory to cache. '~/.npm' is the default npm cache directory on Linux/macOS.
-        # For Windows, it might be different (e.g., %AppData%\npm-cache), actions/cache handles this generally.
-        path: ~/.npm
-        # The primary cache key. It includes the runner's OS, the cache key prefix input,
-        # and a hash of the 'package-lock.json' file. If the lock file changes, the cache key changes,
-        # resulting in a new cache entry.
-        key: ${{ runner.os }}-${{ inputs.cache-key-prefix }}-${{ hashFiles('**/package-lock.json') }}
-        # A list of restore keys. If the primary key doesn't find a cache hit,
-        # GitHub Actions will try these keys in order.
-        restore-keys: |
-          ${{ runner.os }}-${{ inputs.cache-key-prefix }}-
-
-    # Step 3: Install dependencies using npm.
     - name: Install dependencies
       shell: bash
-      # Runs 'npm ci'.
-      # 'npm ci' (clean install) is the recommended command for CI environments.
-      # It installs dependencies based strictly on 'package-lock.json' and is generally faster and more reliable for CI.
-      # It requires a 'package-lock.json' file to be present.
+      # Runs 'npm ci' (clean install), which is the recommended command for CI environments.
       run: npm ci

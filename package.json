@@ -1,7 +1,7 @@
 {
   "name": "create-electron-foundation",
   "type": "module",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "An interactive CLI to bootstrap a modern, type-safe, and scalable Electron application.",
   "author": "Reed Turgeon <turgeon.devd@gmail.com>",
   "repository": {
@@ -62,16 +62,16 @@
     "format:check": "npm run format:check -w @create-electron-foundation/cli"
   },
   "devDependencies": {
-    "@types/node": "^22.15.27",
-    "@typescript-eslint/eslint-plugin": "^8.33.1",
-    "@typescript-eslint/parser": "^8.33.1",
-    "eslint": "^9.28.0",
+    "@types/node": "^24.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.34.0",
+    "@typescript-eslint/parser": "^8.34.0",
+    "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.1",
     "prettier": "^3.5.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.33.1"
+    "typescript-eslint": "^8.34.0"
   },
   "workspaces": [
     "cli"
