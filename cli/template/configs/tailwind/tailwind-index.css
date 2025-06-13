@@ -7,7 +7,6 @@
       justify-start items-center
       min-w-screen min-h-screen 
       bg-gradient-to-br from-indigo-400 to-purple-600
-      border-4 border-blue-500 border-dotted;
   }
 
   .header {
@@ -26,7 +25,6 @@
       items-center justify-center
       w-full max-w-[800px] h-full 
       gap-4
-      border-4 border-teal-500 border-dotted;
   }
 
   .container {
@@ -35,13 +33,11 @@
       items-center justify-center
       w-full
       rounded-lg
-      border-4 border-black border-dotted;
   }
 
   .scrollable {
     @apply
       overflow-y-auto
-      border-4 border-green-500 border-dotted;
   }
 
   /* Base button with CSS custom properties */

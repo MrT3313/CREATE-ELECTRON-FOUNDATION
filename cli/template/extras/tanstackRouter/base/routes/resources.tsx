@@ -35,7 +35,7 @@ export function Resources() {
       {error && <div className="error-message">{error}</div>}
 
       {/* Resource List */}
-      <div className="container scrollable" style={{ maxHeight: '400px' }}>
+      <div className="container scrollable" style={{ maxHeight: '400px', justifyContent: 'flex-start' }}>
         <h2>Resource List</h2>
         {isLoading ? (
           <div className="loading-message">Loading resources...</div>
