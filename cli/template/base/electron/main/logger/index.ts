@@ -2,7 +2,10 @@ import { app } from 'electron'
 import log from 'electron-log/main'
 import path from 'path'
 import { SESSION_ID, electronLogMessageFormat } from '../utils/consts'
-import moment from 'moment'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
 
 // Initialize electron-log. This is optional but recommended if you also log from renderer processes.
 // It allows renderers to use `import log from 'electron-log/renderer'`
@@ -22,7 +25,7 @@ try {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     log.transports.file.resolvePathFn = (variables: any, message: any) => {
-      const now = moment().utc()
+      const now = dayjs().utc()
       const year = now.year().toString()
       const month = (now.month() + 1).toString().padStart(2, '0')
       const day = now.date().toString().padStart(2, '0')
