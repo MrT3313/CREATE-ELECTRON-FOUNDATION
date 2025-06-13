@@ -45,23 +45,26 @@ export function Resources() {
       <br />
 
       {/* Resource List */}
-      <div 
+      <div
         className={cx(
-          "container scrollable", 
-          'justify-start','bg-white', 
+          'container scrollable',
+          'justify-start',
+          'bg-white',
           'max-h-[400px]'
         )}
       >
         {isLoading ? (
           <p>Loading resources...</p>
         ) : resources ? (
-          resources?.length > 0 ? resources?.map((resource) => (
-            <div className={cx('item')}>
-              <p className="font-medium">{`IDs : ${resource.userId} - ${resource.id}`}</p>
-              <p className="text-sm text-gray-600">{`Title: ${resource.title}`}</p>
-              <p className="text-sm text-gray-600">{`Body: ${resource.body}`}</p>
-            </div>
-          )) : (
+          resources?.length > 0 ? (
+            resources?.map((resource) => (
+              <div className={cx('item')}>
+                <p className="font-medium">{`IDs : ${resource.userId} - ${resource.id}`}</p>
+                <p className="text-sm text-gray-600">{`Title: ${resource.title}`}</p>
+                <p className="text-sm text-gray-600">{`Body: ${resource.body}`}</p>
+              </div>
+            ))
+          ) : (
             <p className="text-gray-500">
               No resources found. Add your first resource above!
             </p>

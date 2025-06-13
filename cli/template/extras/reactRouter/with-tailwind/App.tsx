@@ -2,13 +2,7 @@ import React from 'react'
 import cx from 'classnames'
 
 // REACT ROUTER
-import { 
-  Routes, 
-  Route, 
-  Outlet, 
-  useNavigate, 
-  useLocation 
-} from 'react-router'
+import { Routes, Route, Outlet, useNavigate, useLocation } from 'react-router'
 
 // REACT QUERY
 import { QueryClientProvider } from '@tanstack/react-query'
@@ -29,9 +23,9 @@ const Header = () => {
     <div className={cx('header')}>
       <button
         className={cx(
-          "btn btn-gradient-header-menu",
-          "text-xs",
-          location.pathname === "/" && "active"
+          'btn btn-gradient-header-menu',
+          'text-xs',
+          location.pathname === '/' && 'active'
         )}
         onClick={() => navigate('/', { replace: true })}
       >
@@ -40,9 +34,9 @@ const Header = () => {
 
       <button
         className={cx(
-          "btn btn-gradient-header-menu",
-          "text-xs",
-          location.pathname === "/resources" && "active"
+          'btn btn-gradient-header-menu',
+          'text-xs',
+          location.pathname === '/resources' && 'active'
         )}
         onClick={() => navigate('/resources', { replace: true })}
       >
@@ -51,9 +45,9 @@ const Header = () => {
 
       <button
         className={cx(
-          "btn btn-gradient-header-menu",
-          "text-xs",
-          location.pathname === "/settings" && "active"
+          'btn btn-gradient-header-menu',
+          'text-xs',
+          location.pathname === '/settings' && 'active'
         )}
         onClick={() => navigate('/settings', { replace: true })}
       >

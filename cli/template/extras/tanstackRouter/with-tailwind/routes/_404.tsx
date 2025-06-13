@@ -8,9 +8,9 @@ function NotFoundRoute() {
   return (
     <div className="flex flex-col items-center justify-center p-4 text-white">
       <h1>Page Not Found</h1>
-      
+
       <p>The requested page could not be found.</p>
-      
+
       <div className="btn">
         <a href="/" className="text-white">
           Go to Home

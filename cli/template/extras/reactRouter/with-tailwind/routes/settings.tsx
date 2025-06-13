@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import cx from 'classnames'
 
-
 export function Settings() {
   return (
     <div className={cx('page')}>

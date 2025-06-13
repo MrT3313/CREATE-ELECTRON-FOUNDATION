@@ -19,42 +19,48 @@ const Header = () => {
     <div className={cx('header')}>
       <button
         className={cx(
-          "btn btn-gradient-header-menu",
-          "text-xs",
-          location.pathname === "/" && "active"
+          'btn btn-gradient-header-menu',
+          'text-xs',
+          location.pathname === '/' && 'active'
         )}
-        onClick={() => router.navigate({ 
-          to: '/',
-          replace: true
-        })}
+        onClick={() =>
+          router.navigate({
+            to: '/',
+            replace: true,
+          })
+        }
       >
         Home
       </button>
 
       <button
         className={cx(
-          "btn btn-gradient-header-menu",
-          "text-xs",
-          location.pathname === "/resources" && "active"
+          'btn btn-gradient-header-menu',
+          'text-xs',
+          location.pathname === '/resources' && 'active'
         )}
-        onClick={() => router.navigate({ 
-          to: '/resources' ,
-          replace: true
-        })}
+        onClick={() =>
+          router.navigate({
+            to: '/resources',
+            replace: true,
+          })
+        }
       >
         Resources
       </button>
 
       <button
         className={cx(
-          "btn btn-gradient-header-menu",
-          "text-xs",
-          location.pathname === "/settings" && "active"
+          'btn btn-gradient-header-menu',
+          'text-xs',
+          location.pathname === '/settings' && 'active'
         )}
-        onClick={() => router.navigate({ 
-          to: '/settings',
-          replace: true
-        })}
+        onClick={() =>
+          router.navigate({
+            to: '/settings',
+            replace: true,
+          })
+        }
       >
         Settings
       </button>

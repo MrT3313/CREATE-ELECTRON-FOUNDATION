@@ -2,7 +2,6 @@ import React from 'react'
 import cx from 'classnames'
 
 export function Settings() {
-
   return (
     <div className={cx('page')}>
       <div className={cx('hero')}>

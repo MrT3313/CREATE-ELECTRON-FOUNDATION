@@ -41,24 +41,26 @@ export function Resources() {
       <br />
 
       {/* Resource List */}
-      <div 
-        className="container scrollable" 
-        style={{ 
-          justifyContent: 'flex-start', 
+      <div
+        className="container scrollable"
+        style={{
+          justifyContent: 'flex-start',
           backgroundColor: 'white',
-          maxHeight: '400px', 
+          maxHeight: '400px',
         }}
       >
         {isLoading ? (
           <div className="loading-message">Loading resources...</div>
         ) : resources ? (
-          resources?.length > 0 ? resources?.map((resource) => (
-            <div className={cx('item')}>
-              <p className="font-medium">{`IDs : ${resource.userId} - ${resource.id}`}</p>
-              <p className="text-sm text-gray-600">{`Title: ${resource.title}`}</p>
-              <p className="text-sm text-gray-600">{`Body: ${resource.body}`}</p>
-            </div>
-          )) : (
+          resources?.length > 0 ? (
+            resources?.map((resource) => (
+              <div className={cx('item')}>
+                <p className="font-medium">{`IDs : ${resource.userId} - ${resource.id}`}</p>
+                <p className="text-sm text-gray-600">{`Title: ${resource.title}`}</p>
+                <p className="text-sm text-gray-600">{`Body: ${resource.body}`}</p>
+              </div>
+            ))
+          ) : (
             <p className="text-gray-500">
               No resources found. Add your first resource above!
             </p>

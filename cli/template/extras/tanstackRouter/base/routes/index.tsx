@@ -10,7 +10,9 @@ export function Index() {
   return (
     <div className="page">
       <div className={cx('hero')}>
-        <h1>Welcome to <span className={cx('italic')}>your</span></h1>
+        <h1>
+          Welcome to <span className={cx('italic')}>your</span>
+        </h1>
         <h2>Create Electron Foundation</h2>
       </div>
 
