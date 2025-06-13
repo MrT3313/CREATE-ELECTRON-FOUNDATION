@@ -38,15 +38,4 @@ export const addPackageDependency = (opts: {
   fs.writeJSONSync(path.join(project_dir, 'package.json'), sortedPkgJson, {
     spaces: 2,
   })
-
-  const finalPkgJson = fs.readJSONSync(
-    path.join(project_dir, 'package.json')
-  ) as PackageJson
-
-  if (debug)
-    logger.info(`Added ${dependencies.length} dependencies to package.json`)
-  if (debug) logger.info(`${dependencies.join(', ')}`)
-
-  if (debug)
-    logger.info(`Final package.json: ${JSON.stringify(finalPkgJson, null, 2)}`)
 }

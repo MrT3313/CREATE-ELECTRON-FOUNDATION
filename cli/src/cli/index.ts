@@ -22,10 +22,6 @@ import type {
 import { logger } from '../utils/logger.js'
 
 export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
-  logger.info(
-    chalk.red(`runUserPromptCli - cliArgs: ${JSON.stringify(cliArgs, null, 2)}`)
-  )
-
   p.intro(`${color.bgCyan(color.black('create-electron-foundation'))}`)
 
   try {
