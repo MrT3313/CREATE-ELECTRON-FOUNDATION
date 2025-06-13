@@ -11,6 +11,11 @@ declare global {
     env: {
       CUSTOM_ENV_VAR: string
       NODE_ENV: string
+      APP_NAME: string
+      APP_ROOT: string
+      DIST: string
+      VITE_PUBLIC: string
+      VITE_DEV_SERVER_URL: string
     }
   }
 }

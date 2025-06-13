@@ -1,7 +1,6 @@
-/*
- * This maps the necessary packages to a version.
- * This improves performance significantly over fetching it from the npm registry.
- */
+/**
+ * This maps the necessary packages across configurations to a version.
+ * ####################################################################### */
 export const dependencyVersionMap = {
   // TailwindCSS
   tailwindcss: '^4.1.7',
@@ -28,4 +27,5 @@ export const dependencyVersionMap = {
   '@tanstack/router-cli': '^1.120.11',
   '@tanstack/router-plugin': '^1.120.11',
 } as const
+
 export type AvailableDependencies = keyof typeof dependencyVersionMap

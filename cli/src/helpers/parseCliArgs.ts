@@ -15,6 +15,9 @@ import {
 } from '../types/Packages.js'
 
 export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
+  /**
+   * Parses the CLI arguments and returns a Yargs object
+   * ####################################################################### */
   const args = await yargs(hideBin(argv))
     .option('ci', {
       type: 'boolean',

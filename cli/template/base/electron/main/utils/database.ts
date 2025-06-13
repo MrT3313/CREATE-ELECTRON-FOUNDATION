@@ -7,7 +7,8 @@ import { app } from 'electron'
 
 /**
  * Get the appropriate database directory based on the platform
- */
+ * ####################################################################### */
+
 export function getDatabaseDir(): string {
   try {
     // Try Electron's app.getPath if available
@@ -33,7 +34,7 @@ export function getDatabaseDir(): string {
 
 /**
  * Get the full database path and ensure the directory exists
- */
+ * ####################################################################### */
 export function getDatabasePath(): string {
   const dbDir = getDatabaseDir()
   const dbPath = path.join(dbDir, getDbConfig().name)

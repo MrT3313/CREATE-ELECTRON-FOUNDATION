@@ -11,8 +11,8 @@ function ConfigCard() {
           <p className={cx('card-subtitle')}>Environment Settings</p>
         </div>
       </div>
-      
-      <div 
+
+      <div
         className={cx('card-content')}
         style={{
           display: 'flex',

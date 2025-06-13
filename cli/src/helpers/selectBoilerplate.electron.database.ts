@@ -9,8 +9,14 @@ import { CLIResults } from '../types/CLI.js'
 import { PKG_ROOT } from '../consts.js'
 
 export const selectBoilerplateElectronDatabase = (config: CLIResults) => {
+  /**
+   * Copies the Electron database boilerplate into the users new project directory
+   * Updates the package.json with the scripts - these is heavily connected to
+   *    and interact with the scripts added in the selectBoilerplate.drizzle.ts
+   * ####################################################################### */
   const srcDir = path.join(PKG_ROOT, 'template')
 
+  // COPY: electron/main/db
   fs.copySync(
     path.join(srcDir, 'extras', 'electron', 'main', 'db'),
     path.join(config.project_dir, 'electron', 'main', 'db')
@@ -26,11 +32,15 @@ export const selectBoilerplateElectronDatabase = (config: CLIResults) => {
     path.join(config.project_dir, 'electron', 'preload', 'index.ts')
   )
 
+  // COPY: src/api
+  // this keeps the 'non DB' functionality to query "outside" of Electron configuration
+  // in this case we are using the jsonplaceholder api: https://jsonplaceholder.typicode.com/
   fs.copySync(
     path.join(srcDir, 'extras', 'src', 'api'),
     path.join(config.project_dir, 'src', 'api')
   )
 
+  // UPDATE: package.json with better-sqlite3 scripts
   const betterSqliteScripts = {
     'electron:rebuild': 'electron-rebuild -f -w better-sqlite3',
     'electron:check':
@@ -54,6 +64,7 @@ export const selectBoilerplateElectronDatabase = (config: CLIResults) => {
     ...workflowScripts,
   }
 
+  // SORT: package.json
   const sortedPkgJson = sort(pkgJson)
   fs.writeFileSync(
     path.join(config.project_dir, 'package.json'),

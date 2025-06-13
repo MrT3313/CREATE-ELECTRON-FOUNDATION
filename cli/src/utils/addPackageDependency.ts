@@ -10,6 +10,13 @@ import {
 } from '../installers/dependencyVersionMap.js'
 
 export const addPackageDependency = (opts: {
+  /**
+   * Updates the project package.json with relevant package(s) and script(s)
+   * for the given dependencies
+   *
+   * This does NOT 'npm i' any packages.
+   * ####################################################################### */
+
   dependencies: AvailableDependencies[]
   devMode: boolean
   project_dir: string

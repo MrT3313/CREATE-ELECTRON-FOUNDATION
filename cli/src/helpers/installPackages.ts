@@ -8,8 +8,9 @@ import type { InstallerOptions } from '../types/Installers.js'
 
 export const installPackages = (options: InstallerOptions) => {
   /**
-   * This runs the installer for all the packages that the user has selected
-   */
+   * Runs the dedicated installer for all the inUse packages
+   * Updates the package.json with the new dependencies - it does NOT "npm i"
+   * ####################################################################### */
   const { packages } = options
 
   for (const [name, pkgOpts] of Object.entries(packages) as [

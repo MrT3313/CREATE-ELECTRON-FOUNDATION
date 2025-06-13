@@ -19,27 +19,62 @@ import { PKG_ROOT } from '../consts.js'
 import type { CLIResults } from '../types/CLI.js'
 
 export const selectBoilerplate = (config: CLIResults) => {
+  /**
+   * ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️
+   * This is a very important function
+   *
+   * It is responsible for copying the correct template files for the current
+   * user configuration
+   *
+   * The "brain" of this logic is in the "updateMap" object which is a map of
+   * functions. The key for this "brain" is the config_key generated earlier.
+   *
+   * CONFIG KEY STRUCTURE: [router]-[styles]-[database]-[orm]
+   *
+   * As the various configurations are "tiered" so is the logic within the
+   * "udpateMap".
+   *
+   * EXAMPLE:
+   *    A) config.config_key === 'tanstack-router-none-none-none'
+   *    B) config.config_key === 'tanstack-router-tailwind-none-none'
+   *    C) config.config_key === 'tanstack-router-tailwind-sqlite-drizzle'
+   *
+   *    updateMap['tanstack-router-tailwind-sqlite-drizzle']()
+   *      will call updateMap['tanstack-router-tailwind-none-none']() and build from there
+   *    updateMap['tanstack-router-tailwind-none-none']()
+   *      will call updateMap['tanstack-router-none-none-none']() and build from there
+   *    updateMap['tanstack-router-none-none-none']
+   *      has no dependencies
+   *
+   *    The same logic applies for other configurations
+   *    D) config.config_key === 'react-router-none-none-none'
+   *    E) config.config_key === 'react-router-tailwind-none-none'
+   *    F) config.config_key === 'react-router-tailwind-sqlite-drizzle'
+   * ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️
+   * ####################################################################### */
+
   const spinner = ora(
     `${config.project_name} ${chalk.bold('Selecting Boilerplate')}...`
   ).start()
   const srcDir = path.join(PKG_ROOT, 'template')
 
+  // TODO: fix typing
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updateMap: any = {
     'tanstack-router-none-none-none': () => {
-      // TANSTACK ROUTER > base (no tailwind) #################################
+      // TANSTACK ROUTER ######################################################
       fs.copySync(
         path.join(srcDir, 'extras', 'tanstackRouter', 'base', 'routes'),
         path.join(config.project_dir, 'src', 'routes')
       )
 
-      // STYLES > css #########################################################
+      // STYLES ###############################################################
       fs.copySync(
         path.join(srcDir, 'configs', 'styles', 'index.css'),
         path.join(config.project_dir, 'index.css')
       )
 
-      // VITE > with tanstack (no tailwind) ###################################
+      // VITE #################################################################
       fs.copySync(
         path.join(
           srcDir,
@@ -50,14 +85,14 @@ export const selectBoilerplate = (config: CLIResults) => {
         path.join(config.project_dir, 'vite.config.ts')
       )
 
-      // MAKEFILE ##############################################################
+      // MAKEFILE #############################################################
       fs.copySync(
         path.join(srcDir, 'configs', 'makefiles', 'makefile.withTanstack.sh'),
         path.join(config.project_dir, 'makefile')
       )
     },
     'tanstack-router-tailwind-none-none': () => {
-      // TANSTACK ROUTER > base (with tailwind) ###############################
+      // TANSTACK ROUTER ######################################################
       fs.copySync(
         path.join(
           srcDir,
@@ -69,7 +104,7 @@ export const selectBoilerplate = (config: CLIResults) => {
         path.join(config.project_dir, 'src', 'routes')
       )
 
-      // STYLES > tailwind ####################################################
+      // STYLES ###############################################################
       fs.copySync(
         path.join(srcDir, 'configs', 'tailwind', 'tailwind-index.css'),
         path.join(config.project_dir, 'index.css')
@@ -80,7 +115,7 @@ export const selectBoilerplate = (config: CLIResults) => {
         path.join(config.project_dir, 'tailwind.config.ts')
       )
 
-      // VITE > with tanstack (with tailwind) #################################
+      // VITE #################################################################
       fs.copySync(
         path.join(
           srcDir,
@@ -107,7 +142,6 @@ export const selectBoilerplate = (config: CLIResults) => {
       selectBoilerplateDrizzle(config)
 
       // MAKEFILE ##############################################################
-      // overwriting version from 'tanstack-router-tailwind-none-none'
       fs.copySync(
         path.join(
           srcDir,
@@ -128,7 +162,6 @@ export const selectBoilerplate = (config: CLIResults) => {
       selectBoilerplateDrizzle(config)
 
       // MAKEFILE ##############################################################
-      // overwriting version from 'tanstack-router-none-none-none'
       fs.copySync(
         path.join(
           srcDir,
@@ -140,7 +173,7 @@ export const selectBoilerplate = (config: CLIResults) => {
       )
     },
     'react-router-none-none-none': () => {
-      // REACT ROUTER > base (no tailwind) ####################################
+      // REACT ROUTER #########################################################
       fs.copySync(
         path.join(srcDir, 'extras', 'reactRouter', 'base', 'routes'),
         path.join(config.project_dir, 'src', 'routes')
@@ -175,7 +208,7 @@ export const selectBoilerplate = (config: CLIResults) => {
       )
     },
     'react-router-tailwind-none-none': () => {
-      // REACT ROUTER > tailwind (with tailwind) ##############################
+      // REACT ROUTER #########################################################
       fs.copySync(
         path.join(srcDir, 'extras', 'reactRouter', 'with-tailwind', 'routes'),
         path.join(config.project_dir, 'src', 'routes')
@@ -191,7 +224,7 @@ export const selectBoilerplate = (config: CLIResults) => {
         path.join(config.project_dir, 'src', 'main.tsx')
       )
 
-      // STYLES > tailwind ####################################################
+      // STYLES ###############################################################
       fs.copySync(
         path.join(srcDir, 'configs', 'tailwind', 'tailwind-index.css'),
         path.join(config.project_dir, 'index.css')
@@ -229,7 +262,6 @@ export const selectBoilerplate = (config: CLIResults) => {
       selectBoilerplateDrizzle(config)
 
       // MAKEFILE ##############################################################
-      // overwriting version from 'tanstack-router-tailwind-none-none'
       fs.copySync(
         path.join(
           srcDir,
@@ -250,7 +282,6 @@ export const selectBoilerplate = (config: CLIResults) => {
       selectBoilerplateDrizzle(config)
 
       // MAKEFILE ##############################################################
-      // overwriting version from 'tanstack-router-none-none-none'
       fs.copySync(
         path.join(
           srcDir,

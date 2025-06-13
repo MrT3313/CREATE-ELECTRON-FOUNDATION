@@ -21,29 +21,37 @@ import type {
 import { logger } from '../utils/logger.js'
 
 export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
+  /**
+    Interactive prompts for their configuration preferences
+
+    If the user has entered any of the values directly through the CLI then we 
+    can skip the prompts and use the passed cliArgs
+  ########################################################################## */
+
   p.intro(`${color.bgCyan(color.black('create-electron-foundation'))}`)
 
   try {
     let config: CLIResults
 
     if (cliArgs.y || cliArgs.ci) {
-      /* ########################################################################
-        if --yes | -y is passed in the CLI, we can skip the prompts and use 
-            - the passed cliArgs and fallback on the default configuration
+      /**
+        If --yes | -y | ci is passed in the CLI, we can skip the prompts and use 
+        the passed cliArgs or fallback on the default values
 
-        This is useful for CI/CD pipelines, etc.
+        There is no user prompting in this flow
       ######################################################################## */
 
-      const config_key: ConfigKey = `${cliArgs.router as RouterPackage}-${(cliArgs.styles as StylePackage) || 'none'}-${(cliArgs.database as DatabasePackage) || 'none'}-${(cliArgs.orm as ORMPackage) || 'none'}`
-
-      config = {
-        config_key,
-        ...defaultCLIConfig,
-        project_name: cliArgs.project_name || DEFAULT_APP_NAME,
-        project_dir: `./${cliArgs.project_name || DEFAULT_APP_NAME}`,
-      }
-
       try {
+        // DEFINE: initial config with default values ###########################
+        const config_key: ConfigKey = `${cliArgs.router as RouterPackage}-${(cliArgs.styles as StylePackage) || 'none'}-${(cliArgs.database as DatabasePackage) || 'none'}-${(cliArgs.orm as ORMPackage) || 'none'}`
+        config = {
+          config_key,
+          ...defaultCLIConfig,
+          project_name: cliArgs.project_name || DEFAULT_APP_NAME,
+          project_dir: `./${cliArgs.project_name || DEFAULT_APP_NAME}`,
+        }
+
+        // UPDATE: config with passed cliArgs #################################
         if (cliArgs.router) {
           config.packages.router = cliArgs.router as RouterPackage
         }
@@ -68,20 +76,20 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         process.exit(1)
       }
     } else {
-      /* ########################################################################
-        if --yes | -y is not passed in the CLI, we need to prompt the user for 
-            - the project name, router, styles, database, orm, install dependencies, 
-            - initialize git, and run migrations
-
-        This is the default behavior.
-      ######################################################################## */
+      /**
+        prompt the user for their desired configuration - skipping values entered
+        directly through the CLI
+      ###################################################################### */
 
       try {
+        // TODO: fix typing
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let group: any = {}
+        // TODO: fix typing
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const prompts: Record<string, any> = {}
 
+        // PROJECT NAME #########################################################
         if (!cliArgs.project_name) {
           prompts.project_name = () =>
             p.text({
@@ -95,6 +103,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
             })
         }
 
+        // ROUTER #############################################################
         if (!cliArgs.router) {
           prompts.router = () =>
             p.select({
@@ -113,6 +122,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
             })
         }
 
+        // DATABASE ###########################################################
         if (cliArgs.database === undefined) {
           prompts.initialize_database = () =>
             p.confirm({
@@ -120,6 +130,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
               initialValue: true,
             })
 
+          // TODO: fix typing
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           prompts.database = ({ results }: { results: any }) => {
             if (results.initialize_database) {
@@ -138,6 +149,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
           }
         }
 
+        // ORM ################################################################
         if (cliArgs.orm === undefined) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           prompts.initializeORM = ({ results }: { results: any }) => {
@@ -150,6 +162,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
             return Promise.resolve(false)
           }
 
+          // TODO: fix typing
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           prompts.orm = ({ results }: { results: any }) => {
             if (results.initialize_database && results.initializeORM) {
@@ -168,6 +181,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
           }
         }
 
+        // STYLES #############################################################
         if (cliArgs.styles === undefined) {
           prompts.styles = () =>
             p.confirm({
@@ -176,6 +190,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
             })
         }
 
+        // GIT ################################################################
         if (cliArgs.initialize_git === undefined) {
           prompts.initialize_git = () =>
             p.confirm({
@@ -184,6 +199,9 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
               initialValue: true,
             })
         }
+
+        // INSTALL PACKAGES ###################################################
+        // TODO: add this to the prompts (if node issues are resolved with native modules & better-sqlite3)
 
         // Run prompts if any exist
         if (Object.keys(prompts).length > 0) {
@@ -195,6 +213,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
           })
         }
 
+        // DEFINE: config with user prompts ###################################
         const initialize_git = group.initialize_git || cliArgs.initialize_git
         const router = group.router || cliArgs.router
         const styles = group.styles ? 'tailwind' : cliArgs.styles
@@ -228,7 +247,8 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
       Project Name: ${config.project_name}
       Router: ${config?.packages?.router}
       Styles: ${config?.packages?.styles}
-      Database: ${config?.packages?.database}\n\tORM: ${config?.packages?.orm}
+      Database: ${config?.packages?.database}
+      ORM: ${config?.packages?.orm}
       Initialize Git: ${config.initialize_git}`,
       'Summary of your choices:'
     )

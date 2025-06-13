@@ -10,6 +10,7 @@ import log from 'electron-log/renderer'
 const mainLogger = log.scope('main.tsx')
 
 // Create a simple error display component
+// TODO: extract to a component
 function ErrorDisplay({ error }: { error: Error | string }) {
   const errorMessage = error instanceof Error ? error.message : error
   const errorStack = error instanceof Error ? error.stack : ''
