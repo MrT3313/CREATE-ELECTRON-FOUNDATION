@@ -1,13 +1,7 @@
 import { setTimeout } from 'node:timers/promises'
 import color from 'picocolors'
-
-// TERMINAL > user prompting
 import * as p from '@clack/prompts'
-
-// CONSTS
 import { DEFAULT_APP_NAME } from '../consts.js'
-
-// TYPES
 import type { ConfigKey, Yargs, CLIResults } from '../types/CLI.js'
 import { defaultCLIConfig } from '../types/CLI.js'
 import type {
@@ -16,8 +10,6 @@ import type {
   ORMPackage,
   StylePackage,
 } from '../types/Packages.js'
-
-// UTILS
 import { logger } from '../utils/logger.js'
 
 export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
@@ -43,7 +35,11 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
 
       try {
         // DEFINE: initial config with default values ###########################
-        const config_key: ConfigKey = `${cliArgs.router as RouterPackage}-${(cliArgs.styles as StylePackage) || 'none'}-${(cliArgs.database as DatabasePackage) || 'none'}-${(cliArgs.orm as ORMPackage) || 'none'}`
+        const config_key: ConfigKey = `${cliArgs.router as RouterPackage}-${
+          (cliArgs.styles as StylePackage) || 'none'
+        }-${(cliArgs.database as DatabasePackage) || 'none'}-${
+          (cliArgs.orm as ORMPackage) || 'none'
+        }`
         config = {
           config_key,
           ...defaultCLIConfig,
@@ -221,7 +217,11 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         const project_name = group.project_name || cliArgs.project_name
         const orm = group.orm || cliArgs.orm
 
-        const config_key: ConfigKey = `${router as RouterPackage}-${(styles as StylePackage) || 'none'}-${(database as DatabasePackage) || 'none'}-${(orm as ORMPackage) || 'none'}`
+        const config_key: ConfigKey = `${router as RouterPackage}-${
+          (styles as StylePackage) || 'none'
+        }-${(database as DatabasePackage) || 'none'}-${
+          (orm as ORMPackage) || 'none'
+        }`
 
         config = {
           config_key,

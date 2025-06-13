@@ -4,7 +4,7 @@
   "main": "./dist-electron/main/index.js",
   "type": "commonjs",
   "engines": {
-    "node": "22.15.1"
+    "node": "22.16.0"
   },
   "scripts": {
     "tanstackrouter:generate:routes": "npx @tanstack/router-cli ./src/routes -y",
