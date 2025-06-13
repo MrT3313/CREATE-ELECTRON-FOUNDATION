@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import fs from 'fs-extra'
 import path from 'path'
-import assert from 'assert'
 
 // FUNCTIONS
 import { renderTitle } from './utils/renderTitle.js'
@@ -46,6 +45,12 @@ const main = async () => {
   // 1. PARSE: command line arguments #########################################
   const cliArgs: Yargs = await parseCliArgs(process.argv)
 
+  renderTitle()
+  logger.info(`Node.js version: ${process.version}`)
+
+  // 2. PROMPT: user to fill configurations ###################################
+  const config: CLIResults = await runUserPromptCli(cliArgs)
+
   // INJECT ENV VARIABLES ######################################################
   if (cliArgs.project_name) {
     process.env.APP_NAME = cliArgs.project_name
@@ -59,15 +64,6 @@ const main = async () => {
       process.env.CEF_ORM = cliArgs.orm
     }
   }
-
-  renderTitle()
-
-  // Log current Node.js version
-  logger.info(`Node.js version: ${process.version}`)
-  assert(process.version === 'v22.15.1', 'Node.js version must be 22.15.1')
-
-  // 2. PROMPT: user to fill configurations ###################################
-  const config: CLIResults = await runUserPromptCli(cliArgs)
 
   // 3. CONFIGURE: inUse packages & custom installers #########################
   const inUsePackages = Object.values(config.packages).flat()
@@ -98,21 +94,24 @@ const main = async () => {
     const initializeGitSpinner = ora({
       text: 'Initializing Git...',
       spinner: 'dots',
-    })
-    initializeGitSpinner.start()
-
-    let command = `cd "${config.project_name}"`
-    command += ` && git init && git add . && git commit -m "Initial Scaffolding : create-electron-foundation"`
+    }).start()
 
     try {
-      execaSync(command, {
-        shell: true,
-      })
+      execaSync('git', ['init'], { cwd: config.project_dir })
+      execaSync('git', ['add', '.'], { cwd: config.project_dir })
+      execaSync(
+        'git',
+        ['commit', '-m', 'Initial Scaffolding from create-electron-foundation'],
+        {
+          cwd: config.project_dir,
+        }
+      )
       initializeGitSpinner.succeed(chalk.green('Git initialized successfully!'))
     } catch (err) {
-      logger.error(`Failed to execute: ${command}`)
-      logger.error(err)
       initializeGitSpinner.fail(chalk.red('Git initialization failed!'))
+      if (err instanceof Error) {
+        logger.error(err.message)
+      }
     }
   }
 
@@ -128,6 +127,9 @@ const main = async () => {
     } catch (err) {
       logger.error(`Failed to execute: ${command}`)
       logger.error(err)
+      if (err instanceof Error) {
+        logger.error(err.message)
+      }
     }
   }
 
