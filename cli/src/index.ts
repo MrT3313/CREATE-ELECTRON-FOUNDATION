@@ -44,7 +44,6 @@ const main = async () => {
   const ide = process.env.IDE || 'cursor'
 
   // 1. PARSE: command line arguments #########################################
-  logger.info(`process.argv: ${JSON.stringify(process.argv, null, 2)}`)
   const cliArgs: Yargs = await parseCliArgs(process.argv)
 
   // INJECT ENV VARIABLES ######################################################

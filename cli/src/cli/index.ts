@@ -247,7 +247,8 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
       Project Name: ${config.project_name}
       Router: ${config?.packages?.router}
       Styles: ${config?.packages?.styles}
-      Database: ${config?.packages?.database}\n\tORM: ${config?.packages?.orm}
+      Database: ${config?.packages?.database}
+      ORM: ${config?.packages?.orm}
       Initialize Git: ${config.initialize_git}`,
       'Summary of your choices:'
     )
