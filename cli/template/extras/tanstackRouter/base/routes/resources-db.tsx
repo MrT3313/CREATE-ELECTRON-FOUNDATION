@@ -1,21 +1,29 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
+import cx from 'classnames'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import log from '../lib/logger'
 const homepageLogger = log.scope('homepage')
-import { useGetResources } from '../api/index'
-import cx from 'classnames'
+import { useGetDBResourceList } from '../api/index'
+import { NewDBResourceForm } from '../components/NewDBResourceForm'
+
+export const Route = createFileRoute('/resources')({
+  component: Resources,
+})
 
 export function Resources() {
-  const navigate = useNavigate()
+  // HOOKS
+  const router = useRouter()
   const {
     data: resources,
     isLoading,
     error: fetchError,
-  } = useGetResources({
+  } = useGetDBResourceList({
     enabled: true,
   })
+  // STATE
   const [error, setError] = useState<string | null>(null)
 
+  // Log any fetch errors
   useEffect(() => {
     if (fetchError) {
       homepageLogger.error('Failed to load resources:', fetchError)
@@ -29,8 +37,18 @@ export function Resources() {
 
       <div className={cx('hero', 'glass')}>
         <h1>Resource List</h1>
+        <span>
+          This is fetching from the SQLite database.
+        </span>
+        <span>
+          The api to fetch data from an external API is still in the code.
+        </span>
       </div>
 
+      <br />
+      
+      <NewDBResourceForm />
+      
       <br />
 
       {/* Resource List */}
@@ -48,7 +66,7 @@ export function Resources() {
           resources?.length > 0 ? (
             resources?.map((resource) => (
               <div className={cx('item')}>
-                <p className="font-medium">{`IDs : ${resource.userId} - ${resource.id}`}</p>
+                <p className="font-medium">{`IDs : ${resource.user_id} - ${resource.id}`}</p>
                 <p className="text-sm text-gray-600">{`Title: ${resource.title}`}</p>
                 <p className="text-sm text-gray-600">{`Body: ${resource.body}`}</p>
               </div>
@@ -67,5 +85,3 @@ export function Resources() {
     </div>
   )
 }
-
-export default Resources

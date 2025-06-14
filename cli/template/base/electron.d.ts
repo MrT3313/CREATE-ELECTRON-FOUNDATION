@@ -1,12 +1,18 @@
+import type { APIResource, DBResource } from './types/resource'
+
 declare global {
   interface Window {
     api: {
-      getResource: (id: number) => Promise<Resource>
-      getResources: () => Promise<{ data: Resource[] }>
+      getAPIResourceById: (id: number) => Promise<APIResource>
+      getAPIResourceList: () => Promise<{ data: APIResource[] }>
+      insertAPIResource: (resource: Omit<APIResource, 'id'>) => Promise<APIResource>
+      deleteAPIResourceById: (id: number) => Promise<void>
     }
     db: {
-      getResource: (id: number) => Promise<Resource>
-      getResources: () => Promise<Resource[]>
+      getDBResourceById: (id: number) => Promise<DBResource>
+      getDBResourceList: () => Promise<DBResource[]>
+      insertDBResource: (resource: Omit<DBResource, 'id'>) => Promise<DBResource>
+      deleteDBResourceById: (id: number) => Promise<void>
     }
     env: {
       CUSTOM_ENV_VAR: string

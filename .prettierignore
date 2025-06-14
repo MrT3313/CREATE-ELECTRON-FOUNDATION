@@ -1,0 +1,11 @@
+**/package.json
+**/package-lock.json
+
+# Ignore artifacts
+**/dist
+**/dist-electron
+**/node_modules
+**/coverage
+
+# Ignore templates
+cli/template 

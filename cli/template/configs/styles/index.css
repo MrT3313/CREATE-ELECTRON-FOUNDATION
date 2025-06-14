@@ -193,6 +193,23 @@ body {
   padding: 1rem;
 }
 
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: white;
+  color: #374151;
+  font-size: 1rem;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #9333ea;
+  box-shadow: 0 0 0 3px rgb(147 51 234 / 0.1);
+}
+
 /* Base button with CSS custom properties */
 .btn {
   --btn-padding: 6px 3px;

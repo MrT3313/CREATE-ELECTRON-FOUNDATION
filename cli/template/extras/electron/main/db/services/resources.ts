@@ -2,8 +2,20 @@ import { db } from '../dbConnect'
 import { resources } from '../schema'
 import { response } from '../../utils/response'
 import { eq } from 'drizzle-orm'
+import { nanoid } from 'nanoid'
 export class resourceServices {
-  static async getResourceById(id: string) {
+  static async getDBResourceList() {
+    try {
+      const list = await db.select().from(resources)
+      return response.ok({ data: list || [] })
+    } catch (error) {
+      return response.error({
+        msg: `Error getting resource list: ${error.message}`,
+      })
+    }
+  }
+
+  static async getDBResourceById(id: string) {
     try {
       const numericId = parseInt(id, 10)
       if (isNaN(numericId)) {
@@ -23,35 +35,11 @@ export class resourceServices {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static async updateResourceById(id: number, data: any) {
+  static async insertDBResource(data: any) {
     try {
-      const result = db.transaction(() => {
-        return db.update(resources).set(data).where(eq(resources.id, id)).run()
-      })
-
-      if (!result || result.changes === 0) {
-        return response.error({
-          msg: 'Resource update failed - no rows affected',
-        })
-      }
-
-      return response.ok()
-    } catch (error) {
-      return response.error({
-        msg: `Error updating resource: ${error.message}`,
-      })
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static async insertResource(data: any) {
-    try {
-      // Prepare the data with timestamps
-      const now = new Date()
       const insertData = {
         ...data,
-        createdAt: now,
-        updatedAt: now,
+        id: nanoid(10),
       }
 
       const result = db.transaction(() => {
@@ -70,25 +58,14 @@ export class resourceServices {
     }
   }
 
-  static async getResourceList() {
-    try {
-      const list = await db.select().from(resources)
-      return response.ok({ data: list || [] })
-    } catch (error) {
-      return response.error({
-        msg: `Error getting resource list: ${error.message}`,
-      })
-    }
-  }
-
-  static async deleteResourceById(id: string) {
+  static async deleteDBResourceById(id: string) {
     try {
       const numericId = parseInt(id, 10)
       if (isNaN(numericId)) {
         return response.error({ msg: 'Invalid resource ID' })
       }
       const result = db.transaction(() => {
-        return db.delete(resources).where(eq(resources.id, numericId)).run()
+        return db.delete(resources).where(eq(resources.id, id)).run()
       })
 
       if (!result || result.changes === 0) {

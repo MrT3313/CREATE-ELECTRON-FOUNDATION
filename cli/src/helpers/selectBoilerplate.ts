@@ -61,7 +61,11 @@ export const selectBoilerplate = (config: CLIResults) => {
   // TODO: fix typing
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updateMap: any = {
-    'tanstack-router-none-none-none': () => {
+    'tanstack-router-none-none-none': ({
+      final = true,
+    }: {
+      final?: boolean
+    } = {}) => {
       // TANSTACK ROUTER ######################################################
       fs.copySync(
         path.join(srcDir, 'extras', 'tanstackRouter', 'base', 'routes'),
@@ -90,8 +94,24 @@ export const selectBoilerplate = (config: CLIResults) => {
         path.join(srcDir, 'configs', 'makefiles', 'makefile.withTanstack.sh'),
         path.join(config.project_dir, 'makefile')
       )
+
+      // overwrite / specify how we are fetching data
+      if (final) {
+        fs.renameSync(
+          path.join(config.project_dir, 'src', 'routes', 'resources-api.tsx'),
+          path.join(config.project_dir, 'src', 'routes', 'resources.tsx')
+        )
+
+        fs.removeSync(
+          path.join(config.project_dir, 'src', 'routes', 'resources-db.tsx')
+        )
+      }
     },
-    'tanstack-router-tailwind-none-none': () => {
+    'tanstack-router-tailwind-none-none': ({
+      final = true,
+    }: {
+      final?: boolean
+    } = {}) => {
       // TANSTACK ROUTER ######################################################
       fs.copySync(
         path.join(
@@ -131,9 +151,20 @@ export const selectBoilerplate = (config: CLIResults) => {
         path.join(srcDir, 'configs', 'makefiles', 'makefile.withTanstack.sh'),
         path.join(config.project_dir, 'makefile')
       )
+
+      // overwrite / specify how we are fetching data
+      if (final) {
+        fs.renameSync(
+          path.join(config.project_dir, 'src', 'routes', 'resources-api.tsx'),
+          path.join(config.project_dir, 'src', 'routes', 'resources.tsx')
+        )
+        fs.removeSync(
+          path.join(config.project_dir, 'src', 'routes', 'resources-db.tsx')
+        )
+      }
     },
     'tanstack-router-tailwind-sqlite-drizzle': () => {
-      updateMap['tanstack-router-tailwind-none-none']()
+      updateMap['tanstack-router-tailwind-none-none']({ final: false })
 
       // DATABASE #############################################################
       selectBoilerplateElectronDatabase(config)
@@ -150,10 +181,20 @@ export const selectBoilerplate = (config: CLIResults) => {
           'makefile.withTanstack.withDatabase.sh'
         ),
         path.join(config.project_dir, 'makefile')
+      )
+
+      // overwrite / specify how we are fetching data
+      fs.renameSync(
+        path.join(config.project_dir, 'src', 'routes', 'resources-db.tsx'),
+        path.join(config.project_dir, 'src', 'routes', 'resources.tsx')
+      )
+
+      fs.removeSync(
+        path.join(config.project_dir, 'src', 'routes', 'resources-api.tsx')
       )
     },
     'tanstack-router-none-sqlite-drizzle': () => {
-      updateMap['tanstack-router-none-none-none']()
+      updateMap['tanstack-router-none-none-none']({ final: false })
 
       // DATABASE #############################################################
       selectBoilerplateElectronDatabase(config)
@@ -171,8 +212,22 @@ export const selectBoilerplate = (config: CLIResults) => {
         ),
         path.join(config.project_dir, 'makefile')
       )
+
+      // overwrite / specify how we are fetching data
+      fs.renameSync(
+        path.join(config.project_dir, 'src', 'routes', 'resources-db.tsx'),
+        path.join(config.project_dir, 'src', 'routes', 'resources.tsx')
+      )
+
+      fs.removeSync(
+        path.join(config.project_dir, 'src', 'routes', 'resources-api.tsx')
+      )
     },
-    'react-router-none-none-none': () => {
+    'react-router-none-none-none': ({
+      final = true,
+    }: {
+      final?: boolean
+    } = {}) => {
       // REACT ROUTER #########################################################
       fs.copySync(
         path.join(srcDir, 'extras', 'reactRouter', 'base', 'routes'),
@@ -183,7 +238,6 @@ export const selectBoilerplate = (config: CLIResults) => {
         path.join(srcDir, 'extras', 'reactRouter', 'base', 'App.tsx'),
         path.join(config.project_dir, 'src', 'App.tsx')
       )
-
       fs.copySync(
         path.join(srcDir, 'extras', 'reactRouter', 'base', 'main.tsx'),
         path.join(config.project_dir, 'src', 'main.tsx')
@@ -201,13 +255,32 @@ export const selectBoilerplate = (config: CLIResults) => {
         path.join(config.project_dir, 'vite.config.ts')
       )
 
-      // MAKEFILE ##############################################################
+      // MAKEFILE #############################################################
       fs.copySync(
-        path.join(srcDir, 'configs', 'makefiles', 'makefile.withTanstack.sh'),
+        path.join(
+          srcDir,
+          'configs',
+          'makefiles',
+          'makefile.withReactRouter.sh'
+        ),
         path.join(config.project_dir, 'makefile')
       )
+
+      if (final) {
+        fs.renameSync(
+          path.join(config.project_dir, 'src', 'routes', 'resources-api.tsx'),
+          path.join(config.project_dir, 'src', 'routes', 'resources.tsx')
+        )
+        fs.removeSync(
+          path.join(config.project_dir, 'src', 'routes', 'resources-db.tsx')
+        )
+      }
     },
-    'react-router-tailwind-none-none': () => {
+    'react-router-tailwind-none-none': ({
+      final = true,
+    }: {
+      final?: boolean
+    } = {}) => {
       // REACT ROUTER #########################################################
       fs.copySync(
         path.join(srcDir, 'extras', 'reactRouter', 'with-tailwind', 'routes'),
@@ -218,7 +291,6 @@ export const selectBoilerplate = (config: CLIResults) => {
         path.join(srcDir, 'extras', 'reactRouter', 'with-tailwind', 'App.tsx'),
         path.join(config.project_dir, 'src', 'App.tsx')
       )
-
       fs.copySync(
         path.join(srcDir, 'extras', 'reactRouter', 'with-tailwind', 'main.tsx'),
         path.join(config.project_dir, 'src', 'main.tsx')
@@ -246,14 +318,29 @@ export const selectBoilerplate = (config: CLIResults) => {
         path.join(config.project_dir, 'vite.config.ts')
       )
 
-      // MAKEFILE ##############################################################
+      // MAKEFILE #############################################################
       fs.copySync(
-        path.join(srcDir, 'configs', 'makefiles', 'makefile.withTanstack.sh'),
+        path.join(
+          srcDir,
+          'configs',
+          'makefiles',
+          'makefile.withReactRouter.sh'
+        ),
         path.join(config.project_dir, 'makefile')
       )
+
+      if (final) {
+        fs.renameSync(
+          path.join(config.project_dir, 'src', 'routes', 'resources-api.tsx'),
+          path.join(config.project_dir, 'src', 'routes', 'resources.tsx')
+        )
+        fs.removeSync(
+          path.join(config.project_dir, 'src', 'routes', 'resources-db.tsx')
+        )
+      }
     },
     'react-router-tailwind-sqlite-drizzle': () => {
-      updateMap['react-router-tailwind-none-none']()
+      updateMap['react-router-tailwind-none-none']({ final: false })
 
       // DATABASE #############################################################
       selectBoilerplateElectronDatabase(config)
@@ -261,19 +348,26 @@ export const selectBoilerplate = (config: CLIResults) => {
       // DRIZZLE ##############################################################
       selectBoilerplateDrizzle(config)
 
-      // MAKEFILE ##############################################################
+      // MAKEFILE #############################################################
       fs.copySync(
         path.join(
           srcDir,
           'configs',
           'makefiles',
-          'makefile.withTanstack.withDatabase.sh'
+          'makefile.withReactRouter.withDatabase.sh'
         ),
         path.join(config.project_dir, 'makefile')
+      )
+      fs.renameSync(
+        path.join(config.project_dir, 'src', 'routes', 'resources-db.tsx'),
+        path.join(config.project_dir, 'src', 'routes', 'resources.tsx')
+      )
+      fs.removeSync(
+        path.join(config.project_dir, 'src', 'routes', 'resources-api.tsx')
       )
     },
     'react-router-none-sqlite-drizzle': () => {
-      updateMap['react-router-none-none-none']()
+      updateMap['react-router-none-none-none']({ final: false })
 
       // DATABASE #############################################################
       selectBoilerplateElectronDatabase(config)
@@ -281,20 +375,28 @@ export const selectBoilerplate = (config: CLIResults) => {
       // DRIZZLE ##############################################################
       selectBoilerplateDrizzle(config)
 
-      // MAKEFILE ##############################################################
+      // MAKEFILE #############################################################
       fs.copySync(
         path.join(
           srcDir,
           'configs',
           'makefiles',
-          'makefile.withTanstack.withDatabase.sh'
+          'makefile.withReactRouter.withDatabase.sh'
         ),
         path.join(config.project_dir, 'makefile')
+      )
+      fs.renameSync(
+        path.join(config.project_dir, 'src', 'routes', 'resources-db.tsx'),
+        path.join(config.project_dir, 'src', 'routes', 'resources.tsx')
+      )
+      fs.removeSync(
+        path.join(config.project_dir, 'src', 'routes', 'resources-api.tsx')
       )
     },
   }
 
   try {
+    logger.debug('🔍🔍 config.config_key', config.config_key)
     updateMap[config.config_key]()
 
     spinner.succeed(
