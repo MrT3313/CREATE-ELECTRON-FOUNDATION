@@ -123,7 +123,6 @@ export const useGetDBResourceList = ({
 export const useInsertDBResource = () => {
   return useMutation<{ id: string }, Error, NewDBResource>({
     mutationFn: async (resource: NewDBResource) => {
-      log.info('WHAT THE FUCK AM I INSERTING useInsertAPIResource', resource)
       const response: ElectronResponse<{ data: { id: string } }> =
         await window.db.insertDBResource(resource)
       if ('error' in response) {

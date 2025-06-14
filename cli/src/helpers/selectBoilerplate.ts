@@ -66,7 +66,6 @@ export const selectBoilerplate = (config: CLIResults) => {
     }: {
       final?: boolean
     } = {}) => {
-      logger.debug('🔍🔍 --1--')
       // TANSTACK ROUTER ######################################################
       fs.copySync(
         path.join(srcDir, 'extras', 'tanstackRouter', 'base', 'routes'),
@@ -113,7 +112,6 @@ export const selectBoilerplate = (config: CLIResults) => {
     }: {
       final?: boolean
     } = {}) => {
-      logger.debug('🔍🔍 --2--')
       // TANSTACK ROUTER ######################################################
       fs.copySync(
         path.join(
@@ -166,7 +164,6 @@ export const selectBoilerplate = (config: CLIResults) => {
       }
     },
     'tanstack-router-tailwind-sqlite-drizzle': () => {
-      logger.debug('🔍🔍 --3--')
       updateMap['tanstack-router-tailwind-none-none']({ final: false })
 
       // DATABASE #############################################################
@@ -197,7 +194,6 @@ export const selectBoilerplate = (config: CLIResults) => {
       )
     },
     'tanstack-router-none-sqlite-drizzle': () => {
-      logger.debug('🔍🔍 --4--')
       updateMap['tanstack-router-none-none-none']({ final: false })
 
       // DATABASE #############################################################
@@ -232,7 +228,6 @@ export const selectBoilerplate = (config: CLIResults) => {
     }: {
       final?: boolean
     } = {}) => {
-      logger.debug('🔍🔍 --5--')
       // REACT ROUTER #########################################################
       fs.copySync(
         path.join(srcDir, 'extras', 'reactRouter', 'base', 'routes'),
@@ -286,7 +281,6 @@ export const selectBoilerplate = (config: CLIResults) => {
     }: {
       final?: boolean
     } = {}) => {
-      logger.debug('🔍🔍 --6--')
       // REACT ROUTER #########################################################
       fs.copySync(
         path.join(srcDir, 'extras', 'reactRouter', 'with-tailwind', 'routes'),
@@ -346,7 +340,6 @@ export const selectBoilerplate = (config: CLIResults) => {
       }
     },
     'react-router-tailwind-sqlite-drizzle': () => {
-      logger.debug('🔍🔍 --7--')
       updateMap['react-router-tailwind-none-none']({ final: false })
 
       // DATABASE #############################################################
@@ -374,7 +367,6 @@ export const selectBoilerplate = (config: CLIResults) => {
       )
     },
     'react-router-none-sqlite-drizzle': () => {
-      logger.debug('🔍🔍 --8--')
       updateMap['react-router-none-none-none']({ final: false })
 
       // DATABASE #############################################################
