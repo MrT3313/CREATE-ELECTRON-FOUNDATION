@@ -4,6 +4,7 @@ import cx from 'classnames'
 import log from '../lib/logger'
 const homepageLogger = log.scope('homepage')
 import { useGetDBResourceList } from '../api/index'
+import { NewDBResourceForm } from '../components/NewDBResourceForm'
 
 export const Route = createFileRoute('/resources')({
   component: Resources,
@@ -48,6 +49,10 @@ export function Resources() {
         </span>
       </div>
 
+      <br />
+      
+      <NewDBResourceForm />
+      
       <br />
 
       {/* Resource List */}

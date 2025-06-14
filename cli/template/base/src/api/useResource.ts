@@ -1,13 +1,26 @@
-import { useQuery, useMutation } from '@tanstack/react-query'
+import log from '../lib/logger'
 
-import { APIResource, DBResource, NewDBResource } from '../../types/resource'
+// REACT QUERY
+import { useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 
+// TYPES
+import type {
+  APIResource,
+  DBResource,
+  NewDBResource,
+  NewAPIResource,
+  ElectronResponse,
+} from '../../types'
+
+// API ########################################################################
 export const useGetAPIResource = ({ id }: { id: number }) => {
   return useQuery<DBResource>({
     queryKey: ['resource', id],
     queryFn: async () => {
-      const response: APIResource = await window.api.getAPIResource(id)
-      if (response.error) {
+      const response: ElectronResponse<APIResource> =
+        await window.api.getAPIResourceById(id)
+      if ('error' in response) {
         throw new Error(response.error.msg)
       }
 
@@ -28,8 +41,9 @@ export const useGetAPIResourceList = ({
   return useQuery<DBResource[]>({
     queryKey: ['resources'],
     queryFn: async () => {
-      const response: APIResource[] = await window.api.getAPIResourceList()
-      if (response.error) {
+      const response: ElectronResponse<APIResource[]> =
+        await window.api.getAPIResourceList()
+      if ('error' in response) {
         throw new Error(response.error.msg)
       }
 
@@ -42,58 +56,30 @@ export const useGetAPIResourceList = ({
   })
 }
 
-export const useGetDBResource = ({ id }: { id: string }) => {
-  return useQuery<DBResource>({
-    queryKey: ['db-resource', id],
-    queryFn: async () => {
-      const response = await window.api.getDBResourceById(id)
-      if (response.error) {
+export const useInsertAPIResource = () => {
+  return useMutation<DBResource, Error, NewAPIResource>({
+    mutationFn: async (resource: NewAPIResource) => {
+      const response: ElectronResponse<DBResource> =
+        await window.api.insertAPIResource(resource)
+      if ('error' in response) {
         throw new Error(response.error.msg)
       }
-      return response.data
-    },
-    enabled: !!id,
-  })
-}
 
-export const useGetDBResourceList = ({
-  enabled = true,
-}: {
-  enabled?: boolean
-}) => {
-  return useQuery<DBResource[]>({
-    queryKey: ['db-resources'],
-    queryFn: async () => {
-      const response = await window.api.getDBResourceList()
-      if (response.error) {
-        throw new Error(response.error.msg)
-      }
-      return response.data
-    },
-    enabled,
-  })
-}
-
-export const useInsertDBResource = () => {
-  return useMutation({
-    mutationFn: async ({ data }: { data: NewDBResource }) => {
-      const response = await window.api.insertDBResource({ data })
-      if (response.error) {
-        throw new Error(response.error.msg)
-      }
-      return response.data
+      return response
     },
   })
 }
 
-export const useDeleteDBResourceById = () => {
-  return useMutation({
-    mutationFn: async ({ id }: { id: string }) => {
-      const response = await window.api.deleteDBResourceById({ id })
-      if (response.error) {
+export const useDeleteAPIResource = () => {
+  return useMutation<DBResource, Error, number>({
+    mutationFn: async (id: number) => {
+      const response: ElectronResponse<DBResource> =
+        await window.api.deleteAPIResourceById(id)
+      if ('error' in response) {
         throw new Error(response.error.msg)
       }
-      return response.data
+
+      return response
     },
   })
 }

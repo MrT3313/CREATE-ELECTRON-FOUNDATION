@@ -5,9 +5,7 @@ import cx from 'classnames'
 import {
 useGetDBResourceList,
 } from '../api/index'
-
-// TYPES
-import type { NewDBResource } from  '../../types'
+import { NewDBResourceForm } from '../components/NewDBResourceForm'
 
 export function Resources() {
   const {
@@ -28,22 +26,6 @@ export function Resources() {
     }
   }, [fetchError])
 
-  const handleAddResource = () => {
-    const newResource: NewDBResource = {
-      title: 'New Resource',
-      body: 'This is a new resource from the UI',
-      user_id: 1,
-    }
-    insertResource(
-      { data: newResource },
-      {
-        onSuccess: () => {
-          refetch()
-        },
-      }
-    )
-  }
-
   return (
     <div className={cx('page')}>
       {error && <div className="error-message">{error}</div>}
@@ -53,6 +35,10 @@ export function Resources() {
         <p>These resources are fetched from the local SQLite database.</p>
       </div>
 
+      <br />
+
+      <NewDBResourceForm/>
+      
       <br />
 
       {/* Resource List */}

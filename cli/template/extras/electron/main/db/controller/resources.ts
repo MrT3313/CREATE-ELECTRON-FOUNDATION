@@ -29,9 +29,9 @@ ipcMain.handle('db/resource/getDBResourceList', async () => {
 
 ipcMain.handle(
   'db/resource/insertDBResource',
-  async (_event: IpcMainInvokeEvent, args: { data: NewDBResource }) => {
+  async (_event: IpcMainInvokeEvent, args: NewDBResource) => {
     try {
-      const result = await resourceServices.insertDBResource(args.data)
+      const result = await resourceServices.insertDBResource(args)
       return result
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error)

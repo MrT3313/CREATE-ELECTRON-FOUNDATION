@@ -1,5 +1,8 @@
 import { useLoading } from './useLoading'
 
+// TYPES
+import { NewAPIResource, NewDBResource } from '../../types'
+
 // This is a preload script. It runs in a privileged environment before the renderer process's web page is loaded.
 // It has access to Node.js APIs and can be used to selectively expose functionalities
 // to the renderer process via the `contextBridge` API, enhancing security by not exposing all of Node.js directly.
@@ -35,16 +38,21 @@ contextBridge.exposeInMainWorld('api', {
   getAPIResourceList: () =>
     ipcRenderer.invoke('api/resource/getAPIResourceList'),
 
-  insertAPIResource: (id: number) =>
-    ipcRenderer.invoke('api/resource/insertAPIResource', { id }),
+  insertAPIResource: (resource: NewAPIResource) =>
+    ipcRenderer.invoke('api/resource/insertAPIResource', resource),
   deleteAPIResourceById: (id: number) =>
     ipcRenderer.invoke('api/resource/deleteAPIResourceById', { id }),
 })
 
 contextBridge.exposeInMainWorld('db', {
-  getResource: (id: string) =>
+  getDBResourceById: (id: string) =>
     ipcRenderer.invoke('db/resource/getDBResourceById', { id }),
-  getResources: () => ipcRenderer.invoke('db/resource/getDBResourceList'),
+  getDBResourceList: () => ipcRenderer.invoke('db/resource/getDBResourceList'),
+
+  insertDBResource: (resource: NewDBResource) =>
+    ipcRenderer.invoke('db/resource/insertDBResource', resource),
+  deleteDBResourceById: (id: string) =>
+    ipcRenderer.invoke('db/resource/deleteDBResourceById', { id }),
 })
 
 // Exposes specific environment variables to the renderer process.
