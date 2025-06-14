@@ -17,11 +17,11 @@ create-electron-foundation z-tsr-tailwind                 --router=tanstack-rout
 create-electron-foundation z-rr                           --router=react-router     --styles=false      --database=false    --orm=false
 create-electron-foundation z-rr-tailwind                  --router=react-router     --styles=tailwind   --database=false    --orm=false
 
-create-electron-foundation z-tsr-tailwind-sqlite-drizzle  --router=tanstack-router  --styles=tailwind   --database=sqlite   --orm=drizzle
-create-electron-foundation z-rr-tailwind-sqlite-drizzle   --router=react-router     --styles=tailwind   --database=sqlite   --orm=drizzle
+# create-electron-foundation z-tsr-tailwind-sqlite-drizzle  --router=tanstack-router  --styles=tailwind   --database=sqlite   --orm=drizzle
+# create-electron-foundation z-rr-tailwind-sqlite-drizzle   --router=react-router     --styles=tailwind   --database=sqlite   --orm=drizzle
 
-create-electron-foundation z-tsr-sqlite-drizzle           --router=tanstack-router  --styles=false      --database=sqlite   --orm=drizzle
-create-electron-foundation z-rr-sqlite-drizzle            --router=react-router     --styles=false      --database=sqlite   --orm=drizzle
+# create-electron-foundation z-tsr-sqlite-drizzle           --router=tanstack-router  --styles=false      --database=sqlite   --orm=drizzle
+# create-electron-foundation z-rr-sqlite-drizzle            --router=react-router     --styles=false      --database=sqlite   --orm=drizzle
 
 
 echo "All examples created successfully!"

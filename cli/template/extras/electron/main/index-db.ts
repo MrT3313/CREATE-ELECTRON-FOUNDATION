@@ -84,10 +84,13 @@ async function createWindow() {
   }
 
   // CONFIGURE: web links #####################################################
-  // This handler ensures that external links (starting with "https:")
-  // are opened in the system's default web browser instead of a new Electron window.
+  // This handler ensures that external links are opened in the system's
+  // default web browser instead of a new Electron window.
   win.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('https:')) shell.openExternal(url)
+    const protocol = new URL(url).protocol
+    if (protocol === 'http:' || protocol === 'https:') {
+      shell.openExternal(url)
+    }
     return { action: 'deny' }
   })
 

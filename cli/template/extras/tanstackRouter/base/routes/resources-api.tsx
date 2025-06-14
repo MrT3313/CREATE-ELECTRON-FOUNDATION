@@ -37,7 +37,11 @@ export function Resources() {
       <div className={cx('hero', 'glass')}>
         <h1>Resource List</h1>
         <span>
-          This is using the <a href="https://jsonplaceholder.typicode.com/">JSON Placeholder API</a>
+          This is using the <a 
+            href="https://jsonplaceholder.typicode.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >JSON Placeholder API</a>
         </span>
       </div>
 
