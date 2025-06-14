@@ -48,7 +48,7 @@ export function Resources() {
           resources?.length > 0 ? (
             resources?.map((resource) => (
               <div className={cx('item')}>
-                <p className="font-medium">{`IDs : ${resource.userId} - ${resource.id}`}</p>
+                <p className="font-medium">{`IDs : ${resource.user_id} - ${resource.id}`}</p>
                 <p className="text-sm text-gray-600">{`Title: ${resource.title}`}</p>
                 <p className="text-sm text-gray-600">{`Body: ${resource.body}`}</p>
               </div>

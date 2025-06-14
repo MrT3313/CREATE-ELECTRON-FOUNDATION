@@ -3,7 +3,7 @@ import cx from 'classnames'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import log from '../lib/logger'
 const homepageLogger = log.scope('homepage')
-import { useGetResources } from '../api/index'
+import { useGetAPIResourceList } from '../api/index'
 
 export const Route = createFileRoute('/resources')({
   component: Resources,
@@ -16,7 +16,7 @@ export function Resources() {
     data: resources,
     isLoading,
     error: fetchError,
-  } = useGetResources({
+  } = useGetAPIResourceList({
     enabled: true,
   })
   // STATE
@@ -36,6 +36,9 @@ export function Resources() {
 
       <div className={cx('hero', 'glass')}>
         <h1>Resource List</h1>
+        <span>
+          This is using the <a href="https://jsonplaceholder.typicode.com/">JSON Placeholder API</a>
+        </span>
       </div>
 
       <br />
@@ -55,7 +58,7 @@ export function Resources() {
           resources?.length > 0 ? (
             resources?.map((resource) => (
               <div className={cx('item')}>
-                <p className="font-medium">{`IDs : ${resource.userId} - ${resource.id}`}</p>
+                <p className="font-medium">{`IDs : ${resource.user_id} - ${resource.id}`}</p>
                 <p className="text-sm text-gray-600">{`Title: ${resource.title}`}</p>
                 <p className="text-sm text-gray-600">{`Body: ${resource.body}`}</p>
               </div>

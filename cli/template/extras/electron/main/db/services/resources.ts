@@ -3,7 +3,18 @@ import { resources } from '../schema'
 import { response } from '../../utils/response'
 import { eq } from 'drizzle-orm'
 export class resourceServices {
-  static async getResourceById(id: string) {
+  static async getDBResourceList() {
+    try {
+      const list = await db.select().from(resources)
+      return response.ok({ data: list || [] })
+    } catch (error) {
+      return response.error({
+        msg: `Error getting resource list: ${error.message}`,
+      })
+    }
+  }
+
+  static async getDBResourceById(id: string) {
     try {
       const numericId = parseInt(id, 10)
       if (isNaN(numericId)) {
@@ -23,28 +34,7 @@ export class resourceServices {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static async updateResourceById(id: number, data: any) {
-    try {
-      const result = db.transaction(() => {
-        return db.update(resources).set(data).where(eq(resources.id, id)).run()
-      })
-
-      if (!result || result.changes === 0) {
-        return response.error({
-          msg: 'Resource update failed - no rows affected',
-        })
-      }
-
-      return response.ok()
-    } catch (error) {
-      return response.error({
-        msg: `Error updating resource: ${error.message}`,
-      })
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static async insertResource(data: any) {
+  static async insertDBResource(data: any) {
     try {
       // Prepare the data with timestamps
       const now = new Date()
@@ -70,18 +60,7 @@ export class resourceServices {
     }
   }
 
-  static async getResourceList() {
-    try {
-      const list = await db.select().from(resources)
-      return response.ok({ data: list || [] })
-    } catch (error) {
-      return response.error({
-        msg: `Error getting resource list: ${error.message}`,
-      })
-    }
-  }
-
-  static async deleteResourceById(id: string) {
+  static async deleteDBResourceById(id: string) {
     try {
       const numericId = parseInt(id, 10)
       if (isNaN(numericId)) {

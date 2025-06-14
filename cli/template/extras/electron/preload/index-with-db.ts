@@ -30,15 +30,21 @@ import { ipcRenderer, contextBridge } from 'electron'
 // })
 
 contextBridge.exposeInMainWorld('api', {
-  getResource: (id: number) =>
-    ipcRenderer.invoke('api/resource/getResource', { id }),
-  getResources: () => ipcRenderer.invoke('api/resource/getList'),
+  getAPIResourceById: (id: number) =>
+    ipcRenderer.invoke('api/resource/getAPIResourceById', { id }),
+  getAPIResourceList: () =>
+    ipcRenderer.invoke('api/resource/getAPIResourceList'),
+
+  insertAPIResource: (id: number) =>
+    ipcRenderer.invoke('api/resource/insertAPIResource', { id }),
+  deleteAPIResourceById: (id: number) =>
+    ipcRenderer.invoke('api/resource/deleteAPIResourceById', { id }),
 })
 
 contextBridge.exposeInMainWorld('db', {
-  getResource: (id: number) =>
-    ipcRenderer.invoke('db/resource/getResource', { id }),
-  getResources: () => ipcRenderer.invoke('db/resource/getList'),
+  getResource: (id: string) =>
+    ipcRenderer.invoke('db/resource/getDBResourceById', { id }),
+  getResources: () => ipcRenderer.invoke('db/resource/getDBResourceList'),
 })
 
 // Exposes specific environment variables to the renderer process.

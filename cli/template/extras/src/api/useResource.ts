@@ -1,29 +1,75 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { Resource } from '../../types/resource'
+import { APIResource, DBResource } from '../../types/resource'
 
-export const useGetResource = ({ id }: { id: string }) => {
-  return useQuery<Resource>({
+export const useGetAPIResource = ({ id }: { id: number }) => {
+  return useQuery<DBResource>({
     queryKey: ['resource', id],
     queryFn: async () => {
-      const response = await window.db.getResource(id)
+      const response: APIResource = await window.api.getAPIResource(id)
       if (response.error) {
         throw new Error(response.error.msg)
       }
+
+      return {
+        ...response, 
+        user_id: response.userId
+      }
+    },
+    enabled: !!id,
+  })
+}
+
+export const useGetAPIResourceList = ({
+  enabled = true,
+}: {
+  enabled?: boolean
+}) => {
+  return useQuery<DBResource[]>({
+    queryKey: ['resources'],
+    queryFn: async () => {
+      const response: APIResource[] = await window.api.getAPIResourceList()
+      if (response.error) {
+        throw new Error(response.error.msg)
+      }
+
+      return response.map((resource) => ({
+        ...resource,
+        user_id: resource.userId,
+      }))
+    },
+    enabled,
+  })
+}
+
+export const useGetDBResource = ({ id }: { id: number }) => {
+  return useQuery<DBResource>({
+    queryKey: ['resource', id],
+    queryFn: async () => {
+      const response: DBResource = await window.db.getResource(id)
+      if (response.error) {
+        throw new Error(response.error.msg)
+      }
+
       return response.data
     },
     enabled: !!id,
   })
 }
 
-export const useGetResources = ({ enabled = true }: { enabled?: boolean }) => {
-  return useQuery<Resource[]>({
+export const useGetDBResourceList = ({
+  enabled = true,
+}: {
+  enabled?: boolean
+}) => {
+  return useQuery<DBResource[]>({
     queryKey: ['resources'],
     queryFn: async () => {
-      const response = await window.db.getResources()
+      const response: DBResource[] = await window.db.getResources()   
       if (response.error) {
         throw new Error(response.error.msg)
       }
+
       return response.data
     },
     enabled,
