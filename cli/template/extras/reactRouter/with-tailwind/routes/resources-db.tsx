@@ -1,42 +1,61 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
 import cx from 'classnames'
-import log from '../lib/logger'
-const homepageLogger = log.scope('homepage')
-import { useGetResources } from '../api/index'
+
+// REACT QUERY
+import {
+useGetDBResourceList,
+} from '../api/index'
+
+// TYPES
+import type { NewDBResource } from  '../../types'
 
 export function Resources() {
-  const navigate = useNavigate()
   const {
     data: resources,
     isLoading,
+    isError,
     error: fetchError,
-  } = useGetResources({
+    refetch,
+  } = useGetDBResourceList({
     enabled: true,
   })
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (fetchError) {
-      homepageLogger.error('Failed to load resources:', fetchError)
+      console.error('Failed to load resources:', fetchError)
       setError('Failed to load resources. Check the logs for details.')
     }
   }, [fetchError])
 
+  const handleAddResource = () => {
+    const newResource: NewDBResource = {
+      title: 'New Resource',
+      body: 'This is a new resource from the UI',
+      user_id: 1,
+    }
+    insertResource(
+      { data: newResource },
+      {
+        onSuccess: () => {
+          refetch()
+        },
+      }
+    )
+  }
+
   return (
     <div className={cx('page')}>
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-          {error}
-        </div>
-      )}
+      {error && <div className="error-message">{error}</div>}
 
       <div className={cx('hero', 'glass')}>
-        <h1>Resource List</h1>
+        <h1 className="text-2xl font-bold">DB Resource List</h1>
+        <p>These resources are fetched from the local SQLite database.</p>
       </div>
 
       <br />
 
+      {/* Resource List */}
       <div
         className={cx(
           'container scrollable',
@@ -46,11 +65,16 @@ export function Resources() {
         )}
       >
         {isLoading ? (
-          <p>Loading resources...</p>
+          <div className="loading-message">Loading resources...</div>
+        ) : isError ? (
+          <p>Error loading resources</p>
         ) : resources ? (
           resources?.length > 0 ? (
             resources?.map((resource) => (
-              <div className={cx('item')}>
+              <div
+                className="p-4 mb-2 border rounded-md shadow-sm"
+                key={resource.id}
+              >
                 <p className="font-medium">{`IDs : ${resource.user_id} - ${resource.id}`}</p>
                 <p className="text-sm text-gray-600">{`Title: ${resource.title}`}</p>
                 <p className="text-sm text-gray-600">{`Body: ${resource.body}`}</p>
@@ -71,4 +95,4 @@ export function Resources() {
   )
 }
 
-export default Resources
+export default Resources 

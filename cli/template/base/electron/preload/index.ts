@@ -34,6 +34,15 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.invoke('api/resource/getAPIResourceById', { id }),
   getAPIResourceList: () =>
     ipcRenderer.invoke('api/resource/getAPIResourceList'),
+
+  // DB
+  getDBResourceById: (id: string) =>
+    ipcRenderer.invoke('db/resource/getDBResourceById', { id }),
+  getDBResourceList: () => ipcRenderer.invoke('db/resource/getDBResourceList'),
+  insertDBResource: (data: any) =>
+    ipcRenderer.invoke('db/resource/insertDBResource', data),
+  deleteDBResourceById: (id: string) =>
+    ipcRenderer.invoke('db/resource/deleteDBResourceById', { id }),
 })
 
 // Exposes specific environment variables to the renderer process.
