@@ -124,11 +124,6 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     .parse()
 
   const project_name = (args.project_name as string) || (args._[0] as string)
-  if (!project_name) {
-    throw new Error(
-      'Project name is required. Please provide it as an argument or via the --project_name option.'
-    )
-  }
 
   const result: Yargs = {
     ci: args.ci || undefined,

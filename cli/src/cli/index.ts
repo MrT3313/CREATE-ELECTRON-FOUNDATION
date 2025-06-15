@@ -130,7 +130,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         if (cliArgs.database === undefined) {
           prompts.initialize_database = () =>
             p.confirm({
-              message: 'Should we initialize a database?',
+              message: 'Should we initialize an SQLite database?',
               initialValue: true,
             })
 
@@ -211,7 +211,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
           prompts.install_packages = () =>
             p.confirm({
               message: 'Should we install packages after scaffolding?',
-              initialValue: false,
+              initialValue: true,
             })
         }
 
@@ -219,7 +219,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         if (cliArgs.ide === undefined) {
           prompts.ide = () =>
             p.confirm({
-              message: 'Are you using cursor as your IDE?',
+              message: 'Are you using Cursor as your IDE?',
               initialValue: true,
             })
         }
@@ -277,9 +277,9 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
       `
       Project Name: ${config.project_name}
       Router: ${config?.packages?.router}
-      Styles: ${config?.packages?.styles}
-      Database: ${config?.packages?.database}
-      ORM: ${config?.packages?.orm}
+      Styles: ${config?.packages?.styles || 'Vanilla CSS'}
+      Database: ${config?.packages?.database || 'false'}
+      ORM: ${config?.packages?.orm || 'false'}
       Initialize Git: ${config.initialize_git}
       Install Packages: ${config.install_packages}`,
       'Summary of your choices:'
