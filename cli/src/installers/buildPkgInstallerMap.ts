@@ -48,7 +48,7 @@ export const buildPkgInstallerMap = (
   }
 
   spinner.succeed(
-    `${project_name} ${chalk.bold.green('pkgInstallerMap built')} successfully`
+    `${chalk.blue(project_name)} ${chalk.bold.green('pkgInstallerMap built')} successfully`
   )
   return map
 }

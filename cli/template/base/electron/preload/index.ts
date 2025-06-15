@@ -48,11 +48,11 @@ contextBridge.exposeInMainWorld('api', {
 contextBridge.exposeInMainWorld('env', {
   CUSTOM_ENV_VAR: process.env.CUSTOM_ENV_VAR,
   NODE_ENV: process.env.NODE_ENV,
-  APP_NAME: process.env.APP_NAME,
-  APP_ROOT: process.env.APP_ROOT,
-  DIST: process.env.DIST,
-  VITE_PUBLIC: process.env.VITE_PUBLIC,
-  VITE_DEV_SERVER_URL: process.env.VITE_DEV_SERVER_URL,
+  CEF_FRAMEWORK: process.env.CEF_FRAMEWORK,
+  CEF_ROUTER: process.env.CEF_ROUTER,
+  CEF_STYLES: process.env.CEF_STYLES,
+  CEF_DATABASE: process.env.CEF_DATABASE,
+  CEF_ORM: process.env.CEF_ORM,
 })
 
 // A utility function that returns a Promise, resolving when the document's readyState

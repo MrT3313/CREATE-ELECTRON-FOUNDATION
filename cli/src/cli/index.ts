@@ -3,6 +3,7 @@ import color from 'picocolors'
 
 // TERMINAL > user prompting
 import * as p from '@clack/prompts'
+import chalk from 'chalk'
 
 // CONSTS
 import { DEFAULT_APP_NAME } from '../consts.js'
@@ -275,13 +276,15 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
 
     p.note(
       `
-      Project Name: ${config.project_name}
-      Router: ${config?.packages?.router}
-      Styles: ${config?.packages?.styles || 'Vanilla CSS'}
-      Database: ${config?.packages?.database || 'false'}
-      ORM: ${config?.packages?.orm || 'false'}
-      Initialize Git: ${config.initialize_git}
-      Install Packages: ${config.install_packages}`,
+      Project Name: ${chalk.blue.bold(config.project_name)}
+      Router: ${chalk.green.bold(config?.packages?.router)}
+      Styles: ${chalk.green.bold(config?.packages?.styles || 'Vanilla CSS')}
+      Database: ${config?.packages?.database ? chalk.green.bold(config?.packages?.database) : chalk.red.bold('false')}
+      ORM: ${config?.packages?.orm ? chalk.green.bold(config?.packages?.orm) : chalk.red.bold('false')}
+      Initialize Git: ${config.initialize_git ? chalk.green.bold('true') : chalk.red.bold('false')}
+      Install Packages: ${config.install_packages ? chalk.green.bold('true') : chalk.red.bold('false')}
+      IDE: ${config.ide ? chalk.green.bold(config.ide) : chalk.red.bold('false')}
+      `,
       'Summary of your choices:'
     )
     if (!cliArgs.y || !cliArgs.project_name) {
