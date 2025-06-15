@@ -1,4 +1,4 @@
-.PHONY: i ri build link unlink check-link
+.PHONY: i ri build laf version-patch version-minor version-major version pack dry-run publish-local link unlink check-link batch-test
 
 # PACKAGE MANAGEMENT ##########################################################
 i:
@@ -20,19 +20,16 @@ laf:
 	npm run lint
 	npm run format
 
-# PUBLISHING ##################################################################
+# LOCAL PUBLISHING (FOR TESTING) ##############################################
+# Note: Official releases are handled by the 'Publish Package' GitHub Action.
+# This is for local testing of the publish process only.
 pack:
 	npm pack
-
 dry-run:
 	npm publish --dry-run
-
 PUBLISH_TAG=alpha
-publish:
-	@if [ "$$(git branch --show-current)" != "main" ]; then \
-		echo "Error: publish can only be run on the main branch"; \
-		exit 1; \
-	fi
+publish-local:
+	@echo "WARNING: This is for local testing only."
 	npm publish --tag $(PUBLISH_TAG)
 
 # SYMLINK MANAGEMENT ##########################################################

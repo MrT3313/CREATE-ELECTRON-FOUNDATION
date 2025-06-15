@@ -1,0 +1,106 @@
+# ==================================================================================================
+# SUMMARY
+# ==================================================================================================
+# This workflow handles publishing the package to the NPM registry.
+#
+# Triggers:
+#   - Completion of the 'Core CI' workflow on the 'main' branch.
+#   - Manual trigger ('workflow_dispatch') with selectable NPM tag.
+#
+# Key Steps:
+#   1. Set up the environment (checkout code, install Node.js).
+#   2. Install dependencies.
+#   3. Build the project.
+#   4. Determine the NPM tag ('alpha' for CI, user-selected for manual).
+#   5. Publish the package to NPM.
+# ==================================================================================================
+
+name: Publish Package
+
+on:
+  # Trigger for alpha builds on merge to main
+  workflow_run:
+    workflows: ['Core CI']
+    types:
+      - completed
+    branches:
+      - main
+  # Trigger for manual beta/latest releases from the Actions tab
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: "What kind of version bump is this? Use 'custom' for a specific version."
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+          - custom
+      specific_version:
+        description: "If 'custom', specify the exact version (e.g., 1.2.3)."
+        required: false
+      tag:
+        description: 'NPM tag to publish with'
+        required: true
+        default: 'beta'
+        type: choice
+        options:
+          - beta
+          - latest
+
+jobs:
+  publish:
+    name: Publish to NPM
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event_name == 'workflow_dispatch'
+    # Grant permissions for the workflow to create commits and tags
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout with full history
+        uses: actions/checkout@v4
+        with:
+          # Required to allow 'npm version' to create git tags
+          fetch-depth: 0
+      - name: Read .nvmrc
+        id: nvm
+        run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Bump Version and Publish (Automated Alpha)
+        if: github.event_name == 'workflow_run'
+        run: |
+          npm version prerelease --preid=alpha --no-git-tag-version
+          git commit -am "chore(release): bump version to $(node -p "require('./package.json').version") [skip ci]"
+          git push
+          npm publish --tag alpha
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_REGISTRY_ACCESS_TOKEN }}
+      - name: Bump Version and Publish (Manual Release)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          BUMP_TYPE=${{ github.event.inputs.version_bump }}
+          if [ "$BUMP_TYPE" = "custom" ]; then
+            BUMP_TYPE=${{ github.event.inputs.specific_version }}
+            if [ -z "$BUMP_TYPE" ]; then
+              echo "Error: 'specific_version' must be provided when 'custom' is selected."
+              exit 1
+            fi
+          fi
+          npm version $BUMP_TYPE -m "chore(release): bump version to %s"
+          git push --follow-tags
+          npm publish --tag ${{ github.event.inputs.tag }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_REGISTRY_ACCESS_TOKEN }}
