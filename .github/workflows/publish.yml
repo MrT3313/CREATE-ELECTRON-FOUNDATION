@@ -93,15 +93,21 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
         run: |
           BUMP_TYPE=${{ github.event.inputs.version_bump }}
-          if [ "$BUMP_TYPE" = "custom" ]; then
-            BUMP_TYPE=${{ github.event.inputs.specific_version }}
-            if [ -z "$BUMP_TYPE" ]; then
-              echo "Error: 'specific_version' must be provided when 'custom' is selected."
-              exit 1
+          NPM_TAG=${{ github.event.inputs.tag }}
+
+          if [ "$NPM_TAG" = "beta" ]; then
+            npm version prerelease --preid=beta -m "chore(release): bump version to %s [beta]"
+          else
+            if [ "$BUMP_TYPE" = "custom" ]; then
+              BUMP_TYPE=${{ github.event.inputs.specific_version }}
+              if [ -z "$BUMP_TYPE" ]; then
+                echo "Error: 'specific_version' must be provided when 'custom' is selected."
+                exit 1
+              fi
             fi
+            npm version $BUMP_TYPE -m "chore(release): bump version to %s [$NPM_TAG]"
           fi
-          npm version $BUMP_TYPE -m "chore(release): bump version to %s [${{ github.event.inputs.tag }}]"
           git push --follow-tags
-          npm publish --tag ${{ github.event.inputs.tag }}
+          npm publish --tag $NPM_TAG
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_REGISTRY_ACCESS_TOKEN }}
