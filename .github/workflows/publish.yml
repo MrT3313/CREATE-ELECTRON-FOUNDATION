@@ -82,7 +82,7 @@ jobs:
       - name: Bump Version and Publish (Automated Alpha)
         if: github.event_name == 'workflow_run'
         run: |
-          npm version prerelease --preid=alpha --git-tag-version=false
+          npm version prepatch --preid=alpha --git-tag-version=false
           VERSION=$(node -p "require('./package.json').version")
           git commit -am "chore(release): bump version to $VERSION [alpha] [skip ci]"
           git push
