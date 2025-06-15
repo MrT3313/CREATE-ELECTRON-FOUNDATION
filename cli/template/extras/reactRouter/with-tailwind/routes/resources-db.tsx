@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react'
 import cx from 'classnames'
 
 // REACT QUERY
-import {
-useGetDBResourceList,
-} from '../api/index'
+import { useGetDBResourceList } from '../api/index'
 import { NewDBResourceForm } from '../components/NewDBResourceForm'
 
 export function Resources() {
@@ -37,8 +35,8 @@ export function Resources() {
 
       <br />
 
-      <NewDBResourceForm/>
-      
+      <NewDBResourceForm />
+
       <br />
 
       {/* Resource List */}
@@ -81,4 +79,4 @@ export function Resources() {
   )
 }
 
-export default Resources 
+export default Resources

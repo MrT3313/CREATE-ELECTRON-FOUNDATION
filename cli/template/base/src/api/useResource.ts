@@ -1,5 +1,3 @@
-import log from '../lib/logger'
-
 // REACT QUERY
 import { useQuery } from '@tanstack/react-query'
 import { useMutation } from '@tanstack/react-query'
@@ -8,7 +6,6 @@ import { useMutation } from '@tanstack/react-query'
 import type {
   APIResource,
   DBResource,
-  NewDBResource,
   NewAPIResource,
   ElectronResponse,
 } from '../../types'

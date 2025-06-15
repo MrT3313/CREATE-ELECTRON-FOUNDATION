@@ -92,7 +92,11 @@ export const NewDBResourceForm = () => {
       <form.Subscribe
         selector={(state) => [state.canSubmit, state.isSubmitting]}
         children={([canSubmit, isSubmitting]) => (
-          <button type="submit" className="btn btn-gradient" disabled={!canSubmit}>
+          <button
+            type="submit"
+            className="btn btn-gradient"
+            disabled={!canSubmit}
+          >
             {isSubmitting ? 'Adding...' : 'Add Resource'}
           </button>
         )}
@@ -102,4 +106,4 @@ export const NewDBResourceForm = () => {
       )}
     </form>
   )
-} 
+}

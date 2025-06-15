@@ -15,7 +15,7 @@ import { parseCliArgs } from './helpers/parseCliArgs.js'
 import { logger } from './utils/logger.js'
 
 // TERMINAL
-import { execaSync } from 'execa'
+import { execa } from 'execa'
 import ora from 'ora'
 import chalk from 'chalk'
 
@@ -39,8 +39,6 @@ const main = async () => {
    * 9. OPEN in IDE
    * ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️
    * ####################################################################### */
-
-  const ide = process.env.IDE || 'cursor'
 
   // 1. PARSE: command line arguments #########################################
   const cliArgs: Yargs = await parseCliArgs(process.argv)
@@ -89,7 +87,35 @@ const main = async () => {
     spaces: 2,
   })
 
-  // 8. INITIALIZE: git #######################################################
+  // 8. INSTALL PACKAGES ######################################################
+  if (!cliArgs.ci && config.install_packages) {
+    const projectSetupSpinner = ora(
+      `${config.project_name} ${chalk.green.bold('Installing Packages')}...`
+    ).start()
+
+    const command = `cd ${config.project_dir} && make ri`
+
+    try {
+      await execa(command, {
+        shell: true,
+      })
+      projectSetupSpinner.succeed(
+        `${config.project_name} ${chalk.bold.green('Packages installed')} successfully!`
+      )
+    } catch (err) {
+      projectSetupSpinner.fail(
+        `${config.project_name} ${chalk.red('Packages installation failed!')}`
+      )
+      logger.error(`Failed to execute: ${command}`)
+      logger.error(err)
+      if (err instanceof Error) {
+        logger.error(err.message)
+      }
+      process.exit(1)
+    }
+  }
+
+  // 9. INITIALIZE: git #######################################################
   if (config.initialize_git && !cliArgs.ci) {
     const initializeGitSpinner = ora({
       text: 'Initializing Git...',
@@ -97,31 +123,36 @@ const main = async () => {
     }).start()
 
     try {
-      execaSync('git', ['init'], { cwd: config.project_dir })
-      execaSync('git', ['add', '.'], { cwd: config.project_dir })
-      execaSync(
+      await execa('git', ['init'], { cwd: config.project_dir })
+      await execa('git', ['add', '.'], { cwd: config.project_dir })
+      await execa(
         'git',
         ['commit', '-m', 'Initial Scaffolding from create-electron-foundation'],
         {
           cwd: config.project_dir,
         }
       )
-      initializeGitSpinner.succeed(chalk.green('Git initialized successfully!'))
+      initializeGitSpinner.succeed(
+        `${config.project_name} ${chalk.bold.green('Git initialized')} successfully!`
+      )
     } catch (err) {
-      initializeGitSpinner.fail(chalk.red('Git initialization failed!'))
+      initializeGitSpinner.fail(
+        `${config.project_name} ${chalk.red('Git initialization')} failed!`
+      )
       if (err instanceof Error) {
         logger.error(err.message)
       }
+      process.exit(1)
     }
   }
 
-  // 9. OPEN: in IDE ##########################################################
-  if (ide && !cliArgs.ci) {
+  // 10. OPEN: in IDE ##########################################################
+  if (config.ide && !cliArgs.ci) {
     let command = `cd "${config.project_name}"`
-    command += ` && ${ide} .`
+    command += ` && ${config.ide} .`
 
     try {
-      execaSync(command, {
+      await execa(command, {
         shell: true,
       })
     } catch (err) {
@@ -134,7 +165,9 @@ const main = async () => {
   }
 
   logger.success(
-    `${config.project_name} ${chalk.bold.green('Project Initialized Successfully with create-electron-foundation!')}`
+    `${chalk.green(config.project_name)} ${chalk.bold.green(
+      'Project Scaffolded Successfully'
+    )} with ${chalk.blue('create-electron-foundation!')}`
   )
 }
 

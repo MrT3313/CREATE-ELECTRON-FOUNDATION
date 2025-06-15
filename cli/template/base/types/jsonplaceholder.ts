@@ -1,12 +1,8 @@
-export type PlaceholderJsonPostBase = {
-  userId: number // NOT UNIQUE
-  id: number // UNIQUE
+export interface NewAPIResource {
+  userId: number
   title: string
   body: string
 }
-
-export interface NewPlaceholderJsonPost extends PlaceholderJsonPostBase {} // ex: PREP for insert
-export interface PlaceholderJsonPost extends NewPlaceholderJsonPost {
-  // ex: result from fetch
+export interface APIResource extends NewAPIResource {
   id: number
 }

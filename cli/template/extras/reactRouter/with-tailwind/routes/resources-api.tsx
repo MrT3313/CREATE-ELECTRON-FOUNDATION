@@ -76,4 +76,4 @@ export function Resources() {
   )
 }
 
-export default Resources 
+export default Resources

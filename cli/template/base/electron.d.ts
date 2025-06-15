@@ -5,13 +5,17 @@ declare global {
     api: {
       getAPIResourceById: (id: number) => Promise<APIResource>
       getAPIResourceList: () => Promise<{ data: APIResource[] }>
-      insertAPIResource: (resource: Omit<APIResource, 'id'>) => Promise<APIResource>
+      insertAPIResource: (
+        resource: Omit<APIResource, 'id'>
+      ) => Promise<APIResource>
       deleteAPIResourceById: (id: number) => Promise<void>
     }
     db: {
       getDBResourceById: (id: number) => Promise<DBResource>
       getDBResourceList: () => Promise<DBResource[]>
-      insertDBResource: (resource: Omit<DBResource, 'id'>) => Promise<DBResource>
+      insertDBResource: (
+        resource: Omit<DBResource, 'id'>
+      ) => Promise<DBResource>
       deleteDBResourceById: (id: number) => Promise<void>
     }
     env: {

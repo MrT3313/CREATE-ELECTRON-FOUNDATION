@@ -25,27 +25,4 @@ export class jsonPlaceholderServices {
       })
     }
   }
-  static async insertAPIResource(data: any) {
-    try {
-      const response = await fetch(`${JSONPLACEHOLDER_URL}/posts`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      })
-    } catch (error) {
-      return response.error({
-        msg: `Error inserting post: ${error.message}`,
-      })
-    }
-  }
-  static async deleteAPIResourceById(id: number) {
-    try {
-      const response = await fetch(`${JSONPLACEHOLDER_URL}/posts/${id}`, {
-        method: 'DELETE',
-      })
-    } catch (error) {
-      return response.error({
-        msg: `Error deleting post: ${error.message}`,
-      })
-    }
-  }
 }

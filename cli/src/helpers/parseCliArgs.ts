@@ -69,6 +69,15 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
       description: 'Initialize Git repository',
       default: true,
     })
+    .option('install_packages', {
+      type: 'boolean',
+      description: 'Install packages after scaffolding',
+      default: false,
+    })
+    .option('ide', {
+      type: 'string',
+      description: 'IDE to use',
+    })
     .check((argv) => {
       if (argv.router && !validRouters.includes(argv.router)) {
         logger.error(`Invalid router: ${argv.router}. Setting to undefined.`)
@@ -126,6 +135,7 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     y: args.y || undefined,
     project_name: project_name || undefined,
     project_dir: project_name ? path.resolve(project_name) : undefined,
+    ide: args.ide || undefined,
     router: args.router || undefined,
     styles:
       args.styles === undefined
@@ -147,6 +157,7 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
           : args.orm,
     pkg_manager: args.pkg_manager || undefined,
     initialize_git: args.initialize_git || undefined,
+    install_packages: args.install_packages || undefined,
   }
 
   return result

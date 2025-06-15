@@ -37,18 +37,16 @@ export function Resources() {
 
       <div className={cx('hero', 'glass')}>
         <h1>Resource List</h1>
-        <span>
-          This is fetching from the SQLite database.
-        </span>
+        <span>This is fetching from the SQLite database.</span>
         <span>
           The api to fetch data from an external API is still in the code.
         </span>
       </div>
 
       <br />
-      
+
       <NewDBResourceForm />
-      
+
       <br />
 
       {/* Resource List */}

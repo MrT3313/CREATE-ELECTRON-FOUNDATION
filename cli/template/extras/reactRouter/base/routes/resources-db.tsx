@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react'
 import cx from 'classnames'
 
 // REACT QUERY
-import {
-  useGetDBResourceList,
-} from '../api/index'
+import { useGetDBResourceList } from '../api/index'
 import { NewDBResourceForm } from '../components/NewDBResourceForm'
 
 export function Resources() {
@@ -32,15 +30,13 @@ export function Resources() {
 
       <div className={cx('hero', 'glass')}>
         <h1>DB Resource List</h1>
-        <p>
-          These resources are fetched from the local SQLite database.
-        </p>
+        <p>These resources are fetched from the local SQLite database.</p>
       </div>
 
       <br />
 
       <NewDBResourceForm />
-      
+
       <br />
 
       {/* Resource List */}
@@ -80,4 +76,4 @@ export function Resources() {
   )
 }
 
-export default Resources 
+export default Resources

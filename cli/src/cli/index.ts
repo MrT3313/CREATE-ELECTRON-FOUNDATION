@@ -134,56 +134,58 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
               initialValue: true,
             })
 
-          // TODO: fix typing
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          prompts.database = ({ results }: { results: any }) => {
-            if (results.initialize_database) {
-              return p.select({
-                message: 'Which database would you like to use?',
-                options: [
-                  {
-                    value: 'sqlite',
-                    label: 'SQLite',
-                  },
-                ],
-                initialValue: 'sqlite',
-              })
-            }
-            return Promise.resolve(null)
-          }
+          // // TODO: add back when we have > 1 database option
+          // // TODO: fix typing
+          // // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // prompts.database = ({ results }: { results: any }) => {
+          //   if (results.initialize_database) {
+          //     return p.select({
+          //       message: 'Which database would you like to use?',
+          //       options: [
+          //         {
+          //           value: 'sqlite',
+          //           label: 'SQLite',
+          //         },
+          //       ],
+          //       initialValue: 'sqlite',
+          //     })
+          //   }
+          //   return Promise.resolve(null)
+          // }
         }
 
-        // ORM ################################################################
-        if (cliArgs.orm === undefined) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          prompts.initializeORM = ({ results }: { results: any }) => {
-            if (results.initialize_database) {
-              return p.confirm({
-                message: 'Should we initialize an ORM?',
-                initialValue: true,
-              })
-            }
-            return Promise.resolve(false)
-          }
+        // // ORM ################################################################
+        // // TODO: add back when we have > 1 orm option
+        // if (cliArgs.orm === undefined) {
+        //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        //   prompts.initializeORM = ({ results }: { results: any }) => {
+        //     if (results.initialize_database) {
+        //       return p.confirm({
+        //         message: 'Should we initialize an ORM?',
+        //         initialValue: true,
+        //       })
+        //     }
+        //     return Promise.resolve(false)
+        //   }
 
-          // TODO: fix typing
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          prompts.orm = ({ results }: { results: any }) => {
-            if (results.initialize_database && results.initializeORM) {
-              return p.select({
-                message: 'Which ORM would you like to use?',
-                options: [
-                  {
-                    value: 'drizzle',
-                    label: 'Drizzle',
-                  },
-                ],
-                initialValue: 'drizzle',
-              })
-            }
-            return Promise.resolve(null)
-          }
-        }
+        //   // TODO: fix typing
+        //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        //   prompts.orm = ({ results }: { results: any }) => {
+        //     if (results.initialize_database && results.initializeORM) {
+        //       return p.select({
+        //         message: 'Which ORM would you like to use?',
+        //         options: [
+        //           {
+        //             value: 'drizzle',
+        //             label: 'Drizzle',
+        //           },
+        //         ],
+        //         initialValue: 'drizzle',
+        //       })
+        //     }
+        //     return Promise.resolve(null)
+        //   }
+        // }
 
         // STYLES #############################################################
         if (cliArgs.styles === undefined) {
@@ -204,8 +206,23 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
             })
         }
 
-        // INSTALL PACKAGES ###################################################
-        // TODO: add this to the prompts (if node issues are resolved with native modules & better-sqlite3)
+        // INSTALL PACKAGES ####################################################
+        if (cliArgs.install_packages === undefined) {
+          prompts.install_packages = () =>
+            p.confirm({
+              message: 'Should we install packages after scaffolding?',
+              initialValue: false,
+            })
+        }
+
+        // IDE ################################################################
+        if (cliArgs.ide === undefined) {
+          prompts.ide = () =>
+            p.confirm({
+              message: 'Are you using cursor as your IDE?',
+              initialValue: true,
+            })
+        }
 
         // Run prompts if any exist
         if (Object.keys(prompts).length > 0) {
@@ -224,6 +241,10 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         const database = group.database || cliArgs.database
         const project_name = group.project_name || cliArgs.project_name
         const orm = group.orm || cliArgs.orm
+        const install_packages = cliArgs.ci
+          ? false
+          : group.install_packages || cliArgs.install_packages
+        const ide = group.ide ? 'cursor' : false
 
         const config_key: ConfigKey = `${router as RouterPackage}-${
           (styles as StylePackage) || 'none'
@@ -236,6 +257,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
           project_name: project_name || DEFAULT_APP_NAME,
           project_dir: `./${project_name || DEFAULT_APP_NAME}`,
           pkg_manager: 'npm',
+          ide,
           initialize_git,
           packages: {
             router,
@@ -243,6 +265,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
             database,
             orm,
           },
+          install_packages,
         }
       } catch (err) {
         logger.error('🚨🚨 Error running prompt cli', err)
@@ -257,7 +280,8 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
       Styles: ${config?.packages?.styles}
       Database: ${config?.packages?.database}
       ORM: ${config?.packages?.orm}
-      Initialize Git: ${config.initialize_git}`,
+      Initialize Git: ${config.initialize_git}
+      Install Packages: ${config.install_packages}`,
       'Summary of your choices:'
     )
     if (!cliArgs.y || !cliArgs.project_name) {

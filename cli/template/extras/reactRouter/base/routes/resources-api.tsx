@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import cx from 'classnames'
 
 // REACT QUERY
-import { useGetAPIResourceList } from "../api/index"
+import { useGetAPIResourceList } from '../api/index'
 
 export function Resources() {
   const {
@@ -73,4 +73,4 @@ export function Resources() {
   )
 }
 
-export default Resources 
+export default Resources
