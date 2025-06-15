@@ -125,9 +125,6 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
 
   const project_name = (args.project_name as string) || (args._[0] as string)
 
-  logger.info(`1 - ide: ${args.ide}`)
-  logger.info(`2 - ide: ${args.ide}`)
-
   const result: Yargs = {
     ci: args.ci || undefined,
     y: args.y || undefined,

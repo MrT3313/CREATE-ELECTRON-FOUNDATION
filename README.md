@@ -24,9 +24,7 @@
 >
 > **Windows** _(and **Linux** if I can get pewdiepie on the line...)_ support is planned for the future, but full functionality is not yet **guaranteed** on those platforms.
 
-## 🚧 Known Issues 🚧
-
-- rerunning a database configuration project with the **same project name** as a previously run and migrated database configuration project
+## 🚧 [Known Issues](https://github.com/MrT3313/CREATE-ELECTRON-FOUNDATION/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen+%28label%3Abug+OR+type%3ABug%29) 🚧
 
 ## 🚧 Prerequisites 🚧
 
