@@ -1,7 +1,7 @@
 {
   "name": "create-electron-foundation",
   "type": "module",
-  "version": "0.0.37-alpha.0",
+  "version": "0.0.37-beta.0",
   "description": "An interactive CLI to bootstrap a modern, type-safe, and scalable Electron application.",
   "author": "Reed Turgeon <turgeon.dev+oss-create-electron-foundation@gmail.com>",
   "repository": {
