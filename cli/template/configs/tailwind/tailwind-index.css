@@ -109,7 +109,7 @@
   .input {
     @apply w-full px-3 py-3 border border-gray-300 rounded-lg bg-white text-gray-700 text-base transition-colors duration-200 ease-in-out;
   }
-  
+
   .input:focus {
     @apply outline-none border-purple-600 ring-4 ring-purple-600/10;
   }

@@ -30,7 +30,9 @@ export function Resources() {
 
       <div className={cx('hero', 'glass')}>
         <h1>DB Resource List</h1>
-        <span style={{ textAlign: 'center' }}>This is fetching from the SQLite database.</span>
+        <span style={{ textAlign: 'center' }}>
+          This is fetching from the SQLite database.
+        </span>
         <span style={{ textAlign: 'center' }}>
           The api to fetch data from an external API is still in the code.
         </span>
@@ -59,9 +61,15 @@ export function Resources() {
           resources?.length > 0 ? (
             resources?.map((resource) => (
               <div key={resource.id} className={cx('item')}>
-                <p style={{ fontWeight: '500' }}>{`IDs : ${resource.user_id} - ${resource.id}`}</p>
-                <p style={{ fontSize: '14px', color: '#4b5563' }}>{`Title: ${resource.title}`}</p>
-                <p style={{ fontSize: '14px', color: '#4b5563' }}>{`Body: ${resource.body}`}</p>
+                <p
+                  style={{ fontWeight: '500' }}
+                >{`IDs : ${resource.user_id} - ${resource.id}`}</p>
+                <p
+                  style={{ fontSize: '14px', color: '#4b5563' }}
+                >{`Title: ${resource.title}`}</p>
+                <p
+                  style={{ fontSize: '14px', color: '#4b5563' }}
+                >{`Body: ${resource.body}`}</p>
               </div>
             ))
           ) : (

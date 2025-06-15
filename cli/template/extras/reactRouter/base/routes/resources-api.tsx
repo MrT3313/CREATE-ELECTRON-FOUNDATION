@@ -63,9 +63,15 @@ export function Resources() {
           resources?.length > 0 ? (
             resources?.map((resource) => (
               <div key={resource.id} className={cx('item')}>
-                <p style={{ fontWeight: '500' }}>{`IDs : ${resource.user_id} - ${resource.id}`}</p>
-                <p style={{ fontSize: '14px', color: '#4b5563' }}>{`Title: ${resource.title}`}</p>
-                <p style={{ fontSize: '14px', color: '#4b5563' }}>{`Body: ${resource.body}`}</p>
+                <p
+                  style={{ fontWeight: '500' }}
+                >{`IDs : ${resource.user_id} - ${resource.id}`}</p>
+                <p
+                  style={{ fontSize: '14px', color: '#4b5563' }}
+                >{`Title: ${resource.title}`}</p>
+                <p
+                  style={{ fontSize: '14px', color: '#4b5563' }}
+                >{`Body: ${resource.body}`}</p>
               </div>
             ))
           ) : (
