@@ -1,6 +1,6 @@
 {
   "name": "create-electron-foundation-app",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "main": "./dist-electron/main/index.js",
   "type": "commonjs",
   "engines": {
