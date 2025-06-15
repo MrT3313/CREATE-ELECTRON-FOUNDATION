@@ -20,11 +20,15 @@ export interface Yargs {
   orm: string | undefined | false
   pkg_manager: string | undefined
   initialize_git: boolean | undefined
+  install_packages: boolean | undefined
+  ide: false | string | undefined
 }
 
 export interface CLIDefaults {
   pkg_manager: PackageManager // "npm"
+  ide: false | 'cursor' // "cursor"
   initialize_git: boolean
+  install_packages: boolean
   packages: {
     router: RouterPackage
     styles: StylePackage
@@ -35,6 +39,7 @@ export interface CLIDefaults {
 
 export const defaultCLIConfig: CLIDefaults = {
   pkg_manager: 'npm',
+  ide: 'cursor',
   initialize_git: false,
   packages: {
     router: 'tanstack-router',
@@ -42,6 +47,7 @@ export const defaultCLIConfig: CLIDefaults = {
     database: 'sqlite',
     orm: 'drizzle',
   },
+  install_packages: false,
 }
 
 export interface CLIResults extends CLIDefaults {

@@ -54,7 +54,9 @@ export const selectBoilerplate = (config: CLIResults) => {
    * ####################################################################### */
 
   const spinner = ora(
-    `${config.project_name} ${chalk.bold('Selecting Boilerplate')}...`
+    `${config.project_name} ${chalk.green.bold(`Selecting Boilerplate`)} for ${chalk.bold.green(
+      config.config_key
+    )}...`
   ).start()
   const srcDir = path.join(PKG_ROOT, 'template')
 
@@ -396,11 +398,12 @@ export const selectBoilerplate = (config: CLIResults) => {
   }
 
   try {
-    logger.debug('🔍🔍 config.config_key', config.config_key)
     updateMap[config.config_key]()
 
     spinner.succeed(
-      `${config.project_name} ${chalk.bold.green('Boilerplate selected')} successfully`
+      `${config.project_name} ${chalk.bold.green('Boilerplate selected')} successfully for ${chalk.green(
+        config.config_key
+      )}`
     )
   } catch (e) {
     spinner.fail(
