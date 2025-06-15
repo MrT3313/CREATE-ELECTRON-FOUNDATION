@@ -1,7 +1,7 @@
 <h1 align="center">Create Electron Foundation</h1>
 
 <p align="center">
-  An interactive CLI to bootstrap a modern, type-safe, and scalable Electron application.
+  An interactive CLI to bootstrap an Electron application.
 </p>
 
 <p align="center">
@@ -15,7 +15,11 @@
   <a href="..."><img alt="License" src="..."></a>
 </p> -->
 
-## 🚧 Project Status: Beta 🚧
+## 🚧 Project Status: BETA 🚧
+
+> [!NOTE]
+>
+> [Known Issues](https://github.com/MrT3313/CREATE-ELECTRON-FOUNDATION/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen+%28label%3Abug+OR+type%3ABug%29)
 
 > [!WARNING]
 > This project is in its early stages. While it's ready for you to try out, expect breaking changes and incomplete features.
@@ -24,19 +28,22 @@
 >
 > **Windows** _(and **Linux** if I can get pewdiepie on the line...)_ support is planned for the future, but full functionality is not yet **guaranteed** on those platforms.
 
-## 🚧 [Known Issues](https://github.com/MrT3313/CREATE-ELECTRON-FOUNDATION/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen+%28label%3Abug+OR+type%3ABug%29) 🚧
-
-## 🚧 Prerequisites 🚧
-
-- make
-  this project uses makefiles to build & manage the project.
+## 👀 Prerequisites 👀
 
 - nvm
   To ensure compatibility and smooth development, it's generally recommended to use a Node.js version manager. These help you easily switch between Node.js versions as needed for different projects.
 
   This project makefile management is strongly integrated with [**nvm**](https://github.com/nvm-sh/nvm) and it is recommended that you have it installed on your machine when interacting create-electron-foundation or its scaffolded assets.
 
----
+- make
+
+  This project uses [makefiles](https://opensource.com/article/18/8/what-how-makefile) to build & manage the project. There can be issues with Node.JS installs vs NVM depending on when each were installed.
+
+  **Please investigate your own system to confirm you have the ability to run a makefile command.**
+
+  > [!IMPORTANT]
+  >
+  > If you are unsure your system can run make commands please do not attempt to automatically install packages after scaffolding.
 
 ## What's Included?
 
@@ -82,19 +89,21 @@ npx create-electron-foundation@beta -y
 
 You can also customize your project setup directly via command-line arguments.
 
-| Argument           | Alias   | Description                      | Options                               | Default                                      |
-| ------------------ | ------- | -------------------------------- | ------------------------------------- | -------------------------------------------- |
-| `[project_name]`   |         | Name of the project (positional) | string                                | -                                            |
-| `--project_name`   |         | Name of the project (option)     | string                                | `[project_name]` \|\| `process.env.APP_NAME` |
-| `--router`         |         | Router to use                    | `'tanstack-router'`, `'react-router'` | Interactive prompt                           |
-| `--styles`         |         | Styles to use                    | `'tailwind'`, `'false'`               | Interactive prompt                           |
-| `--database`       |         | Database to use                  | `'sqlite'`, `'false'`                 | Interactive prompt                           |
-| `--orm`            |         | ORM to use                       | `'drizzle'`, `'false'`                | Interactive prompt                           |
-| `--ci`             |         | Run in CI mode (non-interactive) | boolean                               | `false`                                      |
-| `-y`, `--yes`      |         | Skip prompts and use defaults    | boolean                               | `false`                                      |
-| `--pkg_manager`    |         | Package manager to use           | `'npm'`                               | `'npm'`                                      |
-| `--initialize_git` | `--git` | Initialize Git repository        | boolean                               | `true`                                       |
-| `-h`, `--help`     |         | Show help                        | -                                     | -                                            |
+| Argument             | Alias   | Description                        | Options                               | Default |
+| -------------------- | ------- | ---------------------------------- | ------------------------------------- | ------- |
+| `[project_name]`     |         | Name of the project (positional)   | string                                | -       |
+| `--project_name`     |         | Name of the project (option)       | string                                | -       |
+| `--router`           |         | Router to use                      | `'tanstack-router'`, `'react-router'` | -       |
+| `--styles`           |         | Styles to use                      | `'tailwind'`, `'false'`               | -       |
+| `--database`         |         | Database to use                    | `'sqlite'`, `'false'`                 | -       |
+| `--orm`              |         | ORM to use                         | `'drizzle'`, `'false'`                | -       |
+| `--ide`              |         | IDE to use                         | string                                | -       |
+| `--pkg_manager`      |         | Package manager to use             | `'npm'`                               | `'npm'` |
+| `--initialize_git`   | `--git` | Initialize Git repository          | boolean                               | `true`  |
+| `--install_packages` |         | Install packages after scaffolding | boolean                               | `false` |
+| `--ci`               |         | Run in CI mode (non-interactive)   | boolean                               | `false` |
+| `-y`, `--yes`        |         | Skip prompts and use defaults      | boolean                               | `false` |
+| `-h`, `--help`       |         | Show help                          | -                                     | -       |
 
 ## Contributing
 

@@ -1,6 +1,7 @@
 import { Installer } from './Installers.js'
 
 // PACKAGE MANAGER
+export const validPackageManagers = ['npm']
 export type PackageManager = 'npm'
 
 // STYLES
