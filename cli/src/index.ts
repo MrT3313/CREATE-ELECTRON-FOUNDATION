@@ -90,7 +90,7 @@ const main = async () => {
   // 8. INSTALL PACKAGES ######################################################
   if (!cliArgs.ci && config.install_packages) {
     const projectSetupSpinner = ora(
-      `${config.project_name} ${chalk.green.bold('Installing Packages')}...`
+      `${chalk.blue(config.project_name)} ${chalk.green.bold('Installing Packages')}...`
     ).start()
 
     const command = `cd ${config.project_dir} && make ri`
@@ -100,11 +100,11 @@ const main = async () => {
         shell: true,
       })
       projectSetupSpinner.succeed(
-        `${config.project_name} ${chalk.bold.green('Packages installed')} successfully!`
+        `${chalk.blue(config.project_name)} ${chalk.bold.green('Packages installed')} successfully!`
       )
     } catch (err) {
       projectSetupSpinner.fail(
-        `${config.project_name} ${chalk.red('Packages installation failed!')}`
+        `${chalk.blue(config.project_name)} ${chalk.red('Packages installation failed!')}`
       )
       logger.error(`Failed to execute: ${command}`)
       logger.error(err)
@@ -133,11 +133,11 @@ const main = async () => {
         }
       )
       initializeGitSpinner.succeed(
-        `${config.project_name} ${chalk.bold.green('Git initialized')} successfully!`
+        `${chalk.blue(config.project_name)} ${chalk.bold.green('Git initialized')} successfully!`
       )
     } catch (err) {
       initializeGitSpinner.fail(
-        `${config.project_name} ${chalk.red('Git initialization')} failed!`
+        `${chalk.blue(config.project_name)} ${chalk.red('Git initialization')} failed!`
       )
       if (err instanceof Error) {
         logger.error(err.message)
@@ -165,7 +165,7 @@ const main = async () => {
   }
 
   logger.success(
-    `${chalk.green(config.project_name)} ${chalk.bold.green(
+    `${chalk.blue(config.project_name)} ${chalk.bold.green(
       'Project Scaffolded Successfully'
     )} with ${chalk.blue('create-electron-foundation!')}`
   )

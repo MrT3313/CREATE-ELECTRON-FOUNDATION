@@ -54,7 +54,7 @@ export const selectBoilerplate = (config: CLIResults) => {
    * ####################################################################### */
 
   const spinner = ora(
-    `${config.project_name} ${chalk.green.bold(`Selecting Boilerplate`)} for ${chalk.bold.green(
+    `${chalk.blue(config.project_name)} ${chalk.green.bold(`Selecting Boilerplate`)} for ${chalk.bold.green(
       config.config_key
     )}...`
   ).start()
@@ -401,13 +401,13 @@ export const selectBoilerplate = (config: CLIResults) => {
     updateMap[config.config_key]()
 
     spinner.succeed(
-      `${config.project_name} ${chalk.bold.green('Boilerplate selected')} successfully for ${chalk.green(
+      `${chalk.blue(config.project_name)} ${chalk.bold.green('Boilerplate selected')} successfully for ${chalk.green(
         config.config_key
       )}`
     )
   } catch (e) {
     spinner.fail(
-      `${config.project_name} ${chalk.red('Error selecting boilerplate')}`
+      `${chalk.blue(config.project_name)} ${chalk.red('Error selecting boilerplate')}`
     )
     logger.error('🚨🚨 Error selecting boilerplate', e)
     process.exit(1)

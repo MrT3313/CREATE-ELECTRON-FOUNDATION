@@ -21,7 +21,7 @@ function ConfigCard() {
           fontSize: '1.2rem',
         }}
       >
-        <span>{`Framework: Electron`}</span>
+        <span>{`Framework: ${window.env.CEF_FRAMEWORK}`}</span>
         <span>{`Router: ${window.env.CEF_ROUTER}`}</span>
         <span>{`Styles: ${window.env.CEF_STYLES}`}</span>
         <span>{`Database: ${window.env.CEF_DATABASE}`}</span>
