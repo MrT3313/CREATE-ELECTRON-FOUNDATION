@@ -85,7 +85,7 @@ jobs:
           npm version prerelease --workspaces --preid=alpha --no-git-tag-version
           git commit -am "chore(release): bump version to $(node -p "require('./package.json').version") [skip ci]"
           git push
-          npm publish --tag alpha
+          npm publish --workspaces --tag alpha
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_REGISTRY_ACCESS_TOKEN }}
       - name: Bump Version and Publish (Manual Release)
@@ -101,6 +101,6 @@ jobs:
           fi
           npm version $BUMP_TYPE --workspaces -m "chore(release): bump version to %s"
           git push --follow-tags
-          npm publish --tag ${{ github.event.inputs.tag }}
+          npm publish --workspaces --tag ${{ github.event.inputs.tag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_REGISTRY_ACCESS_TOKEN }}
