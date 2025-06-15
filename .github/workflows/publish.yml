@@ -83,7 +83,7 @@ jobs:
         if: github.event_name == 'workflow_run'
         run: |
           npm version prerelease --workspaces --preid=alpha --no-git-tag-version
-          git commit -am "chore(release): bump version to $(node -p "require('./package.json').version") [skip ci]"
+          git commit -am "chore(release): bump version to $(node -p "require('./cli/package.json').version") [alpha] [skip ci]"
           git push
           npm publish --workspaces --tag alpha
         env:
@@ -99,7 +99,7 @@ jobs:
               exit 1
             fi
           fi
-          npm version $BUMP_TYPE --workspaces -m "chore(release): bump version to %s"
+          npm version $BUMP_TYPE --workspaces -m "chore(release): bump version to %s [${{ github.event.inputs.tag }}]"
           git push --follow-tags
           npm publish --workspaces --tag ${{ github.event.inputs.tag }}
         env:
