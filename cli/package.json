@@ -1,6 +1,6 @@
 {
   "name": "@create-electron-foundation/cli",
-  "version": "0.0.23",
+  "version": "0.0.24-alpha.0",
   "type": "module",
   "main": "dist/index.js",
   "description": "Core CLI logic for create-electron-foundation",
