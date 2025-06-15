@@ -3,6 +3,36 @@
 # Get the node version from .nvmrc
 NODE_VERSION := $(shell cat .nvmrc)
 
+# ------------------------------------------------------------------------------
+# macOS/nvm Compatibility Fix
+#
+# Problem:
+# On macOS, if Node.js is installed via Homebrew, it can set a global
+# `npm_config_prefix` environment variable. This variable conflicts with nvm
+# (Node Version Manager), which this Makefile uses for Node version management.
+# When nvm detects this variable, it throws an error and exits to prevent
+# potential package corruption.
+#
+# Solution:
+# This block conditionally prepares a command to `unset` the conflicting
+# environment variable *only on macOS*.
+#
+# - `uname -s`: This command gets the name of the operating system kernel.
+#   On macOS, it returns "Darwin".
+# - `ifeq ... endif`: This is a makefile conditional. The code inside only runs
+#   if the condition is met.
+# - `UNSET_NPM_CONFIG_PREFIX`: We define a variable that is empty by default.
+#   On Darwin systems, we set it to `unset npm_config_prefix &&`.
+#
+# This variable is then prepended to any command that uses `npm` or `nvm`,
+# ensuring the conflict is resolved for that specific command without
+# permanently altering the user's shell configuration.
+# ------------------------------------------------------------------------------
+UNSET_NPM_CONFIG_PREFIX :=
+ifeq ($(shell uname -s),Darwin)
+	UNSET_NPM_CONFIG_PREFIX := unset npm_config_prefix &&
+endif
+
 # Get current node version (if node is available)
 CURRENT_NODE_VERSION := $(shell node -v 2>/dev/null || echo "none")
 
@@ -51,7 +81,7 @@ kac: ri gen-tsr-routes setup dev
 
 # Package Management ###########################################################
 i:
-	@$(NODE_MANAGE) && npm install
+	@$(UNSET_NPM_CONFIG_PREFIX)$(NODE_MANAGE) && npm install
 
 ri:
 	rm -rf node_modules package-lock.json
@@ -59,17 +89,17 @@ ri:
 
 # Workflows ###################################################################
 gen-tsr-routes:
-	@$(NODE_MANAGE) && npm run tanstackrouter:generate:routes
+	@$(UNSET_NPM_CONFIG_PREFIX)$(NODE_MANAGE) && npm run tanstackrouter:generate:routes
 
 setup:
-	@$(NODE_MANAGE) && npm run db:setup
+	@$(UNSET_NPM_CONFIG_PREFIX)$(NODE_MANAGE) && npm run db:setup
 
 dev:
 	@if [ -d "node_modules" ]; then \
 		echo "Starting development server..."; \
-		$(NODE_MANAGE) && npm run dev; \
+		@$(UNSET_NPM_CONFIG_PREFIX)$(NODE_MANAGE) && npm run dev; \
 	else \
 		echo "node_modules not found. Running install first..."; \
-		$(MAKE) i; \
+		$(MAKE) ri; \
 		$(MAKE) dev; \
 	fi

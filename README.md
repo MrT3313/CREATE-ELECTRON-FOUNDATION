@@ -24,6 +24,16 @@
 >
 > **Windows** _(and **Linux** if I can get pewdiepie on the line...)_ support is planned for the future, but full functionality is not yet **guaranteed** on those platforms.
 
+## 🚧 Prerequisites 🚧
+
+- make
+  this project uses makefiles to build & manage the project.
+
+- nvm
+  To ensure compatibility and smooth development, it's generally recommended to use a Node.js version manager. These help you easily switch between Node.js versions as needed for different projects.
+
+  This project makefile management is strongly integrated with [**nvm**](https://github.com/nvm-sh/nvm) and it is recommended that you have it installed on your machine when interacting create-electron-foundation or its scaffolded assets.
+
 ---
 
 ## What's Included?
@@ -39,12 +49,6 @@ You can also choose to include:
 - **Styling:** [`Tailwind`](https://tailwindcss.com/) or `Vanilla CSS`
 - **Database:** [`SQLite`](https://www.sqlite.org/index.html)
 - **ORM:** [`Drizzle ORM`](https://orm.drizzle.team/) (when SQLite is selected)
-
-## Prerequisites
-
-To ensure compatibility and smooth development, it's generally recommended to use a Node.js version manager. These help you easily switch between Node.js versions as needed for different projects.
-
-This project makefile management is strongly integrated with [**nvm**](https://github.com/nvm-sh/nvm) and it is recommended that you have it installed on your machine when interacting create-electron-foundation or its scaffolded assets.
 
 ## Getting Started
 
