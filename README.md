@@ -24,6 +24,10 @@
 >
 > **Windows** _(and **Linux** if I can get pewdiepie on the line...)_ support is planned for the future, but full functionality is not yet **guaranteed** on those platforms.
 
+## 🚧 Known Issues 🚧
+
+- rerunning a database configuration project with the **same project name** as a previously run and migrated database configuration project
+
 ## 🚧 Prerequisites 🚧
 
 - make

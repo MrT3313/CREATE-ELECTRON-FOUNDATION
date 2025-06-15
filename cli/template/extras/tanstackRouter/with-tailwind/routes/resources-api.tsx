@@ -39,13 +39,17 @@ export function Resources() {
       )}
 
       <div className={cx('hero', 'glass')}>
-        <h1>Resource List</h1>
+        <h1>API Resource List</h1>
         <span>
           This is using the{' '}
           <a
             href="https://jsonplaceholder.typicode.com/"
             target="_blank"
             rel="noopener noreferrer"
+            style={{
+              fontStyle: 'italic',
+              textDecoration: 'underline',
+            }}
           >
             JSON Placeholder API
           </a>
@@ -60,7 +64,7 @@ export function Resources() {
           'container scrollable',
           'justify-start',
           'bg-white',
-          'max-h-[400px]'
+          'max-h-[300px]'
         )}
       >
         {isLoading ? (
@@ -85,6 +89,8 @@ export function Resources() {
           </p>
         )}
       </div>
+
+      <br />
     </div>
   )
 }

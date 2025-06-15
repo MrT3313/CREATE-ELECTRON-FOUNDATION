@@ -54,7 +54,7 @@ const main = async () => {
     process.env.APP_NAME = cliArgs.project_name
     process.env.CEF_FRAMEWORK = 'Electron'
     process.env.CEF_ROUTER = cliArgs.router
-    process.env.CEF_STYLES = cliArgs.styles || 'CSS'
+    process.env.CEF_STYLES = cliArgs.styles || 'Vanilla CSS'
     if (cliArgs.database) {
       process.env.CEF_DATABASE = cliArgs.database
     }
