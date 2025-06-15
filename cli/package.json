@@ -1,7 +1,6 @@
 {
   "name": "@create-electron-foundation/cli",
-  "version": "0.0.16",
-  "private": true,
+  "version": "0.0.0",
   "type": "module",
   "main": "dist/index.js",
   "description": "Core CLI logic for create-electron-foundation",
@@ -12,18 +11,6 @@
     "lint": "eslint . --ext .ts,.js --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
-  },
-  "dependencies": {
-    "@clack/prompts": "^0.11.0",
-    "@types/yargs": "^17.0.33",
-    "chalk": "^5.4.1",
-    "commander": "^14.0.0",
-    "execa": "^9.6.0",
-    "fs-extra": "^11.3.0",
-    "gradient-string": "^3.0.0",
-    "ora": "^8.2.0",
-    "sort-package-json": "^3.2.1",
-    "yargs": "^18.0.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
