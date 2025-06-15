@@ -93,7 +93,37 @@ const main = async () => {
       `${chalk.blue(config.project_name)} ${chalk.green.bold('Installing Packages')}...`
     ).start()
 
-    const command = `cd ${config.project_dir} && make ri`
+    let command = `cd ${config.project_dir} && make ri`
+    if (process.platform === 'darwin') {
+      /**
+        # ------------------------------------------------------------------------------
+        # macOS/nvm Compatibility Fix
+        #
+        # Problem:
+        # On macOS, if Node.js is installed via Homebrew, it can set a global
+        # `npm_config_prefix` environment variable. This variable conflicts with nvm
+        # (Node Version Manager), which this Makefile uses for Node version management.
+        # When nvm detects this variable, it throws an error and exits to prevent
+        # potential package corruption.
+        #
+        # Solution:
+        # This block conditionally prepares a command to `unset` the conflicting
+        # environment variable *only on macOS*.
+        #
+        # - `uname -s`: This command gets the name of the operating system kernel.
+        #   On macOS, it returns "Darwin".
+        # - `ifeq ... endif`: This is a makefile conditional. The code inside only runs
+        #   if the condition is met.
+        # - `UNSET_NPM_CONFIG_PREFIX`: We define a variable that is empty by default.
+        #   On Darwin systems, we set it to `unset npm_config_prefix &&`.
+        #
+        # This variable is then prepended to any command that uses `npm` or `nvm`,
+        # ensuring the conflict is resolved for that specific command without
+        # permanently altering the user's shell configuration.
+        # ------------------------------------------------------------------------------
+       */
+      command = `cd ${config.project_dir} && unset npm_config_prefix && make ri`
+    }
 
     try {
       await execa(command, {
