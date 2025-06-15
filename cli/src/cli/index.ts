@@ -274,7 +274,8 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
     }
 
     p.note(
-      `Project Name: ${config.project_name}
+      `
+      Project Name: ${config.project_name}
       Router: ${config?.packages?.router}
       Styles: ${config?.packages?.styles}
       Database: ${config?.packages?.database}
