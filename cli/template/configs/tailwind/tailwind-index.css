@@ -94,7 +94,7 @@
   }
 
   .item {
-    @apply flex flex-col gap-1 border-b-2 border-gray-200 p-2 last:border-b-0;
+    @apply flex flex-col w-full items-center justify-center gap-1 border-b-2 border-gray-200 p-2 last:border-b-0;
   }
 
   .env-vars {
@@ -104,6 +104,14 @@
       text-[#9333ea]
       bg-white
       p-4;
+  }
+
+  .input {
+    @apply w-full px-3 py-3 border border-gray-300 rounded-lg bg-white text-gray-700 text-base transition-colors duration-200 ease-in-out;
+  }
+  
+  .input:focus {
+    @apply outline-none border-purple-600 ring-4 ring-purple-600/10;
   }
 
   /* Base button with CSS custom properties */

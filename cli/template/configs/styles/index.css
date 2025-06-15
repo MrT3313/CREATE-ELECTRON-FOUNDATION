@@ -173,6 +173,9 @@ body {
 .item {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
   border-bottom: 2px solid #e5e7eb;
   padding: 0.5rem;
   gap: 0.25rem;

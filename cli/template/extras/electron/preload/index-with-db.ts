@@ -59,6 +59,11 @@ contextBridge.exposeInMainWorld('db', {
 contextBridge.exposeInMainWorld('env', {
   CUSTOM_ENV_VAR: process.env.CUSTOM_ENV_VAR,
   NODE_ENV: process.env.NODE_ENV,
+  CEF_FRAMEWORK: process.env.CEF_FRAMEWORK,
+  CEF_ROUTER: process.env.CEF_ROUTER,
+  CEF_STYLES: process.env.CEF_STYLES,
+  CEF_DATABASE: process.env.CEF_DATABASE,
+  CEF_ORM: process.env.CEF_ORM,
 })
 
 // A utility function that returns a Promise, resolving when the document's readyState

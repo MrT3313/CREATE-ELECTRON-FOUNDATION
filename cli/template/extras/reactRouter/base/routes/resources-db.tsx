@@ -30,7 +30,10 @@ export function Resources() {
 
       <div className={cx('hero', 'glass')}>
         <h1>DB Resource List</h1>
-        <p>These resources are fetched from the local SQLite database.</p>
+        <span style={{ textAlign: 'center' }}>This is fetching from the SQLite database.</span>
+        <span style={{ textAlign: 'center' }}>
+          The api to fetch data from an external API is still in the code.
+        </span>
       </div>
 
       <br />
@@ -45,7 +48,7 @@ export function Resources() {
         style={{
           justifyContent: 'flex-start',
           backgroundColor: 'white',
-          maxHeight: '400px',
+          maxHeight: '300px',
         }}
       >
         {isLoading ? (
@@ -55,23 +58,25 @@ export function Resources() {
         ) : resources ? (
           resources?.length > 0 ? (
             resources?.map((resource) => (
-              <div className={cx('item')} key={resource.id}>
-                <p className="font-medium">{`IDs : ${resource.user_id} - ${resource.id}`}</p>
-                <p className="text-sm text-gray-600">{`Title: ${resource.title}`}</p>
-                <p className="text-sm text-gray-600">{`Body: ${resource.body}`}</p>
+              <div key={resource.id} className={cx('item')}>
+                <p style={{ fontWeight: '500' }}>{`IDs : ${resource.user_id} - ${resource.id}`}</p>
+                <p style={{ fontSize: '14px', color: '#4b5563' }}>{`Title: ${resource.title}`}</p>
+                <p style={{ fontSize: '14px', color: '#4b5563' }}>{`Body: ${resource.body}`}</p>
               </div>
             ))
           ) : (
-            <p className="text-gray-500">
+            <p style={{ color: '#4b5563' }}>
               No resources found. Add your first resource above!
             </p>
           )
         ) : (
-          <p className="text-gray-500">
+          <p style={{ color: '#4b5563' }}>
             No resources found. Add your first resource above!
           </p>
         )}
       </div>
+
+      <br />
     </div>
   )
 }

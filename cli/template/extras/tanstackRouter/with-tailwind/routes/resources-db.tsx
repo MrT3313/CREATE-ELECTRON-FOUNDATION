@@ -40,7 +40,7 @@ export function Resources() {
       )}
 
       <div className={cx('hero', 'glass')}>
-        <h1>Resource List</h1>
+        <h1>DB Resource List</h1>
         <span>This is fetching from the SQLite database.</span>
         <span>
           The api to fetch data from an external API is still in the code.
@@ -59,7 +59,7 @@ export function Resources() {
           'container scrollable',
           'justify-start',
           'bg-white',
-          'max-h-[400px]'
+          'max-h-[300px]'
         )}
       >
         {isLoading ? (
@@ -84,6 +84,8 @@ export function Resources() {
           </p>
         )}
       </div>
+
+      <br />
     </div>
   )
 }

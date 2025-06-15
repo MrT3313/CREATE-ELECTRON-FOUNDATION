@@ -26,12 +26,12 @@ Fixes # (issue)
 
 - [ ] Tanstack Router : Tailwind
 - [ ] Tanstack Router : Tailwind : SQLite & Drizzle
-- [ ] Tanstack Router : CSS
-- [ ] Tanstack Router : CSS : SQLite & Drizzle
+- [ ] Tanstack Router : Vanilla CSS
+- [ ] Tanstack Router : Vanilla CSS : SQLite & Drizzle
 - [ ] React Router : Tailwind
 - [ ] React Router : Tailwind : SQLite & Drizzle
-- [ ] React Router : CSS
-- [ ] React Router : CSS : SQLite & Drizzle
+- [ ] React Router : Vanilla CSS
+- [ ] React Router : Vanilla CSS : SQLite & Drizzle
 
 ## 🧪 How Has This Been Tested?
 
@@ -42,7 +42,7 @@ Provide instructions so we can reproduce.
 
 ### Local
 
-- [ ] MacOS
+- [x] MacOS
 - [ ] Windows
 - [ ] Linux
 
@@ -64,6 +64,3 @@ These should run / fail automatically
 - [ ] I have run `make laf` to lint and format my code
 - [ ] I have made corresponding changes to the documentation
 - [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] I have run `make batch-test` to ensure all existing and new tests pass
-- [ ] Any dependent changes have been merged and published in downstream modules
