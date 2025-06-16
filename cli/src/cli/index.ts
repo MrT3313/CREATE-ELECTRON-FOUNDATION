@@ -9,8 +9,8 @@ import chalk from 'chalk'
 import { DEFAULT_APP_NAME } from '../consts.js'
 
 // TYPES
-import type { ConfigKey, Yargs, CLIResults } from '../types/CLI.js'
 import { defaultCLIConfig } from '../types/CLI.js'
+import type { ConfigKey, Yargs, CLIResults, IDE } from '../types/index.js'
 import type {
   RouterPackage,
   DatabasePackage,
@@ -78,11 +78,16 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         if (cliArgs.initialize_git) {
           config.initialize_git = cliArgs.initialize_git
         }
+
+        if (cliArgs.ide !== undefined) {
+          config.ide = cliArgs.ide as IDE
+        }
       } catch (err) {
         logger.error('🚨🚨 Error running prompt cli --yes', err)
         process.exit(1)
       }
     } else {
+      logger.info('RUNNING USER PROMPT CLI!!', JSON.stringify(cliArgs, null, 2))
       /**
         prompt the user for their desired configuration - skipping values entered
         directly through the CLI
@@ -130,7 +135,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }
 
         // DATABASE ###########################################################
-        if (cliArgs.database === undefined) {
+        if (cliArgs.database === undefined && cliArgs.database !== false) {
           prompts.initialize_database = () =>
             p.confirm({
               message: 'Should we initialize an SQLite database?',
@@ -191,7 +196,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         // }
 
         // STYLES #############################################################
-        if (cliArgs.styles === undefined) {
+        if (cliArgs.styles === undefined && cliArgs.styles !== false) {
           prompts.styles = () =>
             p.confirm({
               message: 'Will you be using Tailwind CSS for styling?',
@@ -200,7 +205,10 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }
 
         // GIT ################################################################
-        if (cliArgs.initialize_git === undefined) {
+        if (
+          cliArgs.initialize_git === undefined &&
+          cliArgs.initialize_git !== false
+        ) {
           prompts.initialize_git = () =>
             p.confirm({
               message:
@@ -210,7 +218,10 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }
 
         // INSTALL PACKAGES ####################################################
-        if (cliArgs.install_packages === undefined) {
+        if (
+          cliArgs.install_packages === undefined &&
+          cliArgs.install_packages !== false
+        ) {
           prompts.install_packages = () =>
             p.confirm({
               message: 'Should we install packages after scaffolding?',
@@ -219,11 +230,25 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }
 
         // IDE ################################################################
-        if (cliArgs.ide === undefined) {
+        if (cliArgs.ide === undefined && cliArgs.ide !== false) {
           prompts.ide = () =>
-            p.confirm({
-              message: 'Are you using Cursor as your IDE?',
-              initialValue: true,
+            p.select({
+              message: 'Which IDE would you like to use?',
+              options: [
+                {
+                  value: 'cursor',
+                  label: 'Cursor',
+                },
+                {
+                  value: 'vscode',
+                  label: 'VSCode',
+                },
+                {
+                  value: 'none',
+                  label: 'Neither',
+                },
+              ],
+              initialValue: 'cursor',
             })
         }
 
@@ -238,31 +263,25 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }
 
         // DEFINE: config with user prompts ###################################
-        const initialize_git =
-          typeof group.initialize_git === 'boolean'
-            ? group.initialize_git
-            : cliArgs.initialize_git
-        const router = group.router || cliArgs.router
-
-        const styles =
-          group.styles === true
-            ? 'tailwind'
-            : group.styles === false
-              ? false
-              : cliArgs.styles
-
-        const database = group.database || cliArgs.database
         const project_name = group.project_name || cliArgs.project_name
+
+        const router = group.router || cliArgs.router // group.router prompt is skipped if --router=<...> is passed in the CLI
+
+        const styles = group.styles || cliArgs.styles // group.styles prompt is skipped if --styles=<...> is passed in the CLI
+
+        const database = group.database || cliArgs.database // group.database prompt is skipped if --database=<...> is passed in the CLI
+
         const orm = group.orm || cliArgs.orm
-        const install_packages = cliArgs.ci
-          ? false
-          : typeof group.install_packages === 'boolean'
-            ? group.install_packages
-            : cliArgs.install_packages
-        const ide = (group.ide && 'cursor') || cliArgs.ide || false
+
+        const initialize_git = group.initialize_git || cliArgs.initialize_git // group.initialize_git prompt is skipped if --initialize_git=<...> is passed in the CLI
+
+        const install_packages =
+          group.install_packages || cliArgs.install_packages // group.install_packages prompt is skipped if --install_packages=<...> is passed in the CLI
+
+        const ide = group.ide || cliArgs.ide // group.ide prompt is skipped if --ide=<...> is passed in the CLI
 
         const config_key: ConfigKey = `${router as RouterPackage}-${
-          styles || 'none'
+          (styles as StylePackage) || 'none'
         }-${(database as DatabasePackage) || 'none'}-${
           (orm as ORMPackage) || 'none'
         }`
@@ -274,14 +293,14 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
             cliArgs.project_dir || `./${project_name || DEFAULT_APP_NAME}`,
           pkg_manager: 'npm',
           ide,
-          initialize_git: initialize_git ?? true,
+          initialize_git: initialize_git,
           packages: {
             router,
-            styles: styles || false,
+            styles: (styles as StylePackage) || false,
             database: (database as DatabasePackage) || false,
             orm: (orm as ORMPackage) || false,
           },
-          install_packages: install_packages ?? true,
+          install_packages: install_packages,
         }
       } catch (err) {
         logger.error('🚨🚨 Error running prompt cli', err)

@@ -17,33 +17,36 @@
 
 ## 🚧 Project Status: BETA 🚧
 
+> [!WARNING]
+>
+> This project is in its early stages.  
+> While it's ready for you to try out, expect breaking changes and incomplete features.  
+> The best way to get these features implemented or improved is to participate 🙂
+
 > [!NOTE]
 >
 > [Known Issues](https://github.com/MrT3313/CREATE-ELECTRON-FOUNDATION/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen+%28label%3Abug+OR+type%3ABug%29)
 
-> [!WARNING]
-> This project is in its early stages. While it's ready for you to try out, expect breaking changes and incomplete features.
->
-> **Platform Support:** Currently, `create-electron-foundation` is developed and tested primarily on **macOS**.
->
-> **Windows** _(and **Linux** if I can get pewdiepie on the line...)_ support is planned for the future, but full functionality is not yet **guaranteed** on those platforms.
+**Platform Support:**
+
+- `create-electron-foundation` was developed and tested on **macOS**.
+- **I have not done nearly enough testing on the final Electron production assets as I have been building towards local scaffolding first.**
+- Windows _(and Linux if I can get pewdiepie on the line...)_ support is planned for the future, but full functionality is not **guaranteed** on those platforms.
 
 ## 👀 Prerequisites 👀
 
-- nvm
+- `nvm`  
   To ensure compatibility and smooth development, it's generally recommended to use a Node.js version manager. These help you easily switch between Node.js versions as needed for different projects.
 
-  This project makefile management is strongly integrated with [**nvm**](https://github.com/nvm-sh/nvm) and it is recommended that you have it installed on your machine when interacting create-electron-foundation or its scaffolded assets.
+  This project management is strongly integrated with [**nvm**](https://github.com/nvm-sh/nvm) and it is recommended that you have it installed on your machine when using create-electron-foundation or its scaffolded assets.
 
-- make
-
-  This project uses [makefiles](https://opensource.com/article/18/8/what-how-makefile) to build & manage the project. There can be issues with Node.JS installs vs NVM depending on when each were installed.
-
-  **Please investigate your own system to confirm you have the ability to run a makefile command.**
+- `make`  
+  This project uses a [makefile](https://opensource.com/article/18/8/what-how-makefile) to build & manage the project. There can be issues with Node.JS installs vs NVM depending on when each were installed.
 
   > [!IMPORTANT]
   >
-  > If you are unsure your system can run make commands please do not attempt to automatically install packages after scaffolding.
+  > Please investigate your own system to confirm you have the ability to run a makefile command.  
+  > If you are unsure please do not attempt to automatically install packages after scaffolding.
 
 ## What's Included?
 
@@ -52,12 +55,15 @@
 - **Framework:** [`Electron`](https://www.electronjs.org/) (with a modern main/renderer process setup)
 - **Frontend:** [`React`](https://react.dev/) w/[`TypeScript`](https://www.typescriptlang.org/) (via [`Vite`](https://vitejs.dev/))
 
-You can also choose to include:
+You can choose to include:
 
 - **Routing:** [`TanStack Router`](https://tanstack.com/router) or [`React Router`](https://reactrouter.com/)
 - **Styling:** [`Tailwind`](https://tailwindcss.com/) or `Vanilla CSS`
-- **Database:** [`SQLite`](https://www.sqlite.org/index.html)
-- **ORM:** [`Drizzle ORM`](https://orm.drizzle.team/) (when SQLite is selected)
+- **Database:** [`SQLite*`](https://www.sqlite.org/index.html)
+- **ORM:** [`Drizzle ORM**`](https://orm.drizzle.team/) (when SQLite is selected)
+
+_\*optional_  
+_\*\*optional : required if Database selected_
 
 ## Getting Started
 
@@ -66,6 +72,8 @@ To create a new Electron application, run the following command in your terminal
 ```bash
 npx create-electron-foundation@latest
 npx create-electron-foundation # will call @latest
+
+# to access other builds
 npx create-electron-foundation@beta
 npx create-electron-foundation@alpha
 ```
@@ -77,13 +85,8 @@ The CLI will guide you through a few interactive prompts to configure your proje
 To skip the prompts and scaffold a project with the default options, use the `-y` flag:
 
 ```bash
-npx create-electron-foundation@beta -y
+npx create-electron-foundation -y
 ```
-
-**Default Stack:**
-
-- Router: **Tanstack Router**
-- Styling: **Tailwind CSS**
 
 ## Command-Line Arguments
 
@@ -97,7 +100,7 @@ You can also customize your project setup directly via command-line arguments.
 | `--styles`           |         | Styles to use                      | `'tailwind'`, `'false'`               | -       |
 | `--database`         |         | Database to use                    | `'sqlite'`, `'false'`                 | -       |
 | `--orm`              |         | ORM to use                         | `'drizzle'`, `'false'`                | -       |
-| `--ide`              |         | IDE to use                         | string                                | -       |
+| `--ide`              |         | IDE to use                         | `'cursor'`, `'false'`                 | -       |
 | `--pkg_manager`      |         | Package manager to use             | `'npm'`                               | `'npm'` |
 | `--initialize_git`   | `--git` | Initialize Git repository          | boolean                               | `true`  |
 | `--install_packages` |         | Install packages after scaffolding | boolean                               | `false` |

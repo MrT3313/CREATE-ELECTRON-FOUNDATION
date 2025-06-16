@@ -1,4 +1,4 @@
-.PHONY: i ri build laf version-patch version-minor version-major version pack dry-run publish-local link unlink check-link batch-test
+.PHONY: i ri build laf version-patch version-minor version-major version pack dry-run publish-local link unlink check-link batch-test test
 
 # PACKAGE MANAGEMENT ##########################################################
 i:
@@ -60,5 +60,9 @@ check-link:
 	@echo "-----------------------------------------------------"
 
 # TESTING #####################################################################
+test:
+	@echo "Running tests for @create-electron-foundation/cli..."
+	npm test -w @create-electron-foundation/cli
+
 batch-test:
 	cd TEST && ./batch.test.sh

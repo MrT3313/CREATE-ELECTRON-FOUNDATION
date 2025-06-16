@@ -17,6 +17,9 @@ import {
   StylePackage,
   DatabasePackage,
   ORMPackage,
+  PackageManager,
+  RouterPackage,
+  IDE,
 } from '../types/index.js'
 
 export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
@@ -180,7 +183,7 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
         argv.ide = undefined
       } else if (argv.ide) {
         const ide = argv.ide.toLowerCase()
-        if (!validIDEs.includes(ide)) {
+        if (ide !== 'false' && !validIDEs.includes(ide)) {
           logger.error(`Invalid IDE: ${argv.ide}. Setting to undefined.`)
           argv.ide = undefined
         } else {
@@ -226,34 +229,50 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
   }
 
   const result: Yargs = {
+    project_dir: project_name_arg ? path.resolve(project_name_arg) : undefined,
+
     ci: args.ci || undefined,
     y: args.y || undefined,
+
     project_name: project_name || undefined,
-    project_dir: project_name_arg ? path.resolve(project_name_arg) : undefined,
-    ide: args.ide as Yargs['ide'],
-    router: args.router as Yargs['router'],
+
+    router: (args.router as RouterPackage) || undefined,
+
     styles:
-      args.styles === undefined
+      args.styles === undefined // nothing was passed in for --styles=<...>
         ? undefined
-        : args.styles === 'false'
+        : args.styles === 'false' // --styles=false
           ? false
-          : (args.styles as StylePackage),
+          : (args.styles as StylePackage), // pass validated styles
+
     database:
-      args.database === undefined
+      args.database === undefined // nothing was passed in for --database=<...>
         ? undefined
-        : args.database === 'false'
+        : args.database === 'false' // --database=false
           ? false
-          : (args.database as DatabasePackage),
+          : (args.database as DatabasePackage), // pass validated database
+
     orm:
-      args.orm === undefined
+      args.orm === undefined // nothing was passed in for --orm=<...>
         ? undefined
-        : args.orm === 'false'
+        : args.orm === 'false' // --orm=false
           ? false
-          : (args.orm as ORMPackage),
-    pkg_manager: args.pkg_manager as Yargs['pkg_manager'],
+          : (args.orm as ORMPackage), // pass validated orm
+
+    pkg_manager: (args.pkg_manager as PackageManager) || undefined,
+
     initialize_git: args.initialize_git || undefined,
+
     install_packages: args.install_packages || undefined,
+
+    ide:
+      args.ide === undefined
+        ? undefined
+        : args.ide === 'false'
+          ? false
+          : (args.ide as IDE),
   }
 
+  logger.info('PARSED CLI ARGS', JSON.stringify(result, null, 2))
   return result
 }

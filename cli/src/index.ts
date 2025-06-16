@@ -182,7 +182,11 @@ const main = async () => {
   // 10. OPEN: in IDE ##########################################################
   if (config.ide && !cliArgs.ci) {
     let command = `cd "${config.project_name}"`
-    command += ` && ${config.ide} .`
+    if (config.ide === 'cursor') {
+      command += ` && ${config.ide} .`
+    } else if (config.ide === 'vscode') {
+      command += ` && code .`
+    }
 
     try {
       await execa(command, {

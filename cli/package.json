@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "description": "Core CLI logic for create-electron-foundation",
   "scripts": {
+    "test": "vitest run",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "dev": "tsc -p tsconfig.json --watch",
@@ -17,7 +18,8 @@
     "@types/node": "^24.0.1",
     "ts-node": "^10.9.2",
     "type-fest": "^4.41.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.3"
   },
   "engines": {
     "node": "22.16.0"

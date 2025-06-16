@@ -4,29 +4,30 @@ import type {
   PackageManager,
   DatabasePackage,
   ORMPackage,
-} from './Packages.js'
+  IDE,
+} from './index.js'
 
 export type ConfigKey =
   `${RouterPackage}-${StylePackage | 'none'}-${DatabasePackage | 'none'}-${ORMPackage | 'none'}`
 
 export interface Yargs {
-  ci: boolean | undefined
-  y: boolean | undefined
-  project_name: string | undefined
-  project_dir: string | undefined
-  router: RouterPackage | undefined
-  styles: StylePackage | undefined | false
-  database: DatabasePackage | undefined | false
-  orm: ORMPackage | undefined | false
-  pkg_manager: PackageManager | undefined
-  initialize_git: boolean | undefined
-  install_packages: boolean | undefined
-  ide: 'cursor' | false | undefined
+  ci: undefined | boolean
+  y: undefined | boolean
+  project_name: undefined | string
+  project_dir: undefined | string
+  router: undefined | RouterPackage
+  styles: undefined | StylePackage | false
+  database: undefined | DatabasePackage | false
+  orm: undefined | ORMPackage | false
+  pkg_manager: undefined | PackageManager
+  initialize_git: undefined | boolean
+  install_packages: undefined | boolean
+  ide: undefined | IDE | false
 }
 
 export interface CLIDefaults {
   pkg_manager: PackageManager // "npm"
-  ide: false | 'cursor' // "cursor"
+  ide: IDE | false
   initialize_git: boolean
   install_packages: boolean
   packages: {

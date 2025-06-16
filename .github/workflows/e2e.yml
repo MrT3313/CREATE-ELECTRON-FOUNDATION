@@ -197,6 +197,9 @@ jobs:
             args+=("--orm=${{ matrix.config.orm }}")
           fi
           args+=("--ci")
+          args+=("--ide=false")
+          args+=("--install_packages=false")
+          args+=("--initialize_git=false")
 
           # Execute the CLI to scaffold a new project.
           node cli/dist/index.js "./temp-scaffolded-project/$project_name" "${args[@]}"
