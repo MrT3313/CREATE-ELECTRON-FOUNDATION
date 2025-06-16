@@ -94,20 +94,29 @@ jobs:
         run: |
           BUMP_TYPE=${{ github.event.inputs.version_bump }}
           NPM_TAG=${{ github.event.inputs.tag }}
+          VERSION_ARG="$BUMP_TYPE"
+
+          if [ "$BUMP_TYPE" = "custom" ]; then
+            VERSION_ARG="${{ github.event.inputs.specific_version }}"
+            if [ -z "$VERSION_ARG" ]; then
+              echo "Error: 'specific_version' must be provided when 'custom' is selected."
+              exit 1
+            fi
+          fi
+
+          COMMIT_MESSAGE="chore(release): bump version to %s [$NPM_TAG]"
 
           if [ "$NPM_TAG" = "beta" ]; then
-            npm version prerelease --preid=beta -m "chore(release): bump version to %s [beta]"
-          else
-            if [ "$BUMP_TYPE" = "custom" ]; then
-              BUMP_TYPE=${{ github.event.inputs.specific_version }}
-              if [ -z "$BUMP_TYPE" ]; then
-                echo "Error: 'specific_version' must be provided when 'custom' is selected."
-                exit 1
-              fi
+            if [ "$BUMP_TYPE" != "custom" ]; then
+              npm version "pre$BUMP_TYPE" --preid=beta -m "$COMMIT_MESSAGE"
+            else
+              npm version "$VERSION_ARG" -m "$COMMIT_MESSAGE"
             fi
-            npm version $BUMP_TYPE -m "chore(release): bump version to %s [$NPM_TAG]"
+          else
+            npm version "$VERSION_ARG" -m "$COMMIT_MESSAGE"
           fi
+
           git push --follow-tags
-          npm publish --tag $NPM_TAG
+          npm publish --tag "$NPM_TAG"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_REGISTRY_ACCESS_TOKEN }}
