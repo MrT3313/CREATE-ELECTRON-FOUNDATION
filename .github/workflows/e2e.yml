@@ -213,3 +213,7 @@ jobs:
 
           echo "Verifying project structure for ${{ matrix.config.name }}..."
           echo "TODO..."
+
+          # need to investigate best way to test
+          #   - file level: take a snapshot of the "example" project made in the /TEST/test.sh 
+          #   - code level: ?? is the resource.tsx using the .db. or the .api.
