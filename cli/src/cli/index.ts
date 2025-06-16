@@ -87,7 +87,6 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         process.exit(1)
       }
     } else {
-      logger.info('RUNNING USER PROMPT CLI!!', JSON.stringify(cliArgs, null, 2))
       /**
         prompt the user for their desired configuration - skipping values entered
         directly through the CLI

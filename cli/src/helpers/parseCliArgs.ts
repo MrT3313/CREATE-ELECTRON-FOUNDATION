@@ -317,6 +317,6 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
           : (args.ide as IDE),
   }
 
-  logger.info('PARSED CLI ARGS', JSON.stringify(result, null, 2))
+  // logger.info('PARSED CLI ARGS', JSON.stringify(result, null, 2))
   return result
 }
