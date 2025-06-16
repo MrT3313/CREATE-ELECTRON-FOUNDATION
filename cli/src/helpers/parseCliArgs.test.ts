@@ -4,8 +4,8 @@ import {
   validRouters,
   validStyles,
   validPackageManagers,
-} from '@/types/Packages.js'
-import { validIDEs } from '@/types/index.js'
+} from '../types/Packages.js'
+import { validIDEs } from '../types/index.js'
 import path from 'path'
 
 // Mock the logger to prevent console output during tests
@@ -108,6 +108,30 @@ describe('parseCliArgs', () => {
     expect(result.orm).toBe(false)
   })
 
+  it('should correctly parse --git=false as false', async () => {
+    const argv = createArgv(['--git=false'])
+    const result = await parseCliArgs(argv)
+    expect(result.initialize_git).toBe(false)
+  })
+
+  it('should correctly parse --git=true as true', async () => {
+    const argv = createArgv(['--git=true'])
+    const result = await parseCliArgs(argv)
+    expect(result.initialize_git).toBe(true)
+  })
+
+  it('should correctly parse --install_packages=false as false', async () => {
+    const argv = createArgv(['--install_packages=false'])
+    const result = await parseCliArgs(argv)
+    expect(result.install_packages).toBe(false)
+  })
+
+  it('should correctly parse --install_packages=true as true', async () => {
+    const argv = createArgv(['--install_packages=true'])
+    const result = await parseCliArgs(argv)
+    expect(result.install_packages).toBe(true)
+  })
+
   it('should handle dependent database and orm options correctly', async () => {
     // Case 1: Only database is provided
     let argv = createArgv(['--database', 'sqlite'])
@@ -146,8 +170,8 @@ describe('parseCliArgs', () => {
       '--ide=vscode',
       '--ci',
       '--y',
-      '--git',
-      '--install_packages',
+      '--git=true',
+      '--install_packages=true',
       '--some-other-random-flag=true',
     ])
 

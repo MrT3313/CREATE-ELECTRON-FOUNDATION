@@ -135,68 +135,16 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }
 
         // DATABASE ###########################################################
-        if (cliArgs.database === undefined && cliArgs.database !== false) {
+        if (cliArgs.database === undefined) {
           prompts.initialize_database = () =>
             p.confirm({
               message: 'Should we initialize an SQLite database?',
               initialValue: true,
             })
-
-          // // TODO: add back when we have > 1 database option
-          // // TODO: fix typing
-          // // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          // prompts.database = ({ results }: { results: any }) => {
-          //   if (results.initialize_database) {
-          //     return p.select({
-          //       message: 'Which database would you like to use?',
-          //       options: [
-          //         {
-          //           value: 'sqlite',
-          //           label: 'SQLite',
-          //         },
-          //       ],
-          //       initialValue: 'sqlite',
-          //     })
-          //   }
-          //   return Promise.resolve(null)
-          // }
         }
 
-        // // ORM ################################################################
-        // // TODO: add back when we have > 1 orm option
-        // if (cliArgs.orm === undefined) {
-        //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        //   prompts.initializeORM = ({ results }: { results: any }) => {
-        //     if (results.initialize_database) {
-        //       return p.confirm({
-        //         message: 'Should we initialize an ORM?',
-        //         initialValue: true,
-        //       })
-        //     }
-        //     return Promise.resolve(false)
-        //   }
-
-        //   // TODO: fix typing
-        //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        //   prompts.orm = ({ results }: { results: any }) => {
-        //     if (results.initialize_database && results.initializeORM) {
-        //       return p.select({
-        //         message: 'Which ORM would you like to use?',
-        //         options: [
-        //           {
-        //             value: 'drizzle',
-        //             label: 'Drizzle',
-        //           },
-        //         ],
-        //         initialValue: 'drizzle',
-        //       })
-        //     }
-        //     return Promise.resolve(null)
-        //   }
-        // }
-
         // STYLES #############################################################
-        if (cliArgs.styles === undefined && cliArgs.styles !== false) {
+        if (cliArgs.styles === undefined) {
           prompts.styles = () =>
             p.confirm({
               message: 'Will you be using Tailwind CSS for styling?',
@@ -205,10 +153,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }
 
         // GIT ################################################################
-        if (
-          cliArgs.initialize_git === undefined &&
-          cliArgs.initialize_git !== false
-        ) {
+        if (cliArgs.initialize_git === undefined) {
           prompts.initialize_git = () =>
             p.confirm({
               message:
@@ -218,10 +163,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }
 
         // INSTALL PACKAGES ####################################################
-        if (
-          cliArgs.install_packages === undefined &&
-          cliArgs.install_packages !== false
-        ) {
+        if (cliArgs.install_packages === undefined) {
           prompts.install_packages = () =>
             p.confirm({
               message: 'Should we install packages after scaffolding?',
@@ -230,7 +172,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }
 
         // IDE ################################################################
-        if (cliArgs.ide === undefined && cliArgs.ide !== false) {
+        if (cliArgs.ide === undefined) {
           prompts.ide = () =>
             p.select({
               message: 'Which IDE would you like to use?',

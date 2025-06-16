@@ -1,0 +1,44 @@
+{
+  "name": "react-router-sqlite-drizzle",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "main": "./dist-electron/main/index.js",
+  "scripts": {
+    "db:setup": "npm run drizzle:generate && npm run drizzle:migrate",
+    "dev": "npm run electron:rebuild && vite",
+    "drizzle:generate": "npm run drizzle:rebuild:sqlite && drizzle-kit generate",
+    "drizzle:migrate": "npm run drizzle:rebuild:sqlite && drizzle-kit migrate",
+    "drizzle:rebuild:sqlite": "npm rebuild better-sqlite3",
+    "drizzle:studio": "npm run drizzle:rebuild:sqlite && drizzle-kit studio",
+    "electron:check": "node -e \"try { require('better-sqlite3'); console.log('✓ better-sqlite3 loaded successfully'); } catch(e) { console.log('✗ better-sqlite3 failed:', e.message); console.log('Run: npm run rebuild:electron'); process.exit(1); }\"",
+    "electron:rebuild": "electron-rebuild -f -w better-sqlite3",
+    "tanstackrouter:generate:routes": "npx @tanstack/router-cli ./src/routes -y"
+  },
+  "dependencies": {
+    "@tanstack/react-form": "^1.12.3",
+    "@tanstack/react-query": "~5.80.7",
+    "better-sqlite3": "~11.10.0",
+    "classnames": "~2.5.1",
+    "dayjs": "~1.11.13",
+    "dotenv": "~16.5.0",
+    "drizzle-orm": "~0.44.2",
+    "nanoid": "~5.1.5",
+    "react": "~19.1.0",
+    "react-dom": "~19.1.0",
+    "react-router": "~7.6.2",
+    "react-toastify": "~11.0.5"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "4.0.1",
+    "@tanstack/react-query-devtools": "~5.80.7",
+    "@types/better-sqlite3": "~7.6.13",
+    "@vitejs/plugin-react": "~4.5.2",
+    "drizzle-kit": "~0.31.1",
+    "electron": "36.4.0",
+    "electron-log": "5.4.1",
+    "vite-plugin-electron": "~0.29.0"
+  },
+  "engines": {
+    "node": "22.16.0"
+  }
+}

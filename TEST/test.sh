@@ -7,21 +7,21 @@ EXAMPLES_DIRECTORY="$CURRENT_DIR/../DOCS/examples"
 
 # Navigate to examples directory and clean up existing directories
 cd "$EXAMPLES_DIRECTORY"
-rm -rf z-tsr z-tsr-tailwind z-tsr-tailwind-sqlite-drizzle z-tsr-sqlite-drizzle z-rr z-rr-tailwind z-rr-tailwind-sqlite-drizzle z-rr-sqlite-drizzle
+rm -rf tanstack-router tanstack-router-tailwind tanstack-router-tailwind-sqlite-drizzle tanstack-router-sqlite-drizzle react-router react-router-tailwind react-router-tailwind-sqlite-drizzle react-router-sqlite-drizzle
 
 # Create new examples with different configurations
 echo "Creating TanStack Router examples..."
-create-electron-foundation z-tsr                          --router=tanstack-router  --styles=false      --database=false    --orm=false     --ide=cursor  --install_packages  --git  
-create-electron-foundation z-tsr-tailwind                 --router=tanstack-router  --styles=tailwind   --database=false    --orm=false     --ide=vscode  --install_packages  --git  
+create-electron-foundation tanstack-router                            --router=tanstack-router  --styles=false      --database=false      --orm=false      --install_packages=false   --git=false    --ide=false
+create-electron-foundation tanstack-router-tailwind                   --router=tanstack-router  --styles=tailwind   --database=false      --orm=false      --install_packages=false   --git=false    --ide=false
 
-create-electron-foundation z-rr                           --router=react-router     --styles=false      --database=false    --orm=false     --ide=cursor  --install_packages  --git  
-create-electron-foundation z-rr-tailwind                  --router=react-router     --styles=tailwind   --database=false    --orm=false     --ide=cursor  --install_packages  --git  
+create-electron-foundation react-router                               --router=react-router     --styles=false      --database=false      --orm=false      --install_packages=false   --git=false    --ide=false
+create-electron-foundation react-router-tailwind                      --router=react-router     --styles=tailwind   --database=false      --orm=false      --install_packages=false   --git=false    --ide=false
 
-create-electron-foundation z-tsr-tailwind-sqlite-drizzle  --router=tanstack-router  --styles=tailwind   --database=sqlite   --orm=drizzle   --ide=cursor  --install_packages  --git  
-create-electron-foundation z-rr-tailwind-sqlite-drizzle   --router=react-router     --styles=tailwind   --database=sqlite   --orm=drizzle   --ide=vscode  --install_packages  --git  
+create-electron-foundation tanstack-router-tailwind-sqlite-drizzle    --router=tanstack-router  --styles=tailwind   --database=sqlite     --orm=drizzle    --install_packages=false   --git=false    --ide=false
+create-electron-foundation react-router-tailwind-sqlite-drizzle       --router=react-router     --styles=tailwind   --database=sqlite     --orm=drizzle    --install_packages=false   --git=false    --ide=false
 
-create-electron-foundation z-tsr-sqlite-drizzle           --router=tanstack-router  --styles=false      --database=sqlite   --orm=drizzle   --ide=cursor  --install_packages  --git  
-create-electron-foundation z-rr-sqlite-drizzle            --router=react-router     --styles=false      --database=sqlite   --orm=drizzle   --ide=cursor  --install_packages  --git  
+create-electron-foundation tanstack-router-sqlite-drizzle             --router=tanstack-router  --styles=false      --database=sqlite     --orm=drizzle    --install_packages=false   --git=false    --ide=false
+create-electron-foundation react-router-sqlite-drizzle                --router=react-router     --styles=false      --database=sqlite     --orm=drizzle    --install_packages=false   --git=false    --ide=false
 
 echo "All examples created successfully!"
 cd "$CURRENT_DIR"

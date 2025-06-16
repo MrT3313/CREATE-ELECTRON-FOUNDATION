@@ -83,17 +83,19 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
       )}`,
     })
     .option('initialize_git', {
-      type: 'boolean',
+      type: 'string',
       alias: 'git',
-      description: 'Initialize Git repository',
+      description: 'Initialize Git repository. Can be set to false.',
     })
     .option('install_packages', {
-      type: 'boolean',
-      description: 'Install packages after scaffolding',
+      type: 'string',
+      description: 'Install packages after scaffolding. Can be set to false.',
     })
     .option('ide', {
       type: 'string',
-      description: `IDE to use. Valid options: ${validIDEs.join(', ')}`,
+      description: `IDE to use. Valid options: ${validIDEs.join(
+        ', '
+      )}, or false`,
     })
     .check((argv) => {
       // VALIDATORS
@@ -174,6 +176,38 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
         } else {
           argv.pkg_manager = pkg_manager
         }
+      }
+
+      if (Array.isArray(argv.initialize_git)) {
+        logger.error(
+          'The initialize_git option can only be specified once. Setting to undefined.'
+        )
+        argv.initialize_git = undefined
+      } else if (
+        argv.initialize_git &&
+        argv.initialize_git.toLowerCase() !== 'true' &&
+        argv.initialize_git.toLowerCase() !== 'false'
+      ) {
+        logger.error(
+          `Invalid initialize_git: ${argv.initialize_git}. Must be true or false. Setting to undefined.`
+        )
+        argv.initialize_git = undefined
+      }
+
+      if (Array.isArray(argv.install_packages)) {
+        logger.error(
+          'The install_packages option can only be specified once. Setting to undefined.'
+        )
+        argv.install_packages = undefined
+      } else if (
+        argv.install_packages &&
+        argv.install_packages.toLowerCase() !== 'true' &&
+        argv.install_packages.toLowerCase() !== 'false'
+      ) {
+        logger.error(
+          `Invalid install_packages: ${argv.install_packages}. Must be true or false. Setting to undefined.`
+        )
+        argv.install_packages = undefined
       }
 
       if (Array.isArray(argv.ide)) {
@@ -261,9 +295,19 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
 
     pkg_manager: (args.pkg_manager as PackageManager) || undefined,
 
-    initialize_git: args.initialize_git || undefined,
+    initialize_git:
+      args.initialize_git === undefined
+        ? undefined
+        : args.initialize_git.toLowerCase() === 'true'
+          ? true
+          : false,
 
-    install_packages: args.install_packages || undefined,
+    install_packages:
+      args.install_packages === undefined
+        ? undefined
+        : args.install_packages.toLowerCase() === 'true'
+          ? true
+          : false,
 
     ide:
       args.ide === undefined
