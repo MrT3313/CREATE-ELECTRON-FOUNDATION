@@ -80,12 +80,10 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
       type: 'boolean',
       alias: 'git',
       description: 'Initialize Git repository',
-      default: true,
     })
     .option('install_packages', {
       type: 'boolean',
       description: 'Install packages after scaffolding',
-      default: false,
     })
     .option('ide', {
       type: 'string',
