@@ -14,6 +14,9 @@ import {
   validORMs,
   validPackageManagers,
   validIDEs,
+  StylePackage,
+  DatabasePackage,
+  ORMPackage,
 } from '../types/index.js'
 
 export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
@@ -227,27 +230,27 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     y: args.y || undefined,
     project_name: project_name || undefined,
     project_dir: project_name_arg ? path.resolve(project_name_arg) : undefined,
-    ide: args.ide || undefined,
-    router: args.router || undefined,
+    ide: args.ide as Yargs['ide'],
+    router: args.router as Yargs['router'],
     styles:
       args.styles === undefined
         ? undefined
         : args.styles === 'false'
           ? false
-          : args.styles,
+          : (args.styles as StylePackage),
     database:
       args.database === undefined
         ? undefined
         : args.database === 'false'
           ? false
-          : args.database,
+          : (args.database as DatabasePackage),
     orm:
       args.orm === undefined
         ? undefined
         : args.orm === 'false'
           ? false
-          : args.orm,
-    pkg_manager: args.pkg_manager || 'npm',
+          : (args.orm as ORMPackage),
+    pkg_manager: args.pkg_manager as Yargs['pkg_manager'],
     initialize_git: args.initialize_git || undefined,
     install_packages: args.install_packages || undefined,
   }
