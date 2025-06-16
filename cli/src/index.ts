@@ -21,6 +21,7 @@ import chalk from 'chalk'
 
 // TYPES
 import type { Yargs, CLIResults } from './types/CLI.js'
+import { AvailablePackages } from './types/index.js'
 
 const main = async () => {
   /**
@@ -64,7 +65,9 @@ const main = async () => {
   }
 
   // 3. CONFIGURE: inUse packages & custom installers #########################
-  const inUsePackages = Object.values(config.packages).flat()
+  const inUsePackages = Object.values(config.packages)
+    .flat()
+    .filter((pkg): pkg is AvailablePackages => !!pkg)
   const usePackages = buildPkgInstallerMap(config.project_name, inUsePackages)
 
   // 4. SCAFFOLD: base project (configuration agnostic files) ##################

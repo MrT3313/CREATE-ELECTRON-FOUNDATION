@@ -53,7 +53,9 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
           config_key,
           ...defaultCLIConfig,
           project_name: cliArgs.project_name || DEFAULT_APP_NAME,
-          project_dir: `./${cliArgs.project_name || DEFAULT_APP_NAME}`,
+          project_dir:
+            cliArgs.project_dir ||
+            `./${cliArgs.project_name || DEFAULT_APP_NAME}`,
         }
 
         // UPDATE: config with passed cliArgs #################################
@@ -236,19 +238,31 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }
 
         // DEFINE: config with user prompts ###################################
-        const initialize_git = group.initialize_git || cliArgs.initialize_git
+        const initialize_git =
+          typeof group.initialize_git === 'boolean'
+            ? group.initialize_git
+            : cliArgs.initialize_git
         const router = group.router || cliArgs.router
-        const styles = group.styles ? 'tailwind' : cliArgs.styles
+
+        const styles =
+          group.styles === true
+            ? 'tailwind'
+            : group.styles === false
+              ? false
+              : cliArgs.styles
+
         const database = group.database || cliArgs.database
         const project_name = group.project_name || cliArgs.project_name
         const orm = group.orm || cliArgs.orm
         const install_packages = cliArgs.ci
           ? false
-          : group.install_packages || cliArgs.install_packages
-        const ide = group.ide || cliArgs.ide || false
+          : typeof group.install_packages === 'boolean'
+            ? group.install_packages
+            : cliArgs.install_packages
+        const ide = (group.ide && 'cursor') || cliArgs.ide || false
 
         const config_key: ConfigKey = `${router as RouterPackage}-${
-          (styles as StylePackage) || 'none'
+          styles || 'none'
         }-${(database as DatabasePackage) || 'none'}-${
           (orm as ORMPackage) || 'none'
         }`
@@ -256,17 +270,18 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         config = {
           config_key,
           project_name: project_name || DEFAULT_APP_NAME,
-          project_dir: `./${project_name || DEFAULT_APP_NAME}`,
+          project_dir:
+            cliArgs.project_dir || `./${project_name || DEFAULT_APP_NAME}`,
           pkg_manager: 'npm',
           ide,
-          initialize_git,
+          initialize_git: initialize_git ?? true,
           packages: {
             router,
-            styles: styles as StylePackage,
-            database,
-            orm,
+            styles: styles || false,
+            database: (database as DatabasePackage) || false,
+            orm: (orm as ORMPackage) || false,
           },
-          install_packages,
+          install_packages: install_packages ?? true,
         }
       } catch (err) {
         logger.error('🚨🚨 Error running prompt cli', err)

@@ -12,12 +12,31 @@ import {
   validRouters,
   validDatabases,
   validORMs,
-} from '../types/Packages.js'
+  validPackageManagers,
+  validIDEs,
+  StylePackage,
+  DatabasePackage,
+  ORMPackage,
+} from '../types/index.js'
 
 export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
   /**
-   * Parses the CLI arguments and returns a Yargs object
-   * ####################################################################### */
+   * @function parseCliArgs
+   * @async
+   * @description Parses command-line arguments using `yargs` to configure the application setup.
+   *
+   * This function is responsible for the following:
+   * 1.  **Defining CLI Options:** It sets up various command-line flags such as `--project_name`, `--router`, `--styles`, `--database`, and more, including booleans like `--ci` and `--git`.
+   * 2.  **Graceful Validation:** Instead of failing on invalid input, it performs checks within a `.check()` block. If an argument is invalid (e.g., wrong format, not in the list of allowed values), it logs an error message and sets the corresponding value to `undefined`.
+   * 3.  **Handling Edge Cases:**
+   *     - It ensures that string-based arguments are handled in a case-insensitive manner.
+   *     - It prevents options from being specified multiple times (e.g., `--router=a --router=b`).
+   *     - It validates dependent options, ensuring that if a database is specified, an ORM must also be specified, and vice-versa.
+   * 4.  **Returning Configuration:** It processes the raw arguments from `yargs` and returns a cleaned, structured `Yargs` object. This object can then be used by the rest of the application to determine which components to scaffold and how to configure the project. The non-failing validation allows for a subsequent prompting mechanism (e.g., using `clack`) to fill in any missing (`undefined`) values.
+   *
+   * @param {string[]} argv - An array of command-line arguments, typically from `process.argv`.
+   * @returns {Promise<Yargs>} A promise that resolves to a `Yargs` object containing the parsed and validated configuration.
+   */
   const args = await yargs(hideBin(argv))
     .option('ci', {
       type: 'boolean',
@@ -33,88 +52,151 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     .option('project_name', {
       type: 'string',
       description: 'Name of the project',
-      default: process.env.APP_NAME,
     })
     .option('router', {
       type: 'string',
-      choices: ['tanstack-router', 'react-router'],
-      description: 'Router to use',
+      description: `Router to use. Valid options: ${validRouters.join(', ')}`,
     })
     .option('styles', {
       type: 'string',
-      choices: ['tailwind', 'false'],
-      description: 'Styles to use',
+      description: `Styles to use. Valid options: ${validStyles.join(
+        ', '
+      )}, false`,
     })
     .option('database', {
       type: 'string',
-      choices: ['sqlite', 'false'],
-      description:
-        "Database to use (e.g., 'sqlite'). Empty String or non-existent param === ''",
+      description: `Database to use. Valid options: ${validDatabases.join(
+        ', '
+      )}, false`,
     })
     .option('orm', {
       type: 'string',
-      choices: ['drizzle', 'false'],
-      description:
-        "ORM to use (e.g., 'drizzle'). Empty String or non-existent param === ''",
+      description: `ORM to use. Valid options: ${validORMs.join(', ')}, false`,
     })
     .option('pkg_manager', {
       type: 'string',
-      choices: ['npm'],
-      description: 'Package manager to use',
-      default: 'npm',
+      description: `Package manager to use. Valid options: ${validPackageManagers.join(
+        ', '
+      )}`,
     })
     .option('initialize_git', {
       type: 'boolean',
       alias: 'git',
       description: 'Initialize Git repository',
-      default: true,
     })
     .option('install_packages', {
       type: 'boolean',
       description: 'Install packages after scaffolding',
-      default: false,
     })
     .option('ide', {
       type: 'string',
-      description: 'IDE to use',
+      description: `IDE to use. Valid options: ${validIDEs.join(', ')}`,
     })
     .check((argv) => {
-      if (argv.router && !validRouters.includes(argv.router)) {
-        logger.error(`Invalid router: ${argv.router}. Setting to undefined.`)
+      // VALIDATORS
+      if (Array.isArray(argv.router)) {
+        logger.error(
+          'The router option can only be specified once. Setting to undefined.'
+        )
         argv.router = undefined
-      }
-
-      if (argv.styles) {
-        if (argv.styles !== 'false' && !validStyles.includes(argv.styles)) {
-          logger.error(`Invalid styles: ${argv.styles}. Setting to undefined.`)
-          argv.styles = undefined
+      } else if (argv.router) {
+        const router = argv.router.toLowerCase()
+        if (!validRouters.includes(router)) {
+          logger.error(`Invalid router: ${argv.router}. Setting to undefined.`)
+          argv.router = undefined
+        } else {
+          argv.router = router
         }
       }
 
-      if (argv.database) {
-        if (
-          argv.database !== 'false' &&
-          !validDatabases.includes(argv.database)
-        ) {
+      if (Array.isArray(argv.styles)) {
+        logger.error(
+          'The styles option can only be specified once. Setting to undefined.'
+        )
+        argv.styles = undefined
+      } else if (argv.styles) {
+        const styles = argv.styles.toLowerCase()
+        if (styles !== 'false' && !validStyles.includes(styles)) {
+          logger.error(`Invalid styles: ${argv.styles}. Setting to undefined.`)
+          argv.styles = undefined
+        } else {
+          argv.styles = styles
+        }
+      }
+
+      if (Array.isArray(argv.database)) {
+        logger.error(
+          'The database option can only be specified once. Setting to undefined.'
+        )
+        argv.database = undefined
+      } else if (argv.database) {
+        const database = argv.database.toLowerCase()
+        if (database !== 'false' && !validDatabases.includes(database)) {
           logger.error(
             `Invalid database: ${argv.database}. Setting to undefined.`
           )
           argv.database = undefined
+        } else {
+          argv.database = database
         }
       }
 
-      if (argv.orm) {
-        if (argv.orm !== 'false' && !validORMs.includes(argv.orm)) {
+      if (Array.isArray(argv.orm)) {
+        logger.error(
+          'The orm option can only be specified once. Setting to undefined.'
+        )
+        argv.orm = undefined
+      } else if (argv.orm) {
+        const orm = argv.orm.toLowerCase()
+        if (orm !== 'false' && !validORMs.includes(orm)) {
           logger.error(`Invalid ORM: ${argv.orm}. Setting to undefined.`)
           argv.orm = undefined
+        } else {
+          argv.orm = orm
         }
       }
 
-      if (
-        (argv.database && argv.database.length > 0 && !argv.orm) ||
-        (!argv.database && argv.orm && argv.orm.length > 0)
-      ) {
-        throw new Error('Invalid database <-> orm configuration')
+      if (Array.isArray(argv.pkg_manager)) {
+        logger.error(
+          'The pkg_manager option can only be specified once. Setting to undefined.'
+        )
+        argv.pkg_manager = undefined
+      } else if (argv.pkg_manager) {
+        const pkg_manager = argv.pkg_manager.toLowerCase()
+        if (!validPackageManagers.includes(pkg_manager)) {
+          logger.error(
+            `Invalid package manager: ${argv.pkg_manager}. Setting to undefined.`
+          )
+          argv.pkg_manager = undefined
+        } else {
+          argv.pkg_manager = pkg_manager
+        }
+      }
+
+      if (Array.isArray(argv.ide)) {
+        logger.error(
+          'The ide option can only be specified once. Setting to undefined.'
+        )
+        argv.ide = undefined
+      } else if (argv.ide) {
+        const ide = argv.ide.toLowerCase()
+        if (!validIDEs.includes(ide)) {
+          logger.error(`Invalid IDE: ${argv.ide}. Setting to undefined.`)
+          argv.ide = undefined
+        } else {
+          argv.ide = ide
+        }
+      }
+
+      const dbIsSet = argv.database && argv.database !== 'false'
+      const ormIsSet = argv.orm && argv.orm !== 'false'
+
+      if (dbIsSet !== ormIsSet) {
+        logger.error(
+          'Must provide both a database and an ORM, or neither. Setting both to undefined.'
+        )
+        argv.database = undefined
+        argv.orm = undefined
       }
       return true
     })
@@ -123,34 +205,52 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     .version(false)
     .parse()
 
-  const project_name = (args.project_name as string) || (args._[0] as string)
+  const project_name_arg =
+    (args.project_name as string) || (args._[0] as string)
+  let project_name: string | undefined = project_name_arg
+    ? path.basename(project_name_arg)
+    : undefined
+
+  if (project_name) {
+    if (!/^[a-zA-Z0-9_-]+$/.test(project_name)) {
+      logger.error(
+        'Project name can only contain letters, numbers, underscores, and hyphens. Setting to undefined.'
+      )
+      project_name = undefined
+    } else if (/^\d/.test(project_name)) {
+      logger.error(
+        'Project name cannot start with a number. Setting to undefined.'
+      )
+      project_name = undefined
+    }
+  }
 
   const result: Yargs = {
     ci: args.ci || undefined,
     y: args.y || undefined,
     project_name: project_name || undefined,
-    project_dir: project_name ? path.resolve(project_name) : undefined,
-    ide: args.ide || undefined,
-    router: args.router || undefined,
+    project_dir: project_name_arg ? path.resolve(project_name_arg) : undefined,
+    ide: args.ide as Yargs['ide'],
+    router: args.router as Yargs['router'],
     styles:
       args.styles === undefined
         ? undefined
         : args.styles === 'false'
           ? false
-          : args.styles,
+          : (args.styles as StylePackage),
     database:
       args.database === undefined
         ? undefined
         : args.database === 'false'
           ? false
-          : args.database,
+          : (args.database as DatabasePackage),
     orm:
       args.orm === undefined
         ? undefined
         : args.orm === 'false'
           ? false
-          : args.orm,
-    pkg_manager: args.pkg_manager || undefined,
+          : (args.orm as ORMPackage),
+    pkg_manager: args.pkg_manager as Yargs['pkg_manager'],
     initialize_git: args.initialize_git || undefined,
     install_packages: args.install_packages || undefined,
   }

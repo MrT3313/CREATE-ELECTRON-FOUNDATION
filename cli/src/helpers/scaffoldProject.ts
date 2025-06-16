@@ -55,8 +55,6 @@ export const scaffoldProject = (config: CLIResults): void => {
 
   let titleCopy = `ELECTRON`
 
-  logger.info(chalk.red.bold(`--0-- ${JSON.stringify(config, null, 2)}`))
-
   const routerCopy = config.packages.router
     .split('-')
     .map((el: string) => el.toUpperCase())

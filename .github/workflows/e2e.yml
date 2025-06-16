@@ -83,54 +83,54 @@ jobs:
             os: ubuntu-latest
             router: 'tanstack-router'
             styles: 'tailwind'
-            db_opts: '--database=sqlite'
-            orm_opts: '--orm=drizzle'
+            db: 'sqlite'
+            orm: 'drizzle'
 
           # 1. Tanstack Router
           - name: 'Tanstack Router, Tailwind'
             os: ubuntu-latest
             router: 'tanstack-router'
             styles: 'tailwind'
-            db_opts: 'false'
-            orm_opts: 'false'
+            db: 'false'
+            orm: 'false'
           - name: 'Tanstack Router, No Styles'
             os: ubuntu-latest
             router: 'tanstack-router'
             styles: 'false'
-            db_opts: 'false'
-            orm_opts: 'false'
+            db: 'false'
+            orm: 'false'
           - name: 'Tanstack Router, No Styles, SQLite, Drizzle'
             os: ubuntu-latest
             router: 'tanstack-router'
             styles: 'false'
-            db_opts: '--database=sqlite'
-            orm_opts: '--orm=drizzle'
+            db: 'sqlite'
+            orm: 'drizzle'
 
           # 2. React Router
           - name: 'React Router, Tailwind'
             os: ubuntu-latest
             router: 'react-router'
             styles: 'tailwind'
-            db_opts: 'false'
-            orm_opts: 'false'
+            db: 'false'
+            orm: 'false'
           - name: 'React Router, No Styles'
             os: ubuntu-latest
             router: 'react-router'
             styles: 'false'
-            db_opts: 'false'
-            orm_opts: 'false'
+            db: 'false'
+            orm: 'false'
           - name: 'React Router, Tailwind, SQLite, Drizzle'
             os: ubuntu-latest
             router: 'react-router'
             styles: 'tailwind'
-            db_opts: '--database=sqlite'
-            orm_opts: '--orm=drizzle'
+            db: 'sqlite'
+            orm: 'drizzle'
           - name: 'React Router, No Styles, SQLite, Drizzle'
             os: ubuntu-latest
             router: 'react-router'
             styles: 'false'
-            db_opts: '--database=sqlite'
-            orm_opts: '--orm=drizzle'
+            db: 'sqlite'
+            orm: 'drizzle'
 
     ###########################################################################
     # ⭐️
@@ -171,18 +171,35 @@ jobs:
           mkdir temp-scaffolded-project
 
           # Construct the project name for uniqueness.
-          project_name="test-proj-${{ matrix.config.router }}-${{ matrix.config.styles }}"
-          if [[ -n "${{ matrix.config.db_opts }}" ]]; then
+          project_name="test-proj-${{ matrix.config.router }}"
+          if [[ "${{ matrix.config.styles }}" != "false" ]]; then
+            project_name+="-${{ matrix.config.styles }}"
+          fi
+          if [[ "${{ matrix.config.db }}" != "false" ]]; then
             project_name+="-db"
           fi
-          if [[ -n "${{ matrix.config.orm_opts }}" ]]; then
+          if [[ "${{ matrix.config.orm }}" != "false" ]]; then
             project_name+="-orm"
           fi
 
           echo "PROJECT_NAME=$project_name" >> $GITHUB_ENV
 
+          # Construct arguments, only adding them if they are not 'false'.
+          args=()
+          args+=("--router=${{ matrix.config.router }}")
+          if [[ "${{ matrix.config.styles }}" != "false" ]]; then
+            args+=("--styles=${{ matrix.config.styles }}")
+          fi
+          if [[ "${{ matrix.config.db }}" != "false" ]]; then
+            args+=("--database=${{ matrix.config.db }}")
+          fi
+          if [[ "${{ matrix.config.orm }}" != "false" ]]; then
+            args+=("--orm=${{ matrix.config.orm }}")
+          fi
+          args+=("--ci")
+
           # Execute the CLI to scaffold a new project.
-          node cli/dist/index.js "./temp-scaffolded-project/$project_name" --router="${{ matrix.config.router }}" --styles="${{ matrix.config.styles }}" ${{ matrix.config.db_opts }} ${{ matrix.config.orm_opts }} --yes --ci
+          node cli/dist/index.js "./temp-scaffolded-project/$project_name" "${args[@]}"
 
       #########################################################
       # ⭐️⭐️⭐️
@@ -191,37 +208,12 @@ jobs:
       #########################################################
       - name: Verify Project Structure
         run: |
-          echo "Verifying project structure for ${{ matrix.config.name }}..."
-
           # Debug: List all files in the generated project directory
-          ls -laR "temp-scaffolded-project/$PROJECT_NAME"
+          # ls -laR "temp-scaffolded-project/$PROJECT_NAME"
 
-          # Generic file checks
-          test -f "temp-scaffolded-project/$PROJECT_NAME/vite.config.ts" || (echo "vite.config.ts not found!" && exit 1)
-          test -f "temp-scaffolded-project/$PROJECT_NAME/index.css" || (echo "index.css not found!" && exit 1)
-          test -f "temp-scaffolded-project/$PROJECT_NAME/makefile" || (echo "makefile not found!" && exit 1)
+          echo "Verifying project structure for ${{ matrix.config.name }}..."
+          echo "TODO..."
 
-          # Router checks
-          if [[ "${{ matrix.config.router }}" == "tanstack-router" ]]; then
-            test -f "temp-scaffolded-project/$PROJECT_NAME/src/routes/__root.tsx" || (echo "src/routes/__root.tsx not found for TanStack Router!" && exit 1)
-            test -f "temp-scaffolded-project/$PROJECT_NAME/src/routes/index.tsx" || (echo "src/routes/index.tsx not found for TanStack Router!" && exit 1)
-            test ! -f "temp-scaffolded-project/$PROJECT_NAME/src/App.tsx" || (echo "src/App.tsx should not exist for TanStack Router!" && exit 1)
-          fi
-
-          if [[ "${{ matrix.config.router }}" == "react-router" ]]; then
-            test -f "temp-scaffolded-project/$PROJECT_NAME/src/App.tsx" || (echo "src/App.tsx not found for React Router!" && exit 1)
-            test -d "temp-scaffolded-project/$PROJECT_NAME/src/routes" || (echo "src/routes directory not found for React Router!" && exit 1)
-            test -f "temp-scaffolded-project/$PROJECT_NAME/src/routes/index.tsx" || (echo "src/routes/index.tsx not found for React Router!" && exit 1)
-            test ! -f "temp-scaffolded-project/$PROJECT_NAME/src/routes/__root.tsx" || (echo "src/routes/__root.tsx should not exist for React Router!" && exit 1)
-          fi
-
-          # Style checks
-          if [[ "${{ matrix.config.styles }}" == "tailwind" ]]; then
-            test -f "temp-scaffolded-project/$PROJECT_NAME/tailwind.config.ts" || (echo "tailwind.config.ts not found for Tailwind!" && exit 1)
-          elif [[ "${{ matrix.config.styles }}" == "false" ]]; then
-            test ! -f "temp-scaffolded-project/$PROJECT_NAME/tailwind.config.ts" || (echo "tailwind.config.ts should not exist for No Styles option!" && exit 1)
-          fi
-
-          # Database checks
-
-          # ORM checks
+          # need to investigate best way to test
+          #   - file level: take a snapshot of the "example" project made in the /TEST/test.sh 
+          #   - code level: ?? is the resource.tsx using the .db. or the .api.

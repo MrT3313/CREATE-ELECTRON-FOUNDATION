@@ -7,21 +7,21 @@ import type {
 } from './Packages.js'
 
 export type ConfigKey =
-  `${RouterPackage}-${StylePackage}-${DatabasePackage | 'none'}-${ORMPackage | 'none'}`
+  `${RouterPackage}-${StylePackage | 'none'}-${DatabasePackage | 'none'}-${ORMPackage | 'none'}`
 
 export interface Yargs {
   ci: boolean | undefined
   y: boolean | undefined
   project_name: string | undefined
   project_dir: string | undefined
-  router: string | undefined
-  styles: string | undefined | false
-  database: string | undefined | false
-  orm: string | undefined | false
-  pkg_manager: string | undefined
+  router: RouterPackage | undefined
+  styles: StylePackage | undefined | false
+  database: DatabasePackage | undefined | false
+  orm: ORMPackage | undefined | false
+  pkg_manager: PackageManager | undefined
   initialize_git: boolean | undefined
   install_packages: boolean | undefined
-  ide: false | string | undefined
+  ide: 'cursor' | false | undefined
 }
 
 export interface CLIDefaults {
@@ -31,9 +31,9 @@ export interface CLIDefaults {
   install_packages: boolean
   packages: {
     router: RouterPackage
-    styles: StylePackage
-    database: DatabasePackage
-    orm: ORMPackage
+    styles: StylePackage | false
+    database: DatabasePackage | false
+    orm: ORMPackage | false
   }
 }
 
