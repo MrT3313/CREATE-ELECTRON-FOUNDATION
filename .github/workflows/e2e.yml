@@ -83,54 +83,54 @@ jobs:
             os: ubuntu-latest
             router: 'tanstack-router'
             styles: 'tailwind'
-            db_opts: '--database=sqlite'
-            orm_opts: '--orm=drizzle'
+            db: 'sqlite'
+            orm: 'drizzle'
 
           # 1. Tanstack Router
           - name: 'Tanstack Router, Tailwind'
             os: ubuntu-latest
             router: 'tanstack-router'
             styles: 'tailwind'
-            db_opts: 'false'
-            orm_opts: 'false'
+            db: 'false'
+            orm: 'false'
           - name: 'Tanstack Router, No Styles'
             os: ubuntu-latest
             router: 'tanstack-router'
             styles: 'false'
-            db_opts: 'false'
-            orm_opts: 'false'
+            db: 'false'
+            orm: 'false'
           - name: 'Tanstack Router, No Styles, SQLite, Drizzle'
             os: ubuntu-latest
             router: 'tanstack-router'
             styles: 'false'
-            db_opts: '--database=sqlite'
-            orm_opts: '--orm=drizzle'
+            db: 'sqlite'
+            orm: 'drizzle'
 
           # 2. React Router
           - name: 'React Router, Tailwind'
             os: ubuntu-latest
             router: 'react-router'
             styles: 'tailwind'
-            db_opts: 'false'
-            orm_opts: 'false'
+            db: 'false'
+            orm: 'false'
           - name: 'React Router, No Styles'
             os: ubuntu-latest
             router: 'react-router'
             styles: 'false'
-            db_opts: 'false'
-            orm_opts: 'false'
+            db: 'false'
+            orm: 'false'
           - name: 'React Router, Tailwind, SQLite, Drizzle'
             os: ubuntu-latest
             router: 'react-router'
             styles: 'tailwind'
-            db_opts: '--database=sqlite'
-            orm_opts: '--orm=drizzle'
+            db: 'sqlite'
+            orm: 'drizzle'
           - name: 'React Router, No Styles, SQLite, Drizzle'
             os: ubuntu-latest
             router: 'react-router'
             styles: 'false'
-            db_opts: '--database=sqlite'
-            orm_opts: '--orm=drizzle'
+            db: 'sqlite'
+            orm: 'drizzle'
 
     ###########################################################################
     # ⭐️
@@ -172,17 +172,25 @@ jobs:
 
           # Construct the project name for uniqueness.
           project_name="test-proj-${{ matrix.config.router }}-${{ matrix.config.styles }}"
-          if [[ -n "${{ matrix.config.db_opts }}" ]]; then
+          if [[ "${{ matrix.config.db }}" != "false" ]]; then
             project_name+="-db"
           fi
-          if [[ -n "${{ matrix.config.orm_opts }}" ]]; then
+          if [[ "${{ matrix.config.orm }}" != "false" ]]; then
             project_name+="-orm"
           fi
 
           echo "PROJECT_NAME=$project_name" >> $GITHUB_ENV
 
+          # Construct arguments
+          args=()
+          args+=("--router=${{ matrix.config.router }}")
+          args+=("--styles=${{ matrix.config.styles }}")
+          args+=("--database=${{ matrix.config.db }}")
+          args+=("--orm=${{ matrix.config.orm }}")
+          args+=("--ci")
+
           # Execute the CLI to scaffold a new project.
-          node cli/dist/index.js "./temp-scaffolded-project/$project_name" --router="${{ matrix.config.router }}" --styles="${{ matrix.config.styles }}" ${{ matrix.config.db_opts }} ${{ matrix.config.orm_opts }} --yes --ci
+          node cli/dist/index.js "./temp-scaffolded-project/$project_name" "${args[@]}"
 
       #########################################################
       # ⭐️⭐️⭐️

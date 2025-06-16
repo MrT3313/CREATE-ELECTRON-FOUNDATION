@@ -245,7 +245,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         const install_packages = cliArgs.ci
           ? false
           : group.install_packages || cliArgs.install_packages
-        const ide = group.ide || cliArgs.ide || false
+        const ide = (group.ide && 'cursor') || cliArgs.ide || false
 
         const config_key: ConfigKey = `${router as RouterPackage}-${
           (styles as StylePackage) || 'none'
