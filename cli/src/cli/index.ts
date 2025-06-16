@@ -53,7 +53,9 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
           config_key,
           ...defaultCLIConfig,
           project_name: cliArgs.project_name || DEFAULT_APP_NAME,
-          project_dir: `./${cliArgs.project_name || DEFAULT_APP_NAME}`,
+          project_dir:
+            cliArgs.project_dir ||
+            `./${cliArgs.project_name || DEFAULT_APP_NAME}`,
         }
 
         // UPDATE: config with passed cliArgs #################################
@@ -256,7 +258,8 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         config = {
           config_key,
           project_name: project_name || DEFAULT_APP_NAME,
-          project_dir: `./${project_name || DEFAULT_APP_NAME}`,
+          project_dir:
+            cliArgs.project_dir || `./${project_name || DEFAULT_APP_NAME}`,
           pkg_manager: 'npm',
           ide,
           initialize_git,

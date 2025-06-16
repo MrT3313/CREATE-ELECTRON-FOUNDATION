@@ -171,7 +171,10 @@ jobs:
           mkdir temp-scaffolded-project
 
           # Construct the project name for uniqueness.
-          project_name="test-proj-${{ matrix.config.router }}-${{ matrix.config.styles }}"
+          project_name="test-proj-${{ matrix.config.router }}"
+          if [[ "${{ matrix.config.styles }}" != "false" ]]; then
+            project_name+="-${{ matrix.config.styles }}"
+          fi
           if [[ "${{ matrix.config.db }}" != "false" ]]; then
             project_name+="-db"
           fi
@@ -181,12 +184,18 @@ jobs:
 
           echo "PROJECT_NAME=$project_name" >> $GITHUB_ENV
 
-          # Construct arguments
+          # Construct arguments, only adding them if they are not 'false'.
           args=()
           args+=("--router=${{ matrix.config.router }}")
-          args+=("--styles=${{ matrix.config.styles }}")
-          args+=("--database=${{ matrix.config.db }}")
-          args+=("--orm=${{ matrix.config.orm }}")
+          if [[ "${{ matrix.config.styles }}" != "false" ]]; then
+            args+=("--styles=${{ matrix.config.styles }}")
+          fi
+          if [[ "${{ matrix.config.db }}" != "false" ]]; then
+            args+=("--database=${{ matrix.config.db }}")
+          fi
+          if [[ "${{ matrix.config.orm }}" != "false" ]]; then
+            args+=("--orm=${{ matrix.config.orm }}")
+          fi
           args+=("--ci")
 
           # Execute the CLI to scaffold a new project.

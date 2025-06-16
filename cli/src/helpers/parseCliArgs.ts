@@ -204,13 +204,16 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     .version(false)
     .parse()
 
-  let project_name: string | undefined =
+  const project_name_arg =
     (args.project_name as string) || (args._[0] as string)
+  let project_name: string | undefined = project_name_arg
+    ? path.basename(project_name_arg)
+    : undefined
 
   if (project_name) {
-    if (!/^[a-zA-Z0-9]+$/.test(project_name)) {
+    if (!/^[a-zA-Z0-9_-]+$/.test(project_name)) {
       logger.error(
-        'Project name can only contain letters and numbers. Setting to undefined.'
+        'Project name can only contain letters, numbers, underscores, and hyphens. Setting to undefined.'
       )
       project_name = undefined
     } else if (/^\d/.test(project_name)) {
@@ -225,7 +228,7 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     ci: args.ci || undefined,
     y: args.y || undefined,
     project_name: project_name || undefined,
-    project_dir: project_name ? path.resolve(project_name) : undefined,
+    project_dir: project_name_arg ? path.resolve(project_name_arg) : undefined,
     ide: args.ide || undefined,
     router: args.router || undefined,
     styles:
