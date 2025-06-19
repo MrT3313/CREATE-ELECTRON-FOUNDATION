@@ -21,17 +21,15 @@ const handleRouter = (config: Readonly<CLIResults>) => {
   const isTailwind = styles === 'tailwind'
   const routerDest = path.join(projectDir, 'src')
 
-  // Copy base files
-  safeCopy(
-    path.join(routerSrc, 'base', 'routes'),
-    path.join(routerDest, 'routes')
-  )
-
-  // Copy router-specific App.tsx and main.tsx
   if (router === 'react-router') {
     const reactRouterSrc = isTailwind
       ? path.join(routerSrc, 'with-tailwind')
       : path.join(routerSrc, 'base')
+
+    safeCopy(
+      path.join(reactRouterSrc, 'routes'),
+      path.join(routerDest, 'routes')
+    )
     safeCopy(
       path.join(reactRouterSrc, 'App.tsx'),
       path.join(routerDest, 'App.tsx')
@@ -40,16 +38,12 @@ const handleRouter = (config: Readonly<CLIResults>) => {
       path.join(reactRouterSrc, 'main.tsx'),
       path.join(routerDest, 'main.tsx')
     )
-  }
+  } else if (router === 'tanstack-router') {
+    const tanstackSrc = isTailwind
+      ? path.join(routerSrc, 'with-tailwind')
+      : path.join(routerSrc, 'base')
 
-  // Copy tailwind-specific files
-  if (isTailwind) {
-    if (router === 'tanstack-router') {
-      safeCopy(
-        path.join(routerSrc, 'with-tailwind', 'routes'),
-        path.join(routerDest, 'routes')
-      )
-    }
+    safeCopy(path.join(tanstackSrc, 'routes'), path.join(routerDest, 'routes'))
   }
 }
 
@@ -133,7 +127,7 @@ const handleDatabase = (config: Readonly<CLIResults>) => {
   )
 }
 
-const finalizeRoutes = (config: Readonly<CLIResults>) => {
+const finalizeResourceRoute = (config: Readonly<CLIResults>) => {
   const useDb = !!config.packages.database
   const resourcesFile = useDb ? 'resources-db.tsx' : 'resources-api.tsx'
   const finalPath = path.join(
@@ -177,7 +171,7 @@ export const selectBoilerplate = (config: Readonly<CLIResults>): void => {
   handleMakefile(config)
   handleDatabase(config)
 
-  finalizeRoutes(config)
+  finalizeResourceRoute(config)
 
   spinner.succeed(
     `${chalk.blue(config.project_name)} ${chalk.green.bold(
