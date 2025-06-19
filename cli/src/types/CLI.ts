@@ -6,9 +6,14 @@ import type {
   ORMPackage,
   IDE,
 } from './index.js'
+import type { CLIError } from '../utils/errors.js'
 
 export type ConfigKey =
   `${RouterPackage}-${StylePackage | 'none'}-${DatabasePackage | 'none'}-${ORMPackage | 'none'}`
+
+export type CLIResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: CLIError }
 
 export interface Yargs {
   ci: undefined | boolean

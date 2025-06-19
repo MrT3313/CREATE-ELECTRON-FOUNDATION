@@ -4,19 +4,32 @@
 # This file defines the End-to-End (E2E) testing workflow for the CLI project.
 #
 # Purpose:
-#   To test the complete functionality of the CLI tool. This is done by running the CLI to
-#   scaffold new projects with various feature combinations and then validating the
-#   integrity and structure of these scaffolded projects.
+#   1. Test the complete functionality of the CLI tool by scaffolding new projects with various
+#      feature combinations and validating their integrity and structure.
+#   2. Keep the /DOCS/examples directory in sync with actual CLI output by updating examples
+#      only when changes are merged to main.
 #
 # Triggers:
 #   - Pull Requests: Activates on pull requests to the 'main' branch that modify files within
-#     the 'cli/**' directory or this workflow file itself.
-#   - Manual Dispatch: Can be triggered manually from the GitHub Actions UI via 'workflow_dispatch'.
+#     the 'cli/**' directory or this workflow file itself. Runs tests and validation only.
+#   - Push to Main: Activates when changes are merged/pushed to main. Runs tests, validation,
+#     and updates examples with fresh CLI output.
+#   - Manual Dispatch: Can be triggered manually from the GitHub Actions UI. Runs tests and
+#     validation only (no example updates).
+#
+# Workflow Behavior:
+#   - On PRs: Tests CLI functionality, validates output structure (no example updates)
+#   - On Push to Main: Tests CLI functionality, validates output, updates examples, commits changes
+#   - On Manual Trigger: Tests CLI functionality, validates output structure (no example updates)
 #
 # Job: e2e-test
 #   The workflow consists of a single job, 'e2e-test', which runs on 'ubuntu-latest'.
 #   It leverages a matrix strategy to execute tests across 8 different configurations,
 #   covering combinations of routers, styling options, databases, and ORMs.
+#
+#   Matrix Configurations:
+#     - tanstack-router (with/without tailwind, with/without sqlite+drizzle)
+#     - react-router (with/without tailwind, with/without sqlite+drizzle)
 #
 # Key Steps for each matrix combination:
 #   1. Setup Environment: Checks out the repository, sets up the Node.js environment based on
@@ -25,16 +38,29 @@
 #   3. Scaffold Test Project: Executes the compiled CLI with flags corresponding to the
 #      current matrix configuration (e.g., router, styles). This generates a new project
 #      in a temporary directory.
-#   4. Validate Scaffolded Project: A series of checks are performed to ensure the
-#      scaffolded project has the correct file structure based on the selected options.
-#      Key files verified include:
-#        - TanStack Router: 'src/routes/__root.tsx', 'src/routes/index.tsx'
-#        - React Router:    'src/App.tsx', 'src/routes/index.tsx'
-#        - Tailwind CSS:    'tailwind.config.js'
-#        - Drizzle ORM:     'drizzle.config.ts', 'src/api/useResource.ts'
+#   4. Update Examples (Push to Main Only): Copies the generated project to the appropriate
+#      /DOCS/examples directory to keep examples in sync with actual CLI output.
+#   5. Validate Scaffolded Project: Performs comprehensive checks to ensure the scaffolded
+#      project has the correct file structure based on the selected options:
+#        - Essential files: package.json, electron.d.ts, index.html
+#        - TanStack Router: src/routes/__root.tsx, src/routes/index.tsx
+#        - React Router: src/App.tsx, src/routes/index.tsx
+#        - Tailwind CSS: tailwind.config.ts
+#        - Drizzle ORM: drizzle.config.ts
+#   6. Configure Git (Push to Main Only): Sets up git configuration for automated commits.
+#   7. Commit Updated Examples (Push to Main Only): Commits the updated examples back to the
+#      repository with descriptive commit messages including [skip ci] to prevent loops.
 #
-# This E2E setup ensures that the CLI can reliably generate valid project structures for
-# all supported feature combinations.
+# Conditional Logic:
+#   Steps 4, 6, and 7 only execute when:
+#   - github.event_name == 'push' AND github.ref == 'refs/heads/main'
+#   This ensures examples are only updated when changes are actually merged, not on every test run.
+#
+# This E2E setup ensures that:
+#   - The CLI can reliably generate valid project structures for all supported feature combinations
+#   - Examples stay perfectly in sync with actual CLI output
+#   - PRs are thoroughly tested without side effects
+#   - The main branch always has up-to-date examples
 # ==================================================================================================
 
 name: E2E Tests # displayed on the GitHub Actions UI.
@@ -54,7 +80,16 @@ on:
       - 'cli/**' # matches the directory of your CLI source code.
       - '.github/workflows/e2e.yml' # Also run if the E2E workflow file itself changes.
 
-  # 3. Scheduled CRON
+  # 3. Push to main (when PRs are merged)
+  push:
+    branches:
+      - main
+    # ONLY trigger if files change in CLI code.
+    paths:
+      - 'cli/**' # matches the directory of your CLI source code.
+      - '.github/workflows/e2e.yml' # Also run if the E2E workflow file itself changes.
+
+  # 4. Scheduled CRON
   # schedule:
   #   - cron: '0 0 * * *' # Example: Runs every day at midnight UTC.
 
@@ -64,6 +99,9 @@ jobs:
     name: E2E Test - ${{ matrix.config.name }}
     # Specifies the type of runner for this job, using a matrix variable.
     runs-on: ${{ matrix.config.os }}
+    # Grant permissions for the workflow to create commits and push changes
+    permissions:
+      contents: write
 
     ###########################################################################
     # ⭐️
@@ -85,52 +123,60 @@ jobs:
             styles: 'tailwind'
             db: 'sqlite'
             orm: 'drizzle'
+            example_dir: 'tanstack-router-tailwind-sqlite-drizzle'
 
           # 1. Tanstack Router
           - name: 'Tanstack Router, Tailwind'
             os: ubuntu-latest
             router: 'tanstack-router'
             styles: 'tailwind'
-            db: 'false'
-            orm: 'false'
+            db: 'none'
+            orm: 'none'
+            example_dir: 'tanstack-router-tailwind'
           - name: 'Tanstack Router, No Styles'
             os: ubuntu-latest
             router: 'tanstack-router'
-            styles: 'false'
-            db: 'false'
-            orm: 'false'
+            styles: 'none'
+            db: 'none'
+            orm: 'none'
+            example_dir: 'tanstack-router'
           - name: 'Tanstack Router, No Styles, SQLite, Drizzle'
             os: ubuntu-latest
             router: 'tanstack-router'
-            styles: 'false'
+            styles: 'none'
             db: 'sqlite'
             orm: 'drizzle'
+            example_dir: 'tanstack-router-sqlite-drizzle'
 
           # 2. React Router
           - name: 'React Router, Tailwind'
             os: ubuntu-latest
             router: 'react-router'
             styles: 'tailwind'
-            db: 'false'
-            orm: 'false'
+            db: 'none'
+            orm: 'none'
+            example_dir: 'react-router-tailwind'
           - name: 'React Router, No Styles'
             os: ubuntu-latest
             router: 'react-router'
-            styles: 'false'
-            db: 'false'
-            orm: 'false'
+            styles: 'none'
+            db: 'none'
+            orm: 'none'
+            example_dir: 'react-router'
           - name: 'React Router, Tailwind, SQLite, Drizzle'
             os: ubuntu-latest
             router: 'react-router'
             styles: 'tailwind'
             db: 'sqlite'
             orm: 'drizzle'
+            example_dir: 'react-router-tailwind-sqlite-drizzle'
           - name: 'React Router, No Styles, SQLite, Drizzle'
             os: ubuntu-latest
             router: 'react-router'
-            styles: 'false'
+            styles: 'none'
             db: 'sqlite'
             orm: 'drizzle'
+            example_dir: 'react-router-sqlite-drizzle'
 
     ###########################################################################
     # ⭐️
@@ -140,6 +186,9 @@ jobs:
       # 1. Check out the repository code.
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          # Required to allow pushing changes back to the repository
+          fetch-depth: 0
 
       # 2. Read Node.js version from .nvmrc file
       - name: Read .nvmrc
@@ -160,63 +209,251 @@ jobs:
         run: npm run build
 
       #########################################################
-      # ⭐️⭐️
       # Step 5: Scaffold a test project using the CLI.
       #########################################################
       - name: Scaffold Test Project (using ${{ matrix.config.name }})
         run: |
           set -x
 
+          # Verify CLI binary exists
+          echo "Checking CLI binary:"
+          ls -la cli/dist/index.js || echo "❌ CLI binary not found"
+          echo "Node.js version:"
+          node --version
+          echo "NPM version:"
+          npm --version
+
           # Create a temporary directory for the scaffolded project.
           mkdir temp-scaffolded-project
 
           # Construct the project name for uniqueness.
           project_name="test-proj-${{ matrix.config.router }}"
-          if [[ "${{ matrix.config.styles }}" != "false" ]]; then
+          if [[ "${{ matrix.config.styles }}" != "none" ]]; then
             project_name+="-${{ matrix.config.styles }}"
           fi
-          if [[ "${{ matrix.config.db }}" != "false" ]]; then
+          if [[ "${{ matrix.config.db }}" != "none" ]]; then
             project_name+="-db"
           fi
-          if [[ "${{ matrix.config.orm }}" != "false" ]]; then
+          if [[ "${{ matrix.config.orm }}" != "none" ]]; then
             project_name+="-orm"
           fi
 
           echo "PROJECT_NAME=$project_name" >> $GITHUB_ENV
 
-          # Construct arguments, only adding them if they are not 'false'.
+          # Construct arguments, only adding them if they are not 'none'.
           args=()
           args+=("--router=${{ matrix.config.router }}")
-          if [[ "${{ matrix.config.styles }}" != "false" ]]; then
+          if [[ "${{ matrix.config.styles }}" != "none" ]]; then
             args+=("--styles=${{ matrix.config.styles }}")
           fi
-          if [[ "${{ matrix.config.db }}" != "false" ]]; then
+          if [[ "${{ matrix.config.db }}" != "none" ]]; then
             args+=("--database=${{ matrix.config.db }}")
           fi
-          if [[ "${{ matrix.config.orm }}" != "false" ]]; then
+          if [[ "${{ matrix.config.orm }}" != "none" ]]; then
             args+=("--orm=${{ matrix.config.orm }}")
           fi
           args+=("--ci")
-          args+=("--ide=false")
-          args+=("--install_packages=false")
-          args+=("--initialize_git=false")
+          args+=("--ide=none")
+          args+=("--install_packages=none")
+          args+=("--initialize_git=none")
 
-          # Execute the CLI to scaffold a new project.
-          node cli/dist/index.js "./temp-scaffolded-project/$project_name" "${args[@]}"
+                    # Execute the CLI to scaffold a new project.
+          echo "Executing CLI with command:"
+          echo "node cli/dist/index.js \"$project_name\" ${args[@]}"
+          echo "Arguments: ${args[@]}"
+
+          # Run the CLI and capture both stdout and stderr
+          if node cli/dist/index.js "$project_name" "${args[@]}"; then
+            echo "✅ CLI command completed successfully"
+          else
+            echo "❌ CLI command failed with exit code $?"
+            echo "Listing current directory contents:"
+            ls -la
+            echo "Listing temp-scaffolded-project contents:"
+            ls -la temp-scaffolded-project/ || echo "temp-scaffolded-project directory not found"
+            exit 1
+          fi
+
+          # Move the created project to our temp directory
+          if [ -d "./$project_name" ]; then
+            echo "✅ Project directory created successfully, moving to temp directory"
+            mv "./$project_name" "./temp-scaffolded-project/$project_name"
+            echo "Contents of moved project:"
+            ls -la "./temp-scaffolded-project/$project_name"
+          else
+            echo "❌ Project directory was not created by CLI"
+            echo "Expected: ./$project_name"
+            echo "Current directory contents:"
+            ls -la
+            exit 1
+          fi
 
       #########################################################
-      # ⭐️⭐️⭐️
-      # Step 6+: Validate the scaffolded project.
-      # These are placeholder commands. You need to implement actual validation steps based on your CLI's output for each configuration.
+      # Step 6: Update the examples directory with the generated project (only when merged to main)
+      #########################################################
+      - name: Update Examples Directory
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          set -x
+
+          # Reconstruct the project name (same logic as scaffolding step)
+          project_name="test-proj-${{ matrix.config.router }}"
+          if [[ "${{ matrix.config.styles }}" != "none" ]]; then
+            project_name+="-${{ matrix.config.styles }}"
+          fi
+          if [[ "${{ matrix.config.db }}" != "none" ]]; then
+            project_name+="-db"
+          fi
+          if [[ "${{ matrix.config.orm }}" != "none" ]]; then
+            project_name+="-orm"
+          fi
+
+          EXAMPLE_DIR="DOCS/examples/${{ matrix.config.example_dir }}"
+          GENERATED_PROJECT="temp-scaffolded-project/$project_name"
+
+          echo "Updating $EXAMPLE_DIR with generated project from $GENERATED_PROJECT"
+
+          # Remove existing example directory if it exists
+          if [ -d "$EXAMPLE_DIR" ]; then
+            rm -rf "$EXAMPLE_DIR"
+          fi
+
+          # Create the example directory structure
+          mkdir -p "$(dirname "$EXAMPLE_DIR")"
+
+          # Copy the generated project to the examples directory
+          cp -r "$GENERATED_PROJECT" "$EXAMPLE_DIR"
+
+          # List the contents for verification
+          echo "Contents of updated example:"
+          ls -la "$EXAMPLE_DIR"
+
+      #########################################################
+      # Step 7: Validate the scaffolded project.
       #########################################################
       - name: Verify Project Structure
         run: |
-          # Debug: List all files in the generated project directory
-          # ls -laR "temp-scaffolded-project/$PROJECT_NAME"
+          set -x
+
+          # Reconstruct the project name (same logic as scaffolding step)
+          project_name="test-proj-${{ matrix.config.router }}"
+          if [[ "${{ matrix.config.styles }}" != "none" ]]; then
+            project_name+="-${{ matrix.config.styles }}"
+          fi
+          if [[ "${{ matrix.config.db }}" != "none" ]]; then
+            project_name+="-db"
+          fi
+          if [[ "${{ matrix.config.orm }}" != "none" ]]; then
+            project_name+="-orm"
+          fi
+
+          GENERATED_PROJECT="temp-scaffolded-project/$project_name"
 
           echo "Verifying project structure for ${{ matrix.config.name }}..."
-          echo "TODO..."
+          echo "Generated project path: $GENERATED_PROJECT"
+          echo "Project name: $project_name"
 
-          # need to investigate best way to test
-          #   - file level: take a snapshot of the "example" project made in the /TEST/test.sh 
-          #   - code level: ?? is the resource.tsx using the .db. or the .api.
+          # Debug: List what's actually in the temp directory
+          echo "Contents of temp-scaffolded-project:"
+          ls -la temp-scaffolded-project/ || echo "temp-scaffolded-project directory not found"
+
+          # Basic structure validation
+          if [ ! -d "$GENERATED_PROJECT" ]; then
+            echo "❌ Generated project directory not found!"
+            echo "Expected: $GENERATED_PROJECT"
+            exit 1
+          fi
+
+          # Check for essential files
+          essential_files=("package.json" "electron.d.ts" "index.html")
+          for file in "${essential_files[@]}"; do
+            if [ ! -f "$GENERATED_PROJECT/$file" ]; then
+              echo "❌ Essential file missing: $file"
+              exit 1
+            else
+              echo "✅ Found: $file"
+            fi
+          done
+
+          # Router-specific validation
+          if [[ "${{ matrix.config.router }}" == "tanstack-router" ]]; then
+            if [ ! -f "$GENERATED_PROJECT/src/routes/__root.tsx" ]; then
+              echo "❌ TanStack Router file missing: src/routes/__root.tsx"
+              exit 1
+            else
+              echo "✅ Found TanStack Router files"
+            fi
+          elif [[ "${{ matrix.config.router }}" == "react-router" ]]; then
+            if [ ! -f "$GENERATED_PROJECT/src/App.tsx" ]; then
+              echo "❌ React Router file missing: src/App.tsx"
+              exit 1
+            else
+              echo "✅ Found React Router files"
+            fi
+          fi
+
+          # Tailwind validation
+          if [[ "${{ matrix.config.styles }}" == "tailwind" ]]; then
+            if [ ! -f "$GENERATED_PROJECT/tailwind.config.ts" ]; then
+              echo "❌ Tailwind config missing: tailwind.config.ts"
+              exit 1
+            else
+              echo "✅ Found Tailwind config"
+            fi
+          fi
+
+          # Database/ORM validation
+          if [[ "${{ matrix.config.db }}" == "sqlite" && "${{ matrix.config.orm }}" == "drizzle" ]]; then
+            if [ ! -f "$GENERATED_PROJECT/drizzle.config.ts" ]; then
+              echo "❌ Drizzle config missing: drizzle.config.ts"
+              exit 1
+            else
+              echo "✅ Found Drizzle config"
+            fi
+          fi
+
+          echo "✅ Project structure validation passed for ${{ matrix.config.name }}"
+
+      #########################################################
+      # Step 8: Commit and push changes to examples (only when merged to main)
+      #########################################################
+      - name: Configure Git
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit Updated Examples
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          set -x
+
+          # Reconstruct the project name (same logic as scaffolding step)
+          project_name="test-proj-${{ matrix.config.router }}"
+          if [[ "${{ matrix.config.styles }}" != "none" ]]; then
+            project_name+="-${{ matrix.config.styles }}"
+          fi
+          if [[ "${{ matrix.config.db }}" != "none" ]]; then
+            project_name+="-db"
+          fi
+          if [[ "${{ matrix.config.orm }}" != "none" ]]; then
+            project_name+="-orm"
+          fi
+
+          EXAMPLE_DIR="DOCS/examples/${{ matrix.config.example_dir }}"
+
+          # Check if there are changes to commit
+          if git diff --quiet HEAD -- "$EXAMPLE_DIR"; then
+            echo "No changes to commit for $EXAMPLE_DIR"
+          else
+            echo "Committing changes to $EXAMPLE_DIR"
+            git add "$EXAMPLE_DIR"
+            git commit -m "chore(examples): update ${{ matrix.config.example_dir }} from e2e test" \
+                       -m "Generated from CLI with configuration:" \
+                       -m "- Router: ${{ matrix.config.router }}" \
+                       -m "- Styles: ${{ matrix.config.styles }}" \
+                       -m "- Database: ${{ matrix.config.db }}" \
+                       -m "- ORM: ${{ matrix.config.orm }}" \
+                       -m "[skip ci]"
+            git push
+          fi

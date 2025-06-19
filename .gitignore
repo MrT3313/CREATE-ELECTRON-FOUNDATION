@@ -1,7 +1,10 @@
 # AI
 .opencode/
-**/TODO.ai.md
-**/DONE.ai.md
+**/AI.TODO.md
+**/AI.DONE.md
+
+# examples
+**/DOCS/examples/tmp/**
 
 # electron
 **/dist

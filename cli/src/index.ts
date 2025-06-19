@@ -13,6 +13,7 @@ import { parseCliArgs } from './helpers/parseCliArgs.js'
 
 // UTILS
 import { logger } from './utils/logger.js'
+import { handleError, CLIError } from './utils/errors.js'
 
 // TERMINAL
 import { execa } from 'execa'
@@ -71,7 +72,7 @@ const main = async () => {
   const usePackages = buildPkgInstallerMap(config.project_name, inUsePackages)
 
   // 4. SCAFFOLD: base project (configuration agnostic files) ##################
-  scaffoldProject(config)
+  await scaffoldProject(config)
 
   // 5. INSTALL: packages (update the package.json - not 'npm i') #############
   installPackages({
@@ -139,12 +140,12 @@ const main = async () => {
       projectSetupSpinner.fail(
         `${chalk.blue(config.project_name)} ${chalk.red('Packages installation failed!')}`
       )
-      logger.error(`Failed to execute: ${command}`)
-      logger.error(err)
-      if (err instanceof Error) {
-        logger.error(err.message)
-      }
-      process.exit(1)
+      throw new CLIError(
+        `Package installation failed: ${command}`,
+        'PACKAGE_INSTALL_ERROR',
+        false,
+        err instanceof Error ? err : new Error(String(err))
+      )
     }
   }
 
@@ -172,10 +173,12 @@ const main = async () => {
       initializeGitSpinner.fail(
         `${chalk.blue(config.project_name)} ${chalk.red('Git initialization')} failed!`
       )
-      if (err instanceof Error) {
-        logger.error(err.message)
-      }
-      process.exit(1)
+      throw new CLIError(
+        'Git initialization failed',
+        'GIT_INIT_ERROR',
+        true,
+        err instanceof Error ? err : new Error(String(err))
+      )
     }
   }
 
@@ -209,14 +212,19 @@ const main = async () => {
 }
 
 main().catch((error) => {
-  logger.error('An unexpected error occurred:')
-  if (error instanceof Error) {
-    logger.error(error.message)
-    if (error.stack) {
-      logger.error(error.stack)
-    }
-  } else {
-    logger.error(String(error))
+  const cliError = handleError(error)
+
+  logger.error(`❌ ${cliError.message}`)
+
+  if (cliError.cause && cliError.cause.stack) {
+    logger.debug('Stack trace:', cliError.cause.stack)
   }
-  process.exit(1)
+
+  if (cliError.recoverable) {
+    logger.info(
+      '💡 This error might be recoverable. Please check your configuration and try again.'
+    )
+  }
+
+  process.exit(cliError.code === 'VALIDATION_ERROR' ? 2 : 1)
 })

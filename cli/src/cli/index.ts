@@ -93,12 +93,11 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
       ###################################################################### */
 
       try {
-        // TODO: fix typing
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let group: any = {}
-        // TODO: fix typing
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const prompts: Record<string, any> = {}
+        let group: Partial<Omit<Yargs, 'ci' | 'y'>> = {}
+        const prompts: Record<
+          string,
+          () => Promise<string | boolean | symbol>
+        > = {}
 
         // PROJECT NAME #########################################################
         if (!cliArgs.project_name) {
@@ -206,20 +205,24 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         // DEFINE: config with user prompts ###################################
         const project_name = group.project_name || cliArgs.project_name
 
-        const router = group.router || cliArgs.router // group.router prompt is skipped if --router=<...> is passed in the CLI
+        // The 'p.select' prompt returns a generic 'string'. A type assertion is
+        // needed to ensure TypeScript recognizes it as a 'RouterPackage'.
+        const router = (group.router || cliArgs.router) as RouterPackage
 
-        const styles = group.styles || cliArgs.styles // group.styles prompt is skipped if --styles=<...> is passed in the CLI
+        const styles = group.styles ?? cliArgs.styles
 
-        const database = group.database || cliArgs.database // group.database prompt is skipped if --database=<...> is passed in the CLI
+        const database = group.database ?? cliArgs.database
 
-        const orm = group.orm || cliArgs.orm
+        const orm = group.orm ?? cliArgs.orm
 
-        const initialize_git = group.initialize_git || cliArgs.initialize_git // group.initialize_git prompt is skipped if --initialize_git=<...> is passed in the CLI
+        const initialize_git = group.initialize_git ?? cliArgs.initialize_git
 
         const install_packages =
-          group.install_packages || cliArgs.install_packages // group.install_packages prompt is skipped if --install_packages=<...> is passed in the CLI
+          group.install_packages ?? cliArgs.install_packages
 
-        const ide = group.ide || cliArgs.ide // group.ide prompt is skipped if --ide=<...> is passed in the CLI
+        // The 'p.select' prompt returns a generic 'string'. A type assertion is
+        // needed to ensure TypeScript recognizes it as an 'IDE'.
+        const ide = (group.ide || cliArgs.ide) as IDE
 
         const config_key: ConfigKey = `${router as RouterPackage}-${
           (styles as StylePackage) || 'none'
@@ -234,14 +237,14 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
             cliArgs.project_dir || `./${project_name || DEFAULT_APP_NAME}`,
           pkg_manager: 'npm',
           ide,
-          initialize_git: initialize_git,
+          initialize_git: initialize_git ?? false,
           packages: {
             router,
             styles: (styles as StylePackage) || false,
             database: (database as DatabasePackage) || false,
             orm: (orm as ORMPackage) || false,
           },
-          install_packages: install_packages,
+          install_packages: install_packages ?? false,
         }
       } catch (err) {
         logger.error('🚨🚨 Error running prompt cli', err)
