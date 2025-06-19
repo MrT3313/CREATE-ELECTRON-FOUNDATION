@@ -85,11 +85,11 @@ describe('parseCliArgs', () => {
     }
   }
 
-  // Test boolean conversions for style, database, orm, ide
-  const booleanOptions = ['styles', 'ide']
-  for (const option of booleanOptions) {
-    it(`should correctly parse --${option}=false as false`, async () => {
-      const argv = createArgv([`--${option}=false`])
+  // Test 'none' conversions for style, database, orm, ide
+  const noneOptions = ['styles', 'ide']
+  for (const option of noneOptions) {
+    it(`should correctly parse --${option} none as false`, async () => {
+      const argv = createArgv([`--${option}`, 'none'])
       const result = await parseCliArgs(argv)
       expect(result[option as keyof typeof result]).toBe(false)
     })
@@ -101,8 +101,8 @@ describe('parseCliArgs', () => {
     })
   }
 
-  it('should correctly parse --database=false and --orm=false as false', async () => {
-    const argv = createArgv(['--database=false', '--orm=false'])
+  it('should correctly parse --database none and --orm none as false', async () => {
+    const argv = createArgv(['--database', 'none', '--orm', 'none'])
     const result = await parseCliArgs(argv)
     expect(result.database).toBe(false)
     expect(result.orm).toBe(false)
@@ -151,8 +151,8 @@ describe('parseCliArgs', () => {
     expect(result.database).toBe('sqlite')
     expect(result.orm).toBe('drizzle')
 
-    // Case 4: Both are set to false
-    argv = createArgv(['--database=false', '--orm=false'])
+    // Case 4: Both are set to none
+    argv = createArgv(['--database', 'none', '--orm', 'none'])
     result = await parseCliArgs(argv)
     expect(result.database).toBe(false)
     expect(result.orm).toBe(false)

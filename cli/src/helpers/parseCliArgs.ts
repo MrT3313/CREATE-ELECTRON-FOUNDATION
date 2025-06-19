@@ -16,6 +16,14 @@ import {
   validPackageManagers,
   validIDEs,
 } from '../types/index.js'
+import type {
+  RouterPackage,
+  StylePackage,
+  DatabasePackage,
+  ORMPackage,
+  PackageManager,
+  IDE,
+} from '../types/index.js'
 
 export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
   const args = await yargs(hideBin(argv))
@@ -38,31 +46,26 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
       type: 'string',
       description: `Router to use.`,
       choices: validRouters,
-      coerce: (arg) => arg,
     })
     .option('styles', {
       type: 'string',
       description: `Styles to use.`,
       choices: [...validStyles, 'none'],
-      coerce: (arg) => (arg === 'none' ? false : arg),
     })
     .option('database', {
       type: 'string',
       description: `Database to use.`,
       choices: [...validDatabases, 'none'],
-      coerce: (arg) => (arg === 'none' ? false : arg),
     })
     .option('orm', {
       type: 'string',
       description: `ORM to use.`,
       choices: [...validORMs, 'none'],
-      coerce: (arg) => (arg === 'none' ? false : arg),
     })
     .option('pkg_manager', {
       type: 'string',
       description: `Package manager to use.`,
       choices: validPackageManagers,
-      coerce: (arg) => arg,
     })
     .option('initialize_git', {
       type: 'boolean',
@@ -77,11 +80,10 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
       type: 'string',
       description: `IDE to use.`,
       choices: [...validIDEs, 'none'],
-      coerce: (arg) => (arg === 'none' ? false : arg),
     })
     .check((argv) => {
-      const dbIsSet = argv.database && argv.database !== false
-      const ormIsSet = argv.orm && argv.orm !== false
+      const dbIsSet = argv.database && argv.database !== 'none'
+      const ormIsSet = argv.orm && argv.orm !== 'none'
 
       if (dbIsSet !== ormIsSet) {
         throw new Error('Must provide both a database and an ORM, or neither.')
@@ -114,14 +116,20 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     project_dir: project_name
       ? path.resolve(process.cwd(), project_name)
       : undefined,
-    router: args.router,
-    styles: args.styles,
-    database: args.database,
-    orm: args.orm,
-    pkg_manager: args.pkg_manager,
+    router: args.router as RouterPackage | undefined,
+    styles:
+      args.styles === 'none'
+        ? false
+        : (args.styles as StylePackage | undefined),
+    database:
+      args.database === 'none'
+        ? false
+        : (args.database as DatabasePackage | undefined),
+    orm: args.orm === 'none' ? false : (args.orm as ORMPackage | undefined),
+    pkg_manager: args.pkg_manager as PackageManager | undefined,
     initialize_git: args.initialize_git,
     install_packages: args.install_packages,
-    ide: args.ide,
+    ide: args.ide === 'none' ? false : (args.ide as IDE | undefined),
   }
 
   return result

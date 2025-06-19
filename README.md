@@ -97,10 +97,10 @@ You can also customize your project setup directly via command-line arguments.
 | `[project_name]`     |         | Name of the project (positional)   | string                                | -         |
 | `--project_name`     |         | Name of the project (option)       | string                                | -         |
 | `--router`           |         | Router to use                      | `'tanstack-router'`, `'react-router'` | -         |
-| `--styles`           |         | Styles to use                      | `'tailwind'`, `'false'`               | -         |
-| `--database`         |         | Database to use                    | `'sqlite'`, `'false'`                 | -         |
-| `--orm`              |         | ORM to use                         | `'drizzle'`, `'false'`                | -         |
-| `--ide`              |         | IDE to use                         | `'cursor'`, `'vscode'`, `'false'`     | -         |
+| `--styles`           |         | Styles to use                      | `'tailwind'`, `'none'`                | -         |
+| `--database`         |         | Database to use                    | `'sqlite'`, `'none'`                  | -         |
+| `--orm`              |         | ORM to use                         | `'drizzle'`, `'none'`                 | -         |
+| `--ide`              |         | IDE to use                         | `'cursor'`, `'vscode'`, `'none'`      | -         |
 | `--pkg_manager`      |         | Package manager to use             | `'npm'`                               | `'npm'`   |
 | `--initialize_git`   | `--git` | Initialize Git repository          | `'true'`, `'false'`                   | `'true'`  |
 | `--install_packages` |         | Install packages after scaffolding | `'true'`, `'false'`                   | `'false'` |
