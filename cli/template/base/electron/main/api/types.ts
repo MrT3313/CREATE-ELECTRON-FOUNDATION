@@ -1,4 +1,4 @@
-import { IpcMainInvokeEvent, ipcMain } from 'electron'
+import { IpcMainInvokeEvent } from 'electron'
 import type { APIResource, DBResource } from '../../../types/resource'
 
 /**
@@ -53,36 +53,3 @@ export type IPCHandler<C extends ResourceChannel> = (
   event: IpcMainInvokeEvent,
   payload: ChannelRequestMap[C]
 ) => Promise<ChannelResponseMap[C]>
-
-/**
- * Register an IPC handler for a specific channel
- * @param channel - The channel to handle
- * @param handler - The handler function
- */
-export function registerHandler<C extends ResourceChannel>(
-  channel: C,
-  handler: IPCHandler<C>
-): void {
-  ipcMain.handle(channel, handler)
-}
-
-/**
- * Generic error response
- */
-export interface ErrorResponse {
-  readonly error: true
-  readonly message: string
-  readonly code: number
-}
-
-/**
- * Type guard to check if a response is an error
- */
-export function isErrorResponse(response: unknown): response is ErrorResponse {
-  return (
-    typeof response === 'object' &&
-    response !== null &&
-    'error' in response &&
-    (response as { error: unknown }).error === true
-  )
-}

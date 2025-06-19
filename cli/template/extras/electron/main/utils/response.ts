@@ -52,15 +52,6 @@ export function isSuccessResponse<T>(
 }
 
 /**
- * Type guard to check if a response is an error response
- */
-export function isErrorResponse<T>(
-  response: ApiResponse<T>
-): response is ApiErrorResponse<T> {
-  return response.status === 'error'
-}
-
-/**
  * Utility for creating standardized API responses
  */
 export const response = {
