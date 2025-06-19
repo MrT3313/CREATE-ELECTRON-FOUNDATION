@@ -1,4 +1,5 @@
 import color from 'picocolors'
+import chalk from 'chalk'
 
 // TERMINAL > user prompting
 import * as p from '@clack/prompts'
@@ -53,53 +54,50 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
       ######################################################################## */
 
       try {
-        // DEFINE: initial config with default values ###########################
-        const config_key: ConfigKey = `${cliArgs.router as RouterPackage}-${
-          (cliArgs.styles as StylePackage) || 'none'
-        }-${(cliArgs.database as DatabasePackage) || 'none'}-${
-          (cliArgs.orm as ORMPackage) || 'none'
-        }`
+        const router = cliArgs.router ?? defaultCLIConfig.packages.router
+        const styles =
+          cliArgs.styles !== undefined
+            ? cliArgs.styles
+            : defaultCLIConfig.packages.styles
+        const database =
+          cliArgs.database !== undefined
+            ? cliArgs.database
+            : defaultCLIConfig.packages.database
+        const orm =
+          cliArgs.orm !== undefined
+            ? cliArgs.orm
+            : defaultCLIConfig.packages.orm
+        const ide =
+          cliArgs.ide !== undefined ? cliArgs.ide : defaultCLIConfig.ide
+        const initialize_git =
+          cliArgs.initialize_git ?? defaultCLIConfig.initialize_git
+        const install_packages =
+          cliArgs.install_packages ?? defaultCLIConfig.install_packages
 
-        // Create a mutable configuration object that will be modified with cli args
-        const mutableConfig = {
-          config_key,
-          ...defaultCLIConfig,
-          project_name: cliArgs.project_name || DEFAULT_APP_NAME,
-          project_dir:
-            cliArgs.project_dir ||
-            `./${cliArgs.project_name || DEFAULT_APP_NAME}`,
+        const pkg_manager = cliArgs.pkg_manager ?? defaultCLIConfig.pkg_manager
+
+        const config_key: ConfigKey = `${router}-${styles || 'none'}-${
+          database || 'none'
+        }-${orm || 'none'}`
+
+        const project_name = cliArgs.project_name || DEFAULT_APP_NAME
+        const project_dir = cliArgs.project_dir || `./${project_name}`
+
+        config = {
+          project_name,
+          project_dir,
+          initialize_git,
+          install_packages,
+          ide,
+          pkg_manager,
           packages: {
-            ...defaultCLIConfig.packages,
+            router,
+            styles,
+            database,
+            orm,
           },
+          config_key,
         }
-
-        // UPDATE: config with passed cliArgs #################################
-        if (cliArgs.router) {
-          mutableConfig.packages.router = cliArgs.router as RouterPackage
-        }
-
-        if (cliArgs.styles !== undefined) {
-          mutableConfig.packages.styles = cliArgs.styles as StylePackage
-        }
-
-        if (cliArgs.database !== undefined) {
-          mutableConfig.packages.database = cliArgs.database as DatabasePackage
-        }
-
-        if (cliArgs.orm !== undefined) {
-          mutableConfig.packages.orm = cliArgs.orm as ORMPackage
-        }
-
-        if (cliArgs.initialize_git) {
-          mutableConfig.initialize_git = cliArgs.initialize_git
-        }
-
-        if (cliArgs.ide !== undefined) {
-          mutableConfig.ide = cliArgs.ide as IDE
-        }
-
-        // Assign the mutable config to the readonly config variable
-        config = mutableConfig as CLIResults
       } catch (err) {
         logger.error('🚨🚨 Error running prompt cli --yes', err)
         process.exit(1)
@@ -218,72 +216,73 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }
 
         // DEFINE: config with user prompts ###################################
-        const project_name = group.project_name || cliArgs.project_name
+        const project_name =
+          (group.project_name as string) ||
+          cliArgs.project_name ||
+          DEFAULT_APP_NAME
 
-        const router = group.router || cliArgs.router // group.router prompt is skipped if --router=<...> is passed in the CLI
+        const router =
+          (group.router as RouterPackage) ||
+          cliArgs.router ||
+          defaultCLIConfig.packages.router
 
-        const styles = group.styles || cliArgs.styles // group.styles prompt is skipped if --styles=<...> is passed in the CLI
+        let styles: StylePackage | false
+        if (group.styles !== undefined) {
+          styles = group.styles ? 'tailwind' : false
+        } else {
+          styles = cliArgs.styles ?? defaultCLIConfig.packages.styles
+        }
 
-        const database = group.database || cliArgs.database // group.database prompt is skipped if --database=<...> is passed in the CLI
+        let database: DatabasePackage | false
+        let orm: ORMPackage | false
+        if (group.initialize_database !== undefined) {
+          database = group.initialize_database ? 'sqlite' : false
+          orm = group.initialize_database ? 'drizzle' : false
+        } else {
+          database = cliArgs.database ?? defaultCLIConfig.packages.database
+          orm = cliArgs.orm ?? defaultCLIConfig.packages.orm
+        }
 
-        const orm = group.orm || cliArgs.orm
-
-        const initialize_git = group.initialize_git || cliArgs.initialize_git // group.initialize_git prompt is skipped if --initialize_git=<...> is passed in the CLI
+        const initialize_git =
+          group.initialize_git ??
+          cliArgs.initialize_git ??
+          defaultCLIConfig.initialize_git
 
         const install_packages =
-          group.install_packages || cliArgs.install_packages // group.install_packages prompt is skipped if --install_packages=<...> is passed in the CLI
+          group.install_packages ??
+          cliArgs.install_packages ??
+          defaultCLIConfig.install_packages
 
-        const ide = group.ide || cliArgs.ide // group.ide prompt is skipped if --ide=<...> is passed in the CLI
+        let ide: IDE | false
+        const idePromptResult = group.ide as IDE | 'none' | undefined
+        if (idePromptResult) {
+          ide = idePromptResult === 'none' ? false : idePromptResult
+        } else {
+          ide = cliArgs.ide ?? defaultCLIConfig.ide
+        }
 
-        // Ensure we have valid values for all required fields or use defaults
-        const routerValue =
-          (router as RouterPackage) || defaultCLIConfig.packages.router
-        const stylesValue =
-          typeof styles === 'boolean'
-            ? styles
-              ? ('tailwind' as StylePackage)
-              : false
-            : (styles as StylePackage) || defaultCLIConfig.packages.styles
+        const pkg_manager = cliArgs.pkg_manager ?? defaultCLIConfig.pkg_manager
 
-        const databaseValue =
-          typeof database === 'boolean'
-            ? database
-              ? ('sqlite' as DatabasePackage)
-              : false
-            : (database as DatabasePackage) ||
-              defaultCLIConfig.packages.database
+        const config_key: ConfigKey = `${router}-${styles || 'none'}-${
+          database || 'none'
+        }-${orm || 'none'}`
 
-        const ormValue =
-          typeof orm === 'boolean'
-            ? orm
-              ? ('drizzle' as ORMPackage)
-              : false
-            : (orm as ORMPackage) || defaultCLIConfig.packages.orm
+        const project_dir = cliArgs.project_dir || `./${project_name}`
 
-        const config_key: ConfigKey = `${routerValue}-${
-          stylesValue || 'none'
-        }-${databaseValue || 'none'}-${ormValue || 'none'}`
-
-        // Create config object with proper typing
         config = {
-          config_key,
-          project_name: project_name || DEFAULT_APP_NAME,
-          project_dir:
-            cliArgs.project_dir || `./${project_name || DEFAULT_APP_NAME}`,
-          pkg_manager: defaultCLIConfig.pkg_manager,
-          ide: (ide || defaultCLIConfig.ide) as IDE | false,
-          initialize_git: Boolean(
-            initialize_git ?? defaultCLIConfig.initialize_git
-          ),
+          project_name,
+          project_dir,
+          initialize_git,
+          install_packages,
+          ide,
+          pkg_manager,
           packages: {
-            router: routerValue,
-            styles: stylesValue,
-            database: databaseValue,
-            orm: ormValue,
+            router,
+            styles,
+            database,
+            orm,
           },
-          install_packages: Boolean(
-            install_packages ?? defaultCLIConfig.install_packages
-          ),
+          config_key,
         }
       } catch (err) {
         logger.error('🚨🚨 Error running prompt cli', err)
@@ -293,24 +292,24 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
 
     p.outro(`${color.blue('✨ Generated configuration')}
 
-    ${color.green('🔹 Directory:')} ${color.yellow(config.project_dir)}
-    ${color.green('🔹 Project Name:')} ${color.yellow(config.project_name)}
-    ${color.green('🔹 UI Libraries:')} ${color.yellow(
+    ${chalk.green('🔹 Directory:')} ${chalk.yellow(config.project_dir)}
+    ${chalk.green('🔹 Project Name:')} ${chalk.yellow(config.project_name)}
+    ${chalk.green('🔹 UI Libraries:')} ${chalk.yellow(
       config.packages.router
     )} ${
       config.packages.styles
-        ? `+ ${color.yellow(config.packages.styles)}`
-        : color.yellow('Vanilla CSS')
+        ? `+ ${chalk.yellow(config.packages.styles)}`
+        : chalk.yellow('Vanilla CSS')
     }
-    ${color.green('🔹 Database:')} ${
+    ${chalk.green('🔹 Database:')} ${
       config.packages.database
-        ? color.yellow(config.packages.database)
-        : color.yellow('None')
-    } ${config.packages.orm ? `+ ${color.yellow(config.packages.orm)}` : ''}
-    ${color.green('🔹 Initialize Git:')} ${
-      config.initialize_git ? color.green('Yes') : color.red('No')
+        ? chalk.yellow(config.packages.database)
+        : chalk.yellow('None')
+    } ${config.packages.orm ? `+ ${chalk.yellow(config.packages.orm)}` : ''}
+    ${chalk.green('🔹 Initialize Git:')} ${
+      config.initialize_git ? chalk.green('Yes') : chalk.red('No')
     }
-    ${color.green('🔹 Package Manager:')} ${color.yellow(config.pkg_manager)}
+    ${chalk.green('🔹 Package Manager:')} ${chalk.yellow(config.pkg_manager)}
     `)
 
     return config

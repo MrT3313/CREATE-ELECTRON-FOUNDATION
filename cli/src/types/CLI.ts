@@ -84,9 +84,8 @@ export interface CLIResults extends CLIDefaults {
 export interface PromptResults {
   readonly project_name?: string
   readonly router?: RouterPackage
-  readonly styles?: StylePackage | boolean
-  readonly database?: DatabasePackage | boolean
-  readonly orm?: ORMPackage | boolean
+  readonly styles?: boolean
+  readonly initialize_database?: boolean
   readonly initialize_git?: boolean
   readonly install_packages?: boolean
   readonly ide?: IDE | false

@@ -4,6 +4,7 @@ import path from 'path'
 
 // UTILS
 import { logger } from '../utils/logger.js'
+import { validateProjectName } from '../utils/validateProjectName.js'
 
 // TYPES
 import type { Yargs } from '../types/CLI.js'
@@ -37,6 +38,7 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
       type: 'string',
       description: `Router to use.`,
       choices: validRouters,
+      coerce: (arg) => arg,
     })
     .option('styles', {
       type: 'string',
@@ -60,6 +62,7 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
       type: 'string',
       description: `Package manager to use.`,
       choices: validPackageManagers,
+      coerce: (arg) => arg,
     })
     .option('initialize_git', {
       type: 'boolean',
@@ -111,25 +114,15 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     project_dir: project_name
       ? path.resolve(process.cwd(), project_name)
       : undefined,
-    router: args.router as Yargs['router'],
-    styles: args.styles as Yargs['styles'],
-    database: args.database as Yargs['database'],
-    orm: args.orm as Yargs['orm'],
-    pkg_manager: args.pkg_manager as Yargs['pkg_manager'],
+    router: args.router,
+    styles: args.styles,
+    database: args.database,
+    orm: args.orm,
+    pkg_manager: args.pkg_manager,
     initialize_git: args.initialize_git,
     install_packages: args.install_packages,
-    ide: args.ide as Yargs['ide'],
+    ide: args.ide,
   }
 
   return result
-}
-
-export const validateProjectName = (name: string) => {
-  const validationRegExp =
-    /^(?:@[a-z0-9-*~][a-z0-9-*._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/
-  if (validationRegExp.test(name)) {
-    return
-  } else {
-    return `"${name}" is not a valid project name. Please use a valid npm package name.`
-  }
 }
