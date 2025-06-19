@@ -1,5 +1,5 @@
 import fs from 'fs-extra'
-import { FileSystemError } from './errors'
+import { FileSystemError } from './errors.js'
 
 export const safeCopy = (sourcePath: string, destPath: string) => {
   try {
