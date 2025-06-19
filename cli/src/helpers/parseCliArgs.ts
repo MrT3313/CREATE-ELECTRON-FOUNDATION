@@ -85,9 +85,14 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
       const dbIsSet = argv.database && argv.database !== 'none'
       const ormIsSet = argv.orm && argv.orm !== 'none'
 
-      if (dbIsSet !== ormIsSet) {
-        throw new Error('Must provide both a database and an ORM, or neither.')
+      if (ormIsSet && !dbIsSet) {
+        throw new Error('Cannot use an ORM without a database.')
       }
+
+      if (dbIsSet && !ormIsSet) {
+        argv.orm = 'drizzle'
+      }
+
       return true
     })
     .help()

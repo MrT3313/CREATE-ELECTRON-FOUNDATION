@@ -12,10 +12,10 @@ rm -rf tanstack-router tanstack-router-tailwind tanstack-router-tailwind-sqlite-
 # Create new examples with different configurations
 echo "Creating TanStack Router examples..."
 create-electron-foundation tanstack-router          --router=tanstack-router --styles=none     --database=none --install_packages=false --git=true --ide=cursor
-create-electron-foundation tanstack-router-tailwind --router=tanstack-router --styles=tailwind --database=none --install_packages=false --git=true --ide=cursor
+# create-electron-foundation tanstack-router-tailwind --router=tanstack-router --styles=tailwind --database=none --install_packages=false --git=true --ide=cursor
 
-# create-electron-foundation react-router --router=react-router --styles=none --database=none --install_packages=false --git=true --ide=cursor
-# create-electron-foundation react-router-tailwind --router=react-router --styles=tailwind --database=none --install_packages=false --git=true --ide=cursor
+# create-electron-foundation react-router             --router=react-router --styles=none --database=none --install_packages=false --git=true --ide=cursor
+# create-electron-foundation react-router-tailwind    --router=react-router --styles=tailwind --database=none --install_packages=false --git=true --ide=cursor
 
 # create-electron-foundation tanstack-router-tailwind-sqlite-drizzle --router=tanstack-router --styles=tailwind --database=sqlite --orm=drizzle --install_packages=false --git=true --ide=cursor
 # create-electron-foundation react-router-tailwind-sqlite-drizzle --router=react-router --styles=tailwind --database=sqlite --orm=drizzle --install_packages=false --git=true --ide=cursor

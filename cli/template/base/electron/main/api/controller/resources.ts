@@ -1,6 +1,6 @@
 import { jsonPlaceholderServices } from '../services/jsonplaceholder.js'
 import { handleIpc } from '../../utils/ipc.js'
-import { IpcApi } from '../../types/ipc.js'
+import { IpcApi } from '../../../types/ipc.js'
 
 handleIpc(
   'api/resource/getAPIResourceById',

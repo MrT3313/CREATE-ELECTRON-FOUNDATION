@@ -75,15 +75,23 @@ const handleStyles = (config: Readonly<CLIResults>) => {
 const handleViteConfig = (config: Readonly<CLIResults>) => {
   const { router, styles, database } = config.packages
   let viteConfig = 'vite.config'
-  if (router)
-    viteConfig += `.with${router.charAt(0).toUpperCase() + router.slice(1)}`
+  if (router) {
+    if (router === 'react-router') {
+      viteConfig += `.withReactRouter`
+    }
+    if (router === 'tanstack-router') {
+      viteConfig += `.withTanstackRouter`
+    }
+  }
   if (styles)
     viteConfig += `.with${styles.charAt(0).toUpperCase() + styles.slice(1)}`
   if (database)
     viteConfig += `.with${database.charAt(0).toUpperCase() + database.slice(1)}`
   viteConfig += '.ts'
 
+  logger.info(`viteConfig: ${viteConfig}`)
   const viteConfigPath = path.join(srcDir, 'configs', 'vite', viteConfig)
+  logger.info(`viteConfigPath: ${viteConfigPath}`)
 
   if (fs.existsSync(viteConfigPath)) {
     safeCopy(viteConfigPath, path.join(config.project_dir, 'vite.config.ts'))
