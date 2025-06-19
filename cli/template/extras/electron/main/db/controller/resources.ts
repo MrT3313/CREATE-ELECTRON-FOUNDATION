@@ -4,7 +4,6 @@ import { response } from '../../utils/response.js'
 import { ResourceCreatePayload } from '../schema/resources.js'
 
 // TYPES
-import { NewDBResource } from '../../../../types/resource'
 
 ipcMain.handle(
   'db/resource/getById',
@@ -16,7 +15,8 @@ ipcMain.handle(
       }
       return response.ok(resource)
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'An unknown error occurred.'
+      const message =
+        error instanceof Error ? error.message : 'An unknown error occurred.'
       return response.error(`Error getting resource: ${message}`)
     }
   }
@@ -27,7 +27,8 @@ ipcMain.handle('db/resource/getAll', async () => {
     const resources = await ResourceServices.getResourceList()
     return response.ok(resources)
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'An unknown error occurred.'
+    const message =
+      error instanceof Error ? error.message : 'An unknown error occurred.'
     return response.error(`Error getting resource list: ${message}`)
   }
 })
@@ -39,7 +40,8 @@ ipcMain.handle(
       const newResource = await ResourceServices.createResource(args)
       return response.ok(newResource)
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'An unknown error occurred.'
+      const message =
+        error instanceof Error ? error.message : 'An unknown error occurred.'
       return response.error(`Error creating resource: ${message}`, 400) // 400 for bad request on validation error
     }
   }
@@ -51,11 +53,14 @@ ipcMain.handle(
     try {
       const wasDeleted = await ResourceServices.deleteResourceById(args.id)
       if (!wasDeleted) {
-        return response.notFound(`Resource with ID ${args.id} not found for deletion.`)
+        return response.notFound(
+          `Resource with ID ${args.id} not found for deletion.`
+        )
       }
       return response.ok({ id: args.id })
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'An unknown error occurred.'
+      const message =
+        error instanceof Error ? error.message : 'An unknown error occurred.'
       return response.error(`Error deleting resource: ${message}`)
     }
   }

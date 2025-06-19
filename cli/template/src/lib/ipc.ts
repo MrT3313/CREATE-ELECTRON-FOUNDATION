@@ -6,4 +6,4 @@ export const invokeIpc = <C extends keyof IpcApi>(
   args: IpcApi[C]['args']
 ): Promise<IpcResponse<IpcApi[C]['response']>> => {
   return ipcRenderer.invoke(channel, args)
-} 
+}

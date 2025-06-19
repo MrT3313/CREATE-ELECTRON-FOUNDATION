@@ -2,4 +2,4 @@
   "extends": "../tsconfig.json",
   "include": ["."],
   "exclude": ["../../node_modules"]
-} 
+}

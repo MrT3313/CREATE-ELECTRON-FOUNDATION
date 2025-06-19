@@ -3,12 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useMutation } from '@tanstack/react-query'
 
 // TYPES
-import type {
-  APIResource,
-  DBResource,
-  NewAPIResource,
-  ElectronResponse,
-} from '../../types'
+import type { APIResource, NewAPIResource, ElectronResponse } from '../../types'
 
 function isErrorResponse<T>(
   response: ElectronResponse<T>

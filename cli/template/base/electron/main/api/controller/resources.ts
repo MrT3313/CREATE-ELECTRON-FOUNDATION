@@ -10,7 +10,10 @@ handleIpc(
       return { success: true, data: result }
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error)
-      return { success: false, error: { code: 500, message: `Error getting resource: ${message}` } }
+      return {
+        success: false,
+        error: { code: 500, message: `Error getting resource: ${message}` },
+      }
     }
   }
 )
@@ -21,7 +24,10 @@ handleIpc('api/resource/getAPIResourceList', async () => {
     return { success: true, data: result }
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error)
-    return { success: false, error: { code: 500, message: `Error getting resource list: ${message}` } }
+    return {
+      success: false,
+      error: { code: 500, message: `Error getting resource list: ${message}` },
+    }
   }
 })
 
