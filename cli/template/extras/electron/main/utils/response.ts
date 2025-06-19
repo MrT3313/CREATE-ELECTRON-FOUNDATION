@@ -16,7 +16,7 @@ export interface ApiResponseBase {
 }
 
 /**
- * Success response with optional data
+ * Success response with data
  */
 export interface ApiSuccessResponse<T = null> extends ApiResponseBase {
   /** Success status discriminator */
@@ -39,35 +39,8 @@ export interface ApiErrorResponse<T = null> extends ApiResponseBase {
 
 /**
  * Union type representing all possible API responses
- * Uses discriminated unions for better type checking
  */
 export type ApiResponse<T = null> = ApiSuccessResponse<T> | ApiErrorResponse<T>
-
-/**
- * Options for creating a success response
- */
-interface SuccessResponseOptions<T> {
-  /** Optional custom status code (defaults to 200) */
-  readonly code?: number
-  /** Optional custom success message (defaults to "SUCCESS") */
-  readonly msg?: string
-  /** Response data */
-  readonly data?: T
-}
-
-/**
- * Options for creating an error response
- */
-interface ErrorResponseOptions<T = null> {
-  /** Optional custom error code (defaults to 500) */
-  readonly code?: number
-  /** Error message */
-  readonly msg: string
-  /** Optional error details */
-  readonly data?: T
-  /** Optional error code for client-side handling */
-  readonly errorCode?: string
-}
 
 /**
  * Type guard to check if a response is a success response
@@ -93,30 +66,44 @@ export function isErrorResponse<T>(
 export const response = {
   /**
    * Create a success response
-   * @param options - Success response options
-   * @returns Standardized success response object
+   * @param data - Response data
+   * @param message - Optional success message
+   * @param code - Optional status code
+   * @returns Standardized success response
    */
-  ok<T = null>(options?: SuccessResponseOptions<T>): ApiSuccessResponse<T> {
+  ok<T = null>(
+    data?: T,
+    message = 'SUCCESS',
+    code = 200
+  ): ApiSuccessResponse<T> {
     return {
-      code: options?.code ?? 200,
-      msg: options?.msg ?? 'SUCCESS',
+      code,
+      msg: message,
       status: 'success',
-      data: options?.data as T,
+      data: data as T,
     }
   },
 
   /**
    * Create an error response
-   * @param options - Error response options
-   * @returns Standardized error response object
+   * @param message - Error message
+   * @param code - Optional status code
+   * @param errorCode - Optional error code for client-side handling
+   * @param data - Optional error details
+   * @returns Standardized error response
    */
-  error<T = null>(options: ErrorResponseOptions<T>): ApiErrorResponse<T> {
+  error<T = null>(
+    message: string,
+    code = 500,
+    errorCode?: string,
+    data?: T
+  ): ApiErrorResponse<T> {
     return {
-      code: options.code ?? 500,
-      msg: options.msg,
+      code,
+      msg: message,
       status: 'error',
-      data: options.data,
-      errorCode: options.errorCode,
+      data,
+      errorCode,
     }
   },
 
@@ -125,7 +112,7 @@ export const response = {
    * @param message - Optional custom message
    * @returns Standardized not found response
    */
-  notFound<T = null>(message = 'Resource not found'): ApiErrorResponse<T> {
+  notFound(message = 'Resource not found'): ApiErrorResponse {
     return {
       code: 404,
       msg: message,
@@ -139,7 +126,7 @@ export const response = {
    * @param message - Optional custom message
    * @returns Standardized bad request response
    */
-  badRequest<T = null>(message = 'Bad request'): ApiErrorResponse<T> {
+  badRequest(message = 'Bad request'): ApiErrorResponse {
     return {
       code: 400,
       msg: message,

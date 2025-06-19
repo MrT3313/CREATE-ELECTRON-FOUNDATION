@@ -19,10 +19,7 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
     "noImplicitThis": true,
-    "useUnknownInCatchVariables": true,
     "alwaysStrict": true,
 
     /* Additional Checks */
@@ -30,31 +27,20 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
 
     /* Module Resolution */
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@types/*": ["./types/*"],
-      "@api/*": ["./src/api/*"],
       "@components/*": ["./src/components/*"],
-      "@lib/*": ["./src/lib/*"],
       "@utils/*": ["./src/utils/*"],
-      "@routes/*": ["./src/routes/*"],
       "@electron/*": ["./electron/*"],
       "@main/*": ["./electron/main/*"],
-      "@preload/*": ["./electron/preload/*"]
+      "@types/*": ["./types/*"]
     },
 
     /* Type Declarations */
     "typeRoots": ["./node_modules/@types", "./types"],
-
-    /* Source Maps */
-    "sourceMap": true,
-    "inlineSources": true,
 
     /* Interop Constraints */
     "esModuleInterop": true,

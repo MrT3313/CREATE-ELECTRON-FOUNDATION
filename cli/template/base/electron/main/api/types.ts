@@ -6,23 +6,7 @@ import type { APIResource, DBResource } from '../../../types/resource'
  */
 
 /**
- * Common channel name type to ensure consistency between main and renderer processes
- */
-export type IPCChannel = string
-
-/**
- * Base interface for all IPC handlers
- */
-export interface IPCHandler<TPayload = unknown, TResult = unknown> {
-  readonly channel: IPCChannel
-  readonly handler: (
-    event: IpcMainInvokeEvent,
-    payload: TPayload
-  ) => Promise<TResult>
-}
-
-/**
- * Type for the resource IPC channels
+ * Common channel name type for resource operations
  */
 export type ResourceChannel =
   | 'api/resource/getById'
@@ -63,40 +47,23 @@ export interface ChannelResponseMap {
 }
 
 /**
- * Type for a strongly-typed IPC handler
+ * Type for a type-safe IPC handler function
  */
-export type TypedIPCHandler<C extends ResourceChannel> = IPCHandler<
-  ChannelRequestMap[C],
-  ChannelResponseMap[C]
->
+export type IPCHandler<C extends ResourceChannel> = (
+  event: IpcMainInvokeEvent,
+  payload: ChannelRequestMap[C]
+) => Promise<ChannelResponseMap[C]>
 
 /**
- * Utility function to create a type-safe IPC handler
- * @param channel - The IPC channel name
+ * Register an IPC handler for a specific channel
+ * @param channel - The channel to handle
  * @param handler - The handler function
- * @returns A type-safe IPC handler object
  */
-export function createIPCHandler<C extends ResourceChannel>(
+export function registerHandler<C extends ResourceChannel>(
   channel: C,
-  handler: (
-    event: IpcMainInvokeEvent,
-    payload: ChannelRequestMap[C]
-  ) => Promise<ChannelResponseMap[C]>
-): TypedIPCHandler<C> {
-  return {
-    channel,
-    handler,
-  }
-}
-
-/**
- * Register all IPC handlers
- * @param handlers - Array of IPC handlers to register
- */
-export function registerIPCHandlers(handlers: IPCHandler[]): void {
-  for (const { channel, handler } of handlers) {
-    ipcMain.handle(channel, handler)
-  }
+  handler: IPCHandler<C>
+): void {
+  ipcMain.handle(channel, handler)
 }
 
 /**

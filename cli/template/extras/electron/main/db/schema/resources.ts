@@ -1,7 +1,6 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
 import { sql } from 'drizzle-orm'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
-import { z } from 'zod'
 
 /**
  * Resources table schema
@@ -20,26 +19,22 @@ export const resources = sqliteTable('resources', {
 })
 
 /**
- * Type representing a resource as retrieved from the database
- * Uses Drizzle's type inference to ensure type safety
+ * Resource type for database operations
  */
 export type Resource = typeof resources.$inferSelect
 
 /**
- * Type representing a resource being inserted into the database
- * Uses Drizzle's type inference to ensure type safety
+ * Type for inserting a new resource
  */
 export type NewResource = typeof resources.$inferInsert
 
 /**
- * Type for resource creation request payloads
- * Omits the id and createdAt fields which are generated automatically
+ * Type for creating a resource from client input
  */
 export type ResourceCreatePayload = Omit<NewResource, 'id' | 'createdAt'>
 
 /**
- * Type for resource update request payloads
- * Makes all fields optional except the ID for identification
+ * Type for updating an existing resource
  */
 export type ResourceUpdatePayload = Partial<
   Omit<Resource, 'id' | 'createdAt'>
@@ -49,31 +44,22 @@ export type ResourceUpdatePayload = Partial<
 export const insertResourceSchema = createInsertSchema(resources)
 export const selectResourceSchema = createSelectSchema(resources)
 
-// Custom validation schema for resource creation
-export const resourceCreatePayloadSchema = z.object({
-  title: z.string().min(1, 'Title cannot be empty'),
-  body: z.string().min(1, 'Body cannot be empty'),
-  user_id: z.number().int().positive('User ID must be a positive integer'),
-})
-
-// Type guard to validate if a value is a valid Resource
-export function isResource(value: unknown): value is Resource {
-  try {
-    selectResourceSchema.parse(value)
-    return true
-  } catch {
-    return false
-  }
-}
-
-// Type guard to validate if a value is a valid ResourceCreatePayload
+/**
+ * Validate if an object is a valid resource create payload
+ */
 export function isResourceCreatePayload(
   value: unknown
 ): value is ResourceCreatePayload {
-  try {
-    resourceCreatePayloadSchema.parse(value)
-    return true
-  } catch {
-    return false
-  }
+  if (typeof value !== 'object' || value === null) return false
+
+  const obj = value as Record<string, unknown>
+
+  return (
+    typeof obj.title === 'string' &&
+    obj.title.length > 0 &&
+    typeof obj.body === 'string' &&
+    obj.body.length > 0 &&
+    typeof obj.user_id === 'number' &&
+    obj.user_id > 0
+  )
 }

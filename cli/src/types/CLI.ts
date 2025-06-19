@@ -18,18 +18,18 @@ export type ConfigKey =
  * Command-line arguments passed to the CLI
  */
 export interface Yargs {
-  readonly ci: undefined | boolean
-  readonly y: undefined | boolean
-  readonly project_name: undefined | string
-  readonly project_dir: undefined | string
-  readonly router: undefined | RouterPackage
-  readonly styles: undefined | StylePackage | false
-  readonly database: undefined | DatabasePackage | false
-  readonly orm: undefined | ORMPackage | false
-  readonly pkg_manager: undefined | PackageManager
-  readonly initialize_git: undefined | boolean
-  readonly install_packages: undefined | boolean
-  readonly ide: undefined | IDE | false
+  readonly ci?: boolean
+  readonly y?: boolean
+  readonly project_name?: string
+  readonly project_dir?: string
+  readonly router?: RouterPackage
+  readonly styles?: StylePackage | false
+  readonly database?: DatabasePackage | false
+  readonly orm?: ORMPackage | false
+  readonly pkg_manager?: PackageManager
+  readonly initialize_git?: boolean
+  readonly install_packages?: boolean
+  readonly ide?: IDE | false
 }
 
 /**

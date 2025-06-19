@@ -23,13 +23,11 @@ export class ResourceServices {
   static async getResourceList(): Promise<ApiResponse<Resource[]>> {
     try {
       const list = await db.select().from(resources)
-      return response.ok({ data: list || [] })
+      return response.ok(list || [])
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error)
-      return response.error({
-        msg: `Error getting resource list: ${errorMessage}`,
-      })
+      return response.error(`Error getting resource list: ${errorMessage}`)
     }
   }
 
@@ -41,7 +39,7 @@ export class ResourceServices {
   static async getResourceById(id: string): Promise<ApiResponse<Resource>> {
     try {
       if (!id) {
-        return response.error({ msg: 'Resource ID is required' })
+        return response.error('Resource ID is required')
       }
 
       const resource = await db
@@ -54,13 +52,11 @@ export class ResourceServices {
         return response.notFound('Resource not found')
       }
 
-      return response.ok({ data: resource })
+      return response.ok(resource)
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error)
-      return response.error({
-        msg: `Error getting resource: ${errorMessage}`,
-      })
+      return response.error(`Error getting resource: ${errorMessage}`)
     }
   }
 
@@ -82,35 +78,28 @@ export class ResourceServices {
         return response.badRequest('Invalid resource data format')
       }
 
-      // Create a new resource with the provided data and generated ID
+      // Create a new resource with generated ID
       const newResource: NewResource = {
         ...data,
         id: nanoid(10),
       }
 
-      // Insert the resource using a transaction for atomicity
-      const result = await db.transaction(async (tx) => {
-        const insertResult = await tx
-          .insert(resources)
-          .values(newResource)
-          .returning()
-        return insertResult.length > 0 ? insertResult[0] : null
-      })
+      // Insert the resource
+      const result = await db
+        .insert(resources)
+        .values(newResource)
+        .returning()
+        .get()
 
       if (!result) {
-        return response.error({
-          msg: 'Resource creation failed',
-          errorCode: 'INSERT_FAILED',
-        })
+        return response.error('Resource creation failed')
       }
 
-      return response.ok({ data: { id: newResource.id } })
+      return response.ok({ id: newResource.id })
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error)
-      return response.error({
-        msg: `Error creating resource: ${errorMessage}`,
-      })
+      return response.error(`Error creating resource: ${errorMessage}`)
     }
   }
 
@@ -125,15 +114,11 @@ export class ResourceServices {
         return response.badRequest('Resource ID is required')
       }
 
-      // Delete the resource using a transaction for atomicity
-      const result = await db.transaction(async (tx) => {
-        const deleteResult = await tx
-          .delete(resources)
-          .where(eq(resources.id, id))
-          .returning({ id: resources.id })
-
-        return deleteResult.length > 0
-      })
+      const result = await db
+        .delete(resources)
+        .where(eq(resources.id, id))
+        .returning({ id: resources.id })
+        .get()
 
       if (!result) {
         return response.notFound('Resource not found or deletion failed')
@@ -143,9 +128,7 @@ export class ResourceServices {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error)
-      return response.error({
-        msg: `Error deleting resource: ${errorMessage}`,
-      })
+      return response.error(`Error deleting resource: ${errorMessage}`)
     }
   }
 

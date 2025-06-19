@@ -1,7 +1,6 @@
 import path from 'path'
 import { z } from 'zod'
 import { app } from 'electron'
-import { logger } from '../logger'
 
 /**
  * Runtime environment
@@ -9,11 +8,11 @@ import { logger } from '../logger'
 export type NodeEnv = 'development' | 'production' | 'test'
 
 /**
- * Environment variables schema with validation
+ * Core environment variables schema
  */
 export const envSchema = z.object({
   /**
-   * Node environment (development, production, test)
+   * Node environment
    */
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
@@ -50,32 +49,9 @@ export const envSchema = z.object({
   VITE_DEV_SERVER_URL: z.string().optional(),
 
   /**
-   * Custom environment variable for demonstration
-   */
-  CUSTOM_ENV_VAR: z.string().default('custom-value'),
-
-  /**
-   * Database path for SQLite (if applicable)
+   * Database path (if applicable)
    */
   DB_PATH: z.string().optional(),
-
-  /**
-   * Flag to run database migrations on startup (if applicable)
-   */
-  RUN_MIGRATIONS: z
-    .enum(['true', 'false'])
-    .default('false')
-    .transform((val) => val === 'true'),
-
-  /**
-   * Database connection timeout in milliseconds (if applicable)
-   */
-  DB_TIMEOUT: z.coerce.number().positive().default(5000),
-
-  /**
-   * Log level
-   */
-  LOG_LEVEL: z.enum(['error', 'warn', 'info', 'debug']).default('info'),
 })
 
 /**
@@ -85,11 +61,9 @@ export type Env = z.infer<typeof envSchema>
 
 /**
  * Load and validate environment variables
- * @returns Validated environment variables
  */
 export function loadEnv(): Env {
-  // For Electron, we need to set up some environment variables that may not be available
-  // from process.env but can be derived from Electron's app paths
+  // For Electron, set up environment variables that may not be available
   const electronEnv = {
     APP_ROOT: app.getAppPath(),
     DIST: path.join(app.getAppPath(), 'dist'),
@@ -105,28 +79,28 @@ export function loadEnv(): Env {
   try {
     return envSchema.parse(rawEnv)
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      logger.error('Environment validation failed:', error.errors)
-      // Add fallbacks for required values that failed validation
-      const safeEnv = {
-        ...rawEnv,
-        NODE_ENV: 'development',
-        APP_NAME: 'Electron Foundation',
-        APP_ROOT: app.getAppPath(),
-        DIST: path.join(app.getAppPath(), 'dist'),
-        VITE_PUBLIC: path.join(app.getAppPath(), 'public'),
-      }
-      return envSchema.parse(safeEnv)
+    // Add fallbacks for required values on validation failure
+    console.error(error)
+    const safeEnv = {
+      ...rawEnv,
+      NODE_ENV: 'development',
+      APP_NAME: 'Electron Foundation',
+      APP_ROOT: app.getAppPath(),
+      DIST: path.join(app.getAppPath(), 'dist'),
+      VITE_PUBLIC: path.join(app.getAppPath(), 'public'),
     }
-    throw error
+    return envSchema.parse(safeEnv)
   }
 }
 
 /**
- * Access typed environment variables
- * Memoized to avoid parsing environment variables multiple times
+ * Cached environment variables
  */
 let _env: Env | null = null
+
+/**
+ * Get typed environment variables
+ */
 export function env(): Env {
   if (!_env) {
     _env = loadEnv()
@@ -135,7 +109,7 @@ export function env(): Env {
 }
 
 /**
- * Type guard to check if app is in development mode
+ * Check if the app is in development mode
  */
 export function isDevelopment(): boolean {
   return env().NODE_ENV === 'development'
