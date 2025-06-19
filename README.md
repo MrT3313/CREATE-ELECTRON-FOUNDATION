@@ -36,12 +36,12 @@
 ## 👀 Prerequisites 👀
 
 - `nvm`  
-  To ensure compatibility and smooth development, it's generally recommended to use a Node.js version manager. These help you easily switch between Node.js versions as needed for different projects.
+   To ensure compatibility and smooth development, it's generally recommended to use a Node.js version manager. These help you easily switch between Node.js versions as needed for different projects.
 
   This project management is strongly integrated with [**nvm**](https://github.com/nvm-sh/nvm) and it is recommended that you have it installed on your machine when using create-electron-foundation or its scaffolded assets.
 
 - `make`  
-  This project uses a [makefile](https://opensource.com/article/18/8/what-how-makefile) to build & manage the project. There can be issues with Node.JS installs vs NVM depending on when each were installed.
+   This project uses a [makefile](https://opensource.com/article/18/8/what-how-makefile) to build & manage the project. There can be issues with Node.JS installs vs NVM depending on when each were installed.
 
   > [!IMPORTANT]
   >
