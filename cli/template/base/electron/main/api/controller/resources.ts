@@ -30,31 +30,3 @@ handleIpc('api/resource/getAPIResourceList', async () => {
     }
   }
 })
-
-// handleIpc(
-//   'api/resource/insertAPIResource',
-//   async (_event, args: IpcApi['api/resource/insertAPIResource']['args']) => {
-//     try {
-//       const result = await jsonPlaceholderServices.insertAPIResource(args)
-//       return { success: true, data: result }
-//     } catch (error: unknown) {
-//       const message = error instanceof Error ? error.message : String(error)
-//       return { success: false, error: { code: 500, message: `Error getting resource list: ${message}` } }
-//     }
-//   }
-// )
-
-// handleIpc(
-//   'api/resource/deleteAPIResourceById',
-//   async (_event, args: IpcApi['api/resource/deleteAPIResourceById']['args']) => {
-//     try {
-//       await jsonPlaceholderServices.deleteAPIResourceById(
-//         args.id
-//       )
-//       return { success: true, data: undefined as void }
-//     } catch (error: unknown) {
-//       const message = error instanceof Error ? error.message : String(error)
-//       return { success: false, error: { code: 500, message: `Error getting resource list: ${message}` } }
-//     }
-//   }
-// )
