@@ -5,5 +5,6 @@
     "rootDir": "src"
   },
   "include": ["src/index.ts"],
-  "exclude": ["node_modules", "../dist"]
+  "exclude": ["node_modules", "../dist"],
+  "references": [{ "path": "./template/base/tsconfig.json" }]
 }
