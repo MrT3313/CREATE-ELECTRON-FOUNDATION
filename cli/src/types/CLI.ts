@@ -7,37 +7,55 @@ import type {
   IDE,
 } from './index.js'
 
+/**
+ * Configuration key format: [router]-[styles]-[database]-[orm]
+ * Example: "tanstack-router-tailwind-sqlite-drizzle"
+ */
 export type ConfigKey =
   `${RouterPackage}-${StylePackage | 'none'}-${DatabasePackage | 'none'}-${ORMPackage | 'none'}`
 
+/**
+ * Command-line arguments passed to the CLI
+ */
 export interface Yargs {
-  ci: undefined | boolean
-  y: undefined | boolean
-  project_name: undefined | string
-  project_dir: undefined | string
-  router: undefined | RouterPackage
-  styles: undefined | StylePackage | false
-  database: undefined | DatabasePackage | false
-  orm: undefined | ORMPackage | false
-  pkg_manager: undefined | PackageManager
-  initialize_git: undefined | boolean
-  install_packages: undefined | boolean
-  ide: undefined | IDE | false
+  readonly ci: undefined | boolean
+  readonly y: undefined | boolean
+  readonly project_name: undefined | string
+  readonly project_dir: undefined | string
+  readonly router: undefined | RouterPackage
+  readonly styles: undefined | StylePackage | false
+  readonly database: undefined | DatabasePackage | false
+  readonly orm: undefined | ORMPackage | false
+  readonly pkg_manager: undefined | PackageManager
+  readonly initialize_git: undefined | boolean
+  readonly install_packages: undefined | boolean
+  readonly ide: undefined | IDE | false
 }
 
+/**
+ * Package configuration for the project
+ */
+export interface PackageConfiguration {
+  readonly router: RouterPackage
+  readonly styles: StylePackage | false
+  readonly database: DatabasePackage | false
+  readonly orm: ORMPackage | false
+}
+
+/**
+ * Default CLI configuration values
+ */
 export interface CLIDefaults {
-  pkg_manager: PackageManager // "npm"
-  ide: IDE | false
-  initialize_git: boolean
-  install_packages: boolean
-  packages: {
-    router: RouterPackage
-    styles: StylePackage | false
-    database: DatabasePackage | false
-    orm: ORMPackage | false
-  }
+  readonly pkg_manager: PackageManager
+  readonly ide: IDE | false
+  readonly initialize_git: boolean
+  readonly install_packages: boolean
+  readonly packages: PackageConfiguration
 }
 
+/**
+ * Default configuration with predefined values
+ */
 export const defaultCLIConfig: CLIDefaults = {
   pkg_manager: 'npm',
   ide: 'cursor',
@@ -51,8 +69,25 @@ export const defaultCLIConfig: CLIDefaults = {
   install_packages: false,
 }
 
+/**
+ * Results from CLI prompt execution, combining default values and user input
+ */
 export interface CLIResults extends CLIDefaults {
-  project_name: string
-  project_dir: string
-  config_key: ConfigKey
+  readonly project_name: string
+  readonly project_dir: string
+  readonly config_key: ConfigKey
+}
+
+/**
+ * Results from user prompt interactions
+ */
+export interface PromptResults {
+  readonly project_name?: string
+  readonly router?: RouterPackage
+  readonly styles?: StylePackage | boolean
+  readonly database?: DatabasePackage | boolean
+  readonly orm?: ORMPackage | boolean
+  readonly initialize_git?: boolean
+  readonly install_packages?: boolean
+  readonly ide?: IDE | false
 }

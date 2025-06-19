@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@routes/*": ["src/routes/*"],
+      "@lib/*": ["src/lib/*"],
+      "@api/*": ["src/api/*"],
+      "@types/*": ["types/*"],
+      "@utils/*": ["src/utils/*"],
+      "@assets/*": ["src/assets/*"],
+      "@electron/*": ["electron/*"],
+      "@main/*": ["electron/main/*"],
+      "@preload/*": ["electron/preload/*"],
+      "@db/*": ["electron/main/db/*"],
+      "@schema/*": ["electron/main/db/schema/*"],
+      "@controllers/*": ["electron/main/api/controllers/*"],
+      "@services/*": ["electron/main/api/services/*"]
+    }
+  }
+}

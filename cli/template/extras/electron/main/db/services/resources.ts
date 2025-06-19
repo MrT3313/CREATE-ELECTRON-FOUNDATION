@@ -1,84 +1,198 @@
 import { db } from '../dbConnect'
-import { resources } from '../schema'
-import { response } from '../../utils/response'
+import {
+  resources,
+  Resource,
+  ResourceCreatePayload,
+  NewResource,
+  isResourceCreatePayload,
+} from '../schema/resources'
+import { response, ApiResponse, isSuccessResponse } from '../../utils/response'
 import { eq } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
-export class resourceServices {
-  static async getDBResourceList() {
+import { Result } from '../../../../types/utility-types'
+
+/**
+ * Service class for resource data operations
+ * Provides type-safe methods for CRUD operations on resources
+ */
+export class ResourceServices {
+  /**
+   * Get all resources from the database
+   * @returns Response with all resources or error
+   */
+  static async getResourceList(): Promise<ApiResponse<Resource[]>> {
     try {
       const list = await db.select().from(resources)
       return response.ok({ data: list || [] })
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error)
       return response.error({
-        msg: `Error getting resource list: ${error.message}`,
+        msg: `Error getting resource list: ${errorMessage}`,
       })
     }
   }
 
-  static async getDBResourceById(id: string) {
+  /**
+   * Get a resource by its ID
+   * @param id - Resource ID to retrieve
+   * @returns Response with the resource or error
+   */
+  static async getResourceById(id: string): Promise<ApiResponse<Resource>> {
     try {
-      const numericId = parseInt(id, 10)
-      if (isNaN(numericId)) {
-        return response.error({ msg: 'Invalid resource ID' })
+      if (!id) {
+        return response.error({ msg: 'Resource ID is required' })
       }
-      const info = await db
+
+      const resource = await db
         .select()
         .from(resources)
-        .where(eq(resources.id, numericId))
-      if (!info || info.length === 0) {
-        return response.error({ msg: 'Resource does not exist' })
+        .where(eq(resources.id, id))
+        .get()
+
+      if (!resource) {
+        return response.notFound('Resource not found')
       }
-      return response.ok({ data: info[0] })
+
+      return response.ok({ data: resource })
     } catch (error) {
-      return response.error({ msg: `Error getting resource: ${error.message}` })
+      const errorMessage =
+        error instanceof Error ? error.message : String(error)
+      return response.error({
+        msg: `Error getting resource: ${errorMessage}`,
+      })
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static async insertDBResource(data: any) {
+  /**
+   * Create a new resource in the database
+   * @param data - Resource data to insert
+   * @returns Response with the created resource ID or error
+   */
+  static async createResource(
+    data: ResourceCreatePayload
+  ): Promise<ApiResponse<{ id: string }>> {
     try {
-      const insertData = {
+      if (!data) {
+        return response.badRequest('Resource data is required')
+      }
+
+      // Validate input data
+      if (!isResourceCreatePayload(data)) {
+        return response.badRequest('Invalid resource data format')
+      }
+
+      // Create a new resource with the provided data and generated ID
+      const newResource: NewResource = {
         ...data,
         id: nanoid(10),
       }
 
-      const result = db.transaction(() => {
-        return db.insert(resources).values(insertData).run()
+      // Insert the resource using a transaction for atomicity
+      const result = await db.transaction(async (tx) => {
+        const insertResult = await tx
+          .insert(resources)
+          .values(newResource)
+          .returning()
+        return insertResult.length > 0 ? insertResult[0] : null
       })
 
-      if (!result || !result.lastInsertRowid) {
-        return response.error({ msg: 'Resource insert failed' })
+      if (!result) {
+        return response.error({
+          msg: 'Resource creation failed',
+          errorCode: 'INSERT_FAILED',
+        })
       }
 
-      return response.ok({ data: { id: result.lastInsertRowid } })
+      return response.ok({ data: { id: newResource.id } })
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error)
       return response.error({
-        msg: `Error inserting resource: ${error.message}`,
+        msg: `Error creating resource: ${errorMessage}`,
       })
     }
   }
 
-  static async deleteDBResourceById(id: string) {
+  /**
+   * Delete a resource by its ID
+   * @param id - Resource ID to delete
+   * @returns Response indicating success or error
+   */
+  static async deleteResourceById(id: string): Promise<ApiResponse<void>> {
     try {
-      const numericId = parseInt(id, 10)
-      if (isNaN(numericId)) {
-        return response.error({ msg: 'Invalid resource ID' })
+      if (!id) {
+        return response.badRequest('Resource ID is required')
       }
-      const result = db.transaction(() => {
-        return db.delete(resources).where(eq(resources.id, id)).run()
+
+      // Delete the resource using a transaction for atomicity
+      const result = await db.transaction(async (tx) => {
+        const deleteResult = await tx
+          .delete(resources)
+          .where(eq(resources.id, id))
+          .returning({ id: resources.id })
+
+        return deleteResult.length > 0
       })
 
-      if (!result || result.changes === 0) {
-        return response.error({
-          msg: 'Resource deletion failed - no rows affected',
-        })
+      if (!result) {
+        return response.notFound('Resource not found or deletion failed')
       }
 
       return response.ok()
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error)
       return response.error({
-        msg: `Error deleting resource: ${error.message}`,
+        msg: `Error deleting resource: ${errorMessage}`,
       })
+    }
+  }
+
+  /**
+   * Search resources by title (case-insensitive)
+   * @param searchTerm - Term to search for in resource titles
+   * @returns Response with matching resources or error
+   */
+  static async searchResourcesByTitle(
+    searchTerm: string
+  ): Promise<ApiResponse<Resource[]>> {
+    try {
+      if (!searchTerm?.trim()) {
+        return response.badRequest('Search term is required')
+      }
+
+      // Use SQL LIKE for case-insensitive search
+      const searchResults = await db
+        .select()
+        .from(resources)
+        .where(
+          sql`LOWER(${resources.title}) LIKE LOWER('%' || ${searchTerm} || '%')`
+        )
+
+      return response.ok({ data: searchResults })
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error)
+      return response.error({
+        msg: `Error searching resources: ${errorMessage}`,
+      })
+    }
+  }
+
+  /**
+   * Type-safe helper to safely unwrap an API response
+   * @param apiResponse - API response to unwrap
+   * @returns A Result object with the unwrapped data or error
+   */
+  static unwrapResponse<T>(apiResponse: ApiResponse<T>): Result<T, string> {
+    if (isSuccessResponse(apiResponse)) {
+      return { success: true, value: apiResponse.data }
+    } else {
+      return {
+        success: false,
+        error: apiResponse.msg,
+      }
     }
   }
 }

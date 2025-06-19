@@ -1,16 +1,20 @@
-import { setTimeout } from 'node:timers/promises'
 import color from 'picocolors'
 
 // TERMINAL > user prompting
 import * as p from '@clack/prompts'
-import chalk from 'chalk'
 
 // CONSTS
 import { DEFAULT_APP_NAME } from '../consts.js'
 
 // TYPES
 import { defaultCLIConfig } from '../types/CLI.js'
-import type { ConfigKey, Yargs, CLIResults, IDE } from '../types/index.js'
+import type {
+  ConfigKey,
+  Yargs,
+  CLIResults,
+  IDE,
+  PromptResults,
+} from '../types/index.js'
 import type {
   RouterPackage,
   DatabasePackage,
@@ -20,6 +24,12 @@ import type {
 
 // UTILS
 import { logger } from '../utils/logger.js'
+
+/**
+ * Type for @clack/prompts group result that returns the specific prompt values
+ * to avoid any type
+ */
+type PromptGroup = Partial<PromptResults>
 
 export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
   /**
@@ -49,39 +59,47 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }-${(cliArgs.database as DatabasePackage) || 'none'}-${
           (cliArgs.orm as ORMPackage) || 'none'
         }`
-        config = {
+
+        // Create a mutable configuration object that will be modified with cli args
+        const mutableConfig = {
           config_key,
           ...defaultCLIConfig,
           project_name: cliArgs.project_name || DEFAULT_APP_NAME,
           project_dir:
             cliArgs.project_dir ||
             `./${cliArgs.project_name || DEFAULT_APP_NAME}`,
+          packages: {
+            ...defaultCLIConfig.packages,
+          },
         }
 
         // UPDATE: config with passed cliArgs #################################
         if (cliArgs.router) {
-          config.packages.router = cliArgs.router as RouterPackage
+          mutableConfig.packages.router = cliArgs.router as RouterPackage
         }
 
         if (cliArgs.styles !== undefined) {
-          config.packages.styles = cliArgs.styles as StylePackage
+          mutableConfig.packages.styles = cliArgs.styles as StylePackage
         }
 
         if (cliArgs.database !== undefined) {
-          config.packages.database = cliArgs.database as DatabasePackage
+          mutableConfig.packages.database = cliArgs.database as DatabasePackage
         }
 
         if (cliArgs.orm !== undefined) {
-          config.packages.orm = cliArgs.orm as ORMPackage
+          mutableConfig.packages.orm = cliArgs.orm as ORMPackage
         }
 
         if (cliArgs.initialize_git) {
-          config.initialize_git = cliArgs.initialize_git
+          mutableConfig.initialize_git = cliArgs.initialize_git
         }
 
         if (cliArgs.ide !== undefined) {
-          config.ide = cliArgs.ide as IDE
+          mutableConfig.ide = cliArgs.ide as IDE
         }
+
+        // Assign the mutable config to the readonly config variable
+        config = mutableConfig as CLIResults
       } catch (err) {
         logger.error('🚨🚨 Error running prompt cli --yes', err)
         process.exit(1)
@@ -93,12 +111,8 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
       ###################################################################### */
 
       try {
-        // TODO: fix typing
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let group: any = {}
-        // TODO: fix typing
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const prompts: Record<string, any> = {}
+        let group: PromptGroup = {}
+        const prompts: Record<string, () => Promise<unknown>> = {}
 
         // PROJECT NAME #########################################################
         if (!cliArgs.project_name) {
@@ -195,12 +209,12 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
 
         // Run prompts if any exist
         if (Object.keys(prompts).length > 0) {
-          group = await p.group(prompts, {
+          group = (await p.group(prompts, {
             onCancel: () => {
               p.cancel('Scaffolding cancelled.')
               process.exit(0)
             },
-          })
+          })) as PromptGroup
         }
 
         // DEFINE: config with user prompts ###################################
@@ -221,27 +235,55 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
 
         const ide = group.ide || cliArgs.ide // group.ide prompt is skipped if --ide=<...> is passed in the CLI
 
-        const config_key: ConfigKey = `${router as RouterPackage}-${
-          (styles as StylePackage) || 'none'
-        }-${(database as DatabasePackage) || 'none'}-${
-          (orm as ORMPackage) || 'none'
-        }`
+        // Ensure we have valid values for all required fields or use defaults
+        const routerValue =
+          (router as RouterPackage) || defaultCLIConfig.packages.router
+        const stylesValue =
+          typeof styles === 'boolean'
+            ? styles
+              ? ('tailwind' as StylePackage)
+              : false
+            : (styles as StylePackage) || defaultCLIConfig.packages.styles
 
+        const databaseValue =
+          typeof database === 'boolean'
+            ? database
+              ? ('sqlite' as DatabasePackage)
+              : false
+            : (database as DatabasePackage) ||
+              defaultCLIConfig.packages.database
+
+        const ormValue =
+          typeof orm === 'boolean'
+            ? orm
+              ? ('drizzle' as ORMPackage)
+              : false
+            : (orm as ORMPackage) || defaultCLIConfig.packages.orm
+
+        const config_key: ConfigKey = `${routerValue}-${
+          stylesValue || 'none'
+        }-${databaseValue || 'none'}-${ormValue || 'none'}`
+
+        // Create config object with proper typing
         config = {
           config_key,
           project_name: project_name || DEFAULT_APP_NAME,
           project_dir:
             cliArgs.project_dir || `./${project_name || DEFAULT_APP_NAME}`,
-          pkg_manager: 'npm',
-          ide,
-          initialize_git: initialize_git,
+          pkg_manager: defaultCLIConfig.pkg_manager,
+          ide: (ide || defaultCLIConfig.ide) as IDE | false,
+          initialize_git: Boolean(
+            initialize_git ?? defaultCLIConfig.initialize_git
+          ),
           packages: {
-            router,
-            styles: (styles as StylePackage) || false,
-            database: (database as DatabasePackage) || false,
-            orm: (orm as ORMPackage) || false,
+            router: routerValue,
+            styles: stylesValue,
+            database: databaseValue,
+            orm: ormValue,
           },
-          install_packages: install_packages,
+          install_packages: Boolean(
+            install_packages ?? defaultCLIConfig.install_packages
+          ),
         }
       } catch (err) {
         logger.error('🚨🚨 Error running prompt cli', err)
@@ -249,35 +291,31 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
       }
     }
 
-    p.note(
-      `
-      Project Name: ${chalk.blue.bold(config.project_name)}
-      Router: ${chalk.green.bold(config?.packages?.router)}
-      Styles: ${chalk.green.bold(config?.packages?.styles || 'Vanilla CSS')}
-      Database: ${config?.packages?.database ? chalk.green.bold(config?.packages?.database) : chalk.red.bold('false')}
-      ORM: ${config?.packages?.orm ? chalk.green.bold(config?.packages?.orm) : chalk.red.bold('false')}
-      Initialize Git: ${config.initialize_git ? chalk.green.bold('true') : chalk.red.bold('false')}
-      Install Packages: ${config.install_packages ? chalk.green.bold('true') : chalk.red.bold('false')}
-      IDE: ${config.ide ? chalk.green.bold(config.ide) : chalk.red.bold('false')}
-      `,
-      'Summary of your choices:'
-    )
-    if (!cliArgs.y || !cliArgs.project_name) {
-      const s = p.spinner()
-      s.start('Processing your choices')
-      await setTimeout(1000)
-      s.stop('Choices processed')
+    p.outro(`${color.blue('✨ Generated configuration')}
+
+    ${color.green('🔹 Directory:')} ${color.yellow(config.project_dir)}
+    ${color.green('🔹 Project Name:')} ${color.yellow(config.project_name)}
+    ${color.green('🔹 UI Libraries:')} ${color.yellow(
+      config.packages.router
+    )} ${
+      config.packages.styles
+        ? `+ ${color.yellow(config.packages.styles)}`
+        : color.yellow('Vanilla CSS')
     }
+    ${color.green('🔹 Database:')} ${
+      config.packages.database
+        ? color.yellow(config.packages.database)
+        : color.yellow('None')
+    } ${config.packages.orm ? `+ ${color.yellow(config.packages.orm)}` : ''}
+    ${color.green('🔹 Initialize Git:')} ${
+      config.initialize_git ? color.green('Yes') : color.red('No')
+    }
+    ${color.green('🔹 Package Manager:')} ${color.yellow(config.pkg_manager)}
+    `)
 
     return config
-  } catch (e) {
-    if (e === Symbol.for('clack:cancel')) {
-      p.cancel('Scaffolding cancelled by user.')
-    } else {
-      p.cancel('An unexpected error occurred.')
-      console.error(e)
-    }
-    logger.error('🚨🚨 Error running prompt cli', e)
+  } catch (err) {
+    logger.error('Error in CLI Prompt:', err)
     process.exit(1)
   }
 }
