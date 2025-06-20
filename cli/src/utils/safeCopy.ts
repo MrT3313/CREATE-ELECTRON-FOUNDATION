@@ -1,6 +1,5 @@
 import fs from 'fs-extra'
 import path from 'path'
-import { logger } from './logger.js'
 import { FileSystemError } from './errors.js'
 
 export const safeCopy = (src: string, dest: string): void => {
@@ -19,8 +18,6 @@ export const safeCopy = (src: string, dest: string): void => {
 
     // Copy the file/directory
     fs.copySync(src, dest, { overwrite: true })
-
-    logger.debug(`✅ Copied: ${src} → ${dest}`)
   } catch (error) {
     if (error instanceof FileSystemError) {
       throw error

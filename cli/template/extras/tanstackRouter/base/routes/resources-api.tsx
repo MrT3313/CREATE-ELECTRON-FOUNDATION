@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import cx from 'classnames'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import log from '../lib/logger'
 const homepageLogger = log.scope('homepage')
 import { useGetAPIResourceList } from '../api/index'
@@ -11,7 +11,6 @@ export const Route = createFileRoute('/resources')({
 
 export function Resources() {
   // HOOKS
-  const router = useRouter()
   const {
     data: resources,
     isLoading,

@@ -1,4 +1,4 @@
-.PHONY:  kac i ri setup dev
+.PHONY:  kac i ri setup dev laf
 
 # Get the node version from .nvmrc
 NODE_VERSION := $(shell cat .nvmrc)
@@ -70,3 +70,8 @@ dev:
 		$(MAKE) i; \
 		$(MAKE) dev; \
 	fi
+
+# LINTING & FORMATTING ########################################################
+laf:
+	npm run lint
+	npm run format

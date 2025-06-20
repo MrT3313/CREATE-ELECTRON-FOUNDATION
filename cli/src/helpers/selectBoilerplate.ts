@@ -82,7 +82,6 @@ const handleViteConfig = (config: Readonly<CLIResults>) => {
   if (database && orm) viteConfig += `.withDrizzle`
   viteConfig += '.ts'
 
-  logger.info(`viteConfig: ${viteConfig}`)
   const viteConfigPath = path.join(srcDir, 'configs', 'vite', viteConfig)
   logger.info(`viteConfigPath: ${viteConfigPath}`)
 

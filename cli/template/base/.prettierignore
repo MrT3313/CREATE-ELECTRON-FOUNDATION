@@ -1,0 +1,9 @@
+**/package.json
+**/package-lock.json
+
+**/DOCS/examples/
+
+# Ignore artifacts
+**/dist
+**/dist-electron
+**/node_modules

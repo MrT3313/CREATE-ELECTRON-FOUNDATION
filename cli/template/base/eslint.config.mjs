@@ -5,6 +5,7 @@ export default tseslint.config(
   {
     ignores: [
       'dist/',
+      'dist-electron/',
       'node_modules/',
       '*.config.js',
       '*.config.ts',
@@ -18,7 +19,7 @@ export default tseslint.config(
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: './tsconfig.eslint.json',
+        project: './tsconfig.json',
         tsconfigRootDir: import.meta.dirname,
       },
     },

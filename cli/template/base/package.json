@@ -8,7 +8,10 @@
   },
   "scripts": {
     "tanstackrouter:generate:routes": "npx @tanstack/router-cli ./src/routes -y",
-    "dev": "vite"
+    "dev": "vite",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier . --write",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@tanstack/react-query": "~5.80.7",
@@ -27,6 +30,11 @@
     "@electron/rebuild": "4.0.1",
     "electron-log": "5.4.1",
     "@vitejs/plugin-react": "~4.5.2",
-    "vite-plugin-electron": "~0.29.0"
+    "vite-plugin-electron": "~0.29.0",
+    "typescript": "^5.8.3",
+    "eslint": "^9.8.0",
+    "prettier": "^3.3.3",
+    "eslint-plugin-prettier": "^5.2.1",
+    "typescript-eslint": "^8.0.0-alpha.54"
   }
 }
