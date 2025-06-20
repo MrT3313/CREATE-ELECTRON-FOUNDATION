@@ -137,6 +137,7 @@ jobs:
     if: github.event_name == 'workflow_run' && needs.wait-for-core-ci.outputs.conclusion == 'success'
     permissions:
       contents: write # Required to push changes to the repository.
+      actions: read # Required to read artifacts from other workflows.
     steps:
       # 1. Check out the repository code.
       - name: Checkout Repository
