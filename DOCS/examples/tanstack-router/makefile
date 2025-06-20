@@ -1,4 +1,4 @@
-.PHONY:  kac i ri gen-tsr-routes setup dev laf
+.PHONY:  kac i ri gen-tsr-routes dev laf
 
 # Get the node version from .nvmrc
 NODE_VERSION := $(shell cat .nvmrc)
@@ -47,7 +47,7 @@ NODE_MANAGE = \
 
 # Kit and Caboodle ############################################################
 # ^^ ?? 👉 https://www.youtube.com/watch?v=xvFZjo5PgG0
-kac: ri gen-tsr-routes setup dev
+kac: ri gen-tsr-routes dev
 
 # Package Management ###########################################################
 i:
@@ -60,9 +60,6 @@ ri:
 # Workflows ###################################################################
 gen-tsr-routes:
 	@$(NODE_MANAGE) && npm run tanstackrouter:generate:routes
-
-setup:
-	@$(NODE_MANAGE) && npm run db:setup
 
 dev:
 	@if [ -d "node_modules" ]; then \
