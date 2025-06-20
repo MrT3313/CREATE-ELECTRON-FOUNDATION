@@ -37,6 +37,9 @@ jobs:
     outputs:
       conclusion: ${{ steps.check.outputs.conclusion }}
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: 'Wait for "Core CI" workflow to complete'
         id: check
         env:
