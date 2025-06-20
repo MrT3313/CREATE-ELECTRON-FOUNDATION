@@ -20,7 +20,7 @@ name: Publish Package
 on:
   # Trigger for alpha builds on merge to main
   workflow_run:
-    workflows: ['Core CI']
+    workflows: ['E2E Tests']
     types:
       - completed
     branches:
