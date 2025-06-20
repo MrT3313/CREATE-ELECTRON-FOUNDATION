@@ -141,15 +141,14 @@ jobs:
       # 1. Check out the repository code.
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # 2. Clean the examples directory before downloading new artifacts.
       # This ensures that any removed or renamed examples are no longer present.
       - name: Clean Examples Directory
         run: |
-          if [ -d "DOCS/examples" ]; then
-            rm -rf DOCS/examples/*
-          fi
-          mkdir -p DOCS/examples/tmp
+          rm -rf DOCS/examples && mkdir -p DOCS/examples
 
       # 3. Download all artifacts from the triggering 'e2e-test' workflow job.
       - name: Download Example Artifacts
