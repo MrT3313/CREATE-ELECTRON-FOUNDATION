@@ -30,17 +30,14 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
   ########################################################################## */
 
   p.intro(`${color.bgCyan(color.black('create-electron-foundation'))}`)
-
   try {
-    let config: CLIResults
-
     // DEFINE: initial config with default values ###########################
     const config_key: ConfigKey = `${cliArgs.router as RouterPackage}-${
       (cliArgs.styles as StylePackage) || 'none'
     }-${(cliArgs.database as DatabasePackage) || 'none'}-${
       (cliArgs.orm as ORMPackage) || 'none'
     }`
-    config = {
+    const config: CLIResults = {
       config_key,
       ...defaultCLIConfig,
       project_name: cliArgs.project_name || DEFAULT_APP_NAME,
