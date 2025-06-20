@@ -1,0 +1,84 @@
+# ==================================================================================================
+# SUMMARY
+# ==================================================================================================
+# This workflow updates the example projects in the DOCS/examples directory.
+#
+# Triggers:
+#   - This workflow is triggered automatically upon the successful completion of the
+#     'E2E Tests' workflow on the 'main' branch.
+#
+# Key Steps:
+#   1. Checkout Repository: Checks out the code.
+#   2. Clean Examples Directory: Removes old examples to ensure a clean slate.
+#   3. Download Example Artifacts: Downloads the generated example projects, which were
+#      uploaded as artifacts by the 'E2E Tests' workflow.
+#   4. Commit Updated Examples: Commits the new/updated examples to the repository.
+#      A [skip ci] tag is included in the commit message to prevent an infinite
+#      loop of workflow runs.
+# ==================================================================================================
+name: Update Examples
+
+on:
+  workflow_run:
+    workflows: ['E2E Tests']
+    types:
+      - completed
+    branches:
+      - main
+
+jobs:
+  update-examples:
+    name: Update Examples
+    runs-on: ubuntu-latest
+    # This job only runs when the triggering E2E test workflow was successful.
+    if: github.event.workflow_run.conclusion == 'success'
+    permissions:
+      contents: write # Required to push changes to the repository.
+    steps:
+      # 1. Check out the repository code.
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Clean the examples directory before downloading new artifacts.
+      # This ensures that any removed or renamed examples are no longer present.
+      - name: Clean Examples Directory
+        run: |
+          if [ -d "DOCS/examples" ]; then
+            rm -rf DOCS/examples/*
+          fi
+          mkdir -p DOCS/examples/tmp
+
+      # 3. Download all artifacts from the 'e2e-test' jobs.
+      # Each artifact will be placed in its own directory inside 'DOCS/examples'.
+      - name: Download Example Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: DOCS/examples
+
+      - name: Display Downloaded Examples
+        run: |
+          echo "Listing downloaded examples..."
+          ls -R DOCS/examples
+
+      # 4. Configure Git with credentials for the github-actions bot.
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # 5. Commit and push the updated examples to the repository.
+      - name: Commit Updated Examples
+        run: |
+          set -x
+          # Stage all changes within the 'DOCS/examples' directory.
+          git add DOCS/examples
+
+          # Check if there are any staged changes to commit.
+          # 'git diff --cached --quiet' exits with 0 if no changes, 1 if changes.
+          if ! git diff --cached --quiet; then
+            echo "Committing updated examples..."
+            git commit -m "chore(examples): update examples from e2e tests" -m "[skip ci]"
+            git push
+          else
+            echo "No changes to commit in examples."
+          fi
