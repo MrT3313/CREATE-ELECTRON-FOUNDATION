@@ -28,7 +28,7 @@ export const scaffoldProject = async (config: CLIResults): Promise<void> => {
   // CHECK: if the project directory already exists
   if (fs.existsSync(config.project_dir)) {
     const shouldOverwrite = await p.confirm({
-      message: `Directory ${config.project_dir} already exists. Overwrite?`,
+      message: `${chalk.bold.red('Directory already exists: ')}${chalk.red('Backup this directory and continue? > ')}${chalk.red(config.project_dir)}`,
       initialValue: false,
     })
 
