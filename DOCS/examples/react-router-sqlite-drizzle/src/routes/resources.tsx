@@ -11,6 +11,7 @@ export function Resources() {
     isLoading,
     isError,
     error: fetchError,
+    refetch,
   } = useGetDBResourceList({
     enabled: true,
   })
