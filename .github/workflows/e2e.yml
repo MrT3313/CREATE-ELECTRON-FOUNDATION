@@ -446,13 +446,21 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 2. Download all artifacts from the 'e2e-test' jobs.
-      # The artifacts (generated examples) will be placed in the 'DOCS/examples' directory.
+      # 2. Clean the examples directory before downloading new artifacts.
+      # This ensures that any removed or renamed examples are no longer present.
+      - name: Clean Examples Directory
+        run: |
+          if [ -d "DOCS/examples" ]; then
+            rm -rf DOCS/examples/*
+          fi
+          mkdir -p DOCS/examples/tmp
+
+      # 3. Download all artifacts from the 'e2e-test' jobs.
+      # Each artifact will be placed in its own directory inside 'DOCS/examples'.
       - name: Download Example Artifacts
         uses: actions/download-artifact@v4
         with:
           path: DOCS/examples
-          merge-multiple: true # Merge all artifacts into a single directory.
 
       - name: Display Downloaded Examples
         run: |
