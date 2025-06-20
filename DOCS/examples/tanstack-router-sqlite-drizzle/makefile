@@ -1,4 +1,4 @@
-.PHONY:  kac i ri gen-tsr-routes setup dev
+.PHONY:  kac i ri gen-tsr-routes setup dev laf
 
 # Get the node version from .nvmrc
 NODE_VERSION := $(shell cat .nvmrc)
@@ -73,3 +73,13 @@ dev:
 		$(MAKE) i; \
 		$(MAKE) dev; \
 	fi
+
+# LINTING & FORMATTING ########################################################
+lint:
+	@$(NODE_MANAGE) && npm run lint
+format:
+	@$(NODE_MANAGE) && npm run format
+
+laf:
+	$(MAKE) lint
+	$(MAKE) format

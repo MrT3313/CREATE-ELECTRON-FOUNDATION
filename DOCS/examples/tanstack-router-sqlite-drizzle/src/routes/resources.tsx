@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
 import cx from 'classnames'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
 import log from '../lib/logger'
 const homepageLogger = log.scope('homepage')
 import { useGetDBResourceList } from '../api/index'
@@ -12,7 +12,6 @@ export const Route = createFileRoute('/resources')({
 
 export function Resources() {
   // HOOKS
-  const router = useRouter()
   const {
     data: resources,
     isLoading,
@@ -32,15 +31,17 @@ export function Resources() {
   }, [fetchError])
 
   return (
-    <div className="page">
-      {error && <div className="error-message">{error}</div>}
+    <div className={cx('page')}>
+      {error && (
+        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          {error}
+        </div>
+      )}
 
       <div className={cx('hero', 'glass')}>
         <h1>DB Resource List</h1>
-        <span style={{ textAlign: 'center' }}>
-          This is fetching from the SQLite database.
-        </span>
-        <span style={{ textAlign: 'center' }}>
+        <span>This is fetching from the SQLite database.</span>
+        <span>
           The api to fetch data from an external API is still in the code.
         </span>
       </div>
@@ -53,37 +54,31 @@ export function Resources() {
 
       {/* Resource List */}
       <div
-        className="container scrollable"
-        style={{
-          justifyContent: 'flex-start',
-          backgroundColor: 'white',
-          maxHeight: '300px',
-        }}
+        className={cx(
+          'container scrollable',
+          'justify-start',
+          'bg-white',
+          'max-h-[300px]'
+        )}
       >
         {isLoading ? (
-          <div className="loading-message">Loading resources...</div>
+          <p>Loading resources...</p>
         ) : resources ? (
           resources?.length > 0 ? (
             resources?.map((resource) => (
               <div key={resource.id} className={cx('item')}>
-                <p
-                  style={{ fontWeight: '500' }}
-                >{`IDs : ${resource.user_id} - ${resource.id}`}</p>
-                <p
-                  style={{ fontSize: '14px', color: '#4b5563' }}
-                >{`Title: ${resource.title}`}</p>
-                <p
-                  style={{ fontSize: '14px', color: '#4b5563' }}
-                >{`Body: ${resource.body}`}</p>
+                <p className="font-medium">{`IDs : ${resource.user_id} - ${resource.id}`}</p>
+                <p className="text-sm text-gray-600">{`Title: ${resource.title}`}</p>
+                <p className="text-sm text-gray-600">{`Body: ${resource.body}`}</p>
               </div>
             ))
           ) : (
-            <p style={{ color: '#4b5563' }}>
+            <p className="text-gray-500">
               No resources found. Add your first resource above!
             </p>
           )
         ) : (
-          <p style={{ color: '#4b5563' }}>
+          <p className="text-gray-500">
             No resources found. Add your first resource above!
           </p>
         )}
