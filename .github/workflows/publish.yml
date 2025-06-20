@@ -165,7 +165,7 @@ jobs:
           # Explicitly specify the triggering workflow run ID to get its artifacts.
           run-id: ${{ github.event.workflow_run.id }}
 
-       - name: Manually List Artifacts via API
+      - name: Manually List Artifacts via API
         id: list_artifacts
         run: |
           gh api \
