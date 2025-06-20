@@ -234,9 +234,9 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }`
         config.config_key = config_key
 
-        logger.info(`
-          Run User Prompt CLI config:${JSON.stringify(config, null, 2)}
-        `)
+        // logger.info(`
+        //   Run User Prompt CLI config:${JSON.stringify(config, null, 2)}
+        // `)
       } catch (err) {
         logger.error('🚨🚨 Error running prompt cli', err)
         process.exit(1)
