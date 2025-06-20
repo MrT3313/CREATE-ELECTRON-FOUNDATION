@@ -108,7 +108,7 @@ jobs:
           ref: main
           fetch-depth: 0
       - name: Pull changes from example update
-        if: needs.update-examples.conclusion == 'success'
+        if: github.event_name == 'workflow_run'
         run: git pull --rebase
       - name: Read .nvmrc
         id: nvm
@@ -127,7 +127,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
       - name: Bump Version and Publish (Automated Alpha)
-        if: github.event_name == 'workflow_run' && needs.update-examples.conclusion == 'success'
+        if: github.event_name == 'workflow_run'
         run: |
           npm version prepatch --preid=alpha --git-tag-version=false
           VERSION=$(node -p "require('./package.json').version")
