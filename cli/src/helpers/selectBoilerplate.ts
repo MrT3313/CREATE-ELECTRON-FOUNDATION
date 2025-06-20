@@ -1,415 +1,196 @@
 import path from 'path'
 import fs from 'fs-extra'
-
-// TERMINAL
 import ora from 'ora'
 import chalk from 'chalk'
 
-// HELPERS
+import { PKG_ROOT } from '../consts.js'
+import { logger } from '../utils/logger.js'
+import { FileSystemError } from '../utils/errors.js'
+import type { CLIResults } from '../types/CLI.js'
 import { selectBoilerplateDrizzle } from './selectBoilerplate.drizzle.js'
 import { selectBoilerplateElectronDatabase } from './selectBoilerplate.electron.database.js'
+import { safeCopy } from '../utils/safeCopy.js'
 
-// UTILS
-import { logger } from '../utils/logger.js'
+const srcDir = path.join(PKG_ROOT, 'template')
 
-// CONSTS
-import { PKG_ROOT } from '../consts.js'
+const handleRouter = (config: Readonly<CLIResults>) => {
+  const { router, styles } = config.packages
+  const projectDir = config.project_dir
+  const routerSrc = path.join(srcDir, 'extras')
 
-// TYPES
-import type { CLIResults } from '../types/CLI.js'
+  const isTailwind = styles === 'tailwind'
+  const routerDest = path.join(projectDir, 'src')
 
-export const selectBoilerplate = (config: CLIResults) => {
-  /**
-   * ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️
-   * This is a very important function
-   *
-   * It is responsible for copying the correct template files for the current
-   * user configuration
-   *
-   * The "brain" of this logic is in the "updateMap" object which is a map of
-   * functions. The key for this "brain" is the config_key generated earlier.
-   *
-   * CONFIG KEY STRUCTURE: [router]-[styles]-[database]-[orm]
-   *
-   * As the various configurations are "tiered" so is the logic within the
-   * "udpateMap".
-   *
-   * EXAMPLE:
-   *    A) config.config_key === 'tanstack-router-none-none-none'
-   *    B) config.config_key === 'tanstack-router-tailwind-none-none'
-   *    C) config.config_key === 'tanstack-router-tailwind-sqlite-drizzle'
-   *
-   *    updateMap['tanstack-router-tailwind-sqlite-drizzle']()
-   *      will call updateMap['tanstack-router-tailwind-none-none']() and build from there
-   *    updateMap['tanstack-router-tailwind-none-none']()
-   *      will call updateMap['tanstack-router-none-none-none']() and build from there
-   *    updateMap['tanstack-router-none-none-none']
-   *      has no dependencies
-   *
-   *    The same logic applies for other configurations
-   *    D) config.config_key === 'react-router-none-none-none'
-   *    E) config.config_key === 'react-router-tailwind-none-none'
-   *    F) config.config_key === 'react-router-tailwind-sqlite-drizzle'
-   * ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️
-   * ####################################################################### */
+  if (router === 'react-router') {
+    const reactRouterSrc = isTailwind
+      ? path.join(routerSrc, 'reactRouter', 'with-tailwind')
+      : path.join(routerSrc, 'reactRouter', 'base')
+    logger.info(`reactRouterSrc PATH: ${reactRouterSrc}`)
 
-  const spinner = ora(
-    `${chalk.blue(config.project_name)} ${chalk.green.bold(`Selecting Boilerplate`)} for ${chalk.bold.green(
-      config.config_key
-    )}...`
-  ).start()
-  const srcDir = path.join(PKG_ROOT, 'template')
+    safeCopy(
+      path.join(reactRouterSrc, 'routes'),
+      path.join(routerDest, 'routes')
+    )
+    safeCopy(
+      path.join(reactRouterSrc, 'App.tsx'),
+      path.join(routerDest, 'App.tsx')
+    )
+    safeCopy(
+      path.join(reactRouterSrc, 'main.tsx'),
+      path.join(routerDest, 'main.tsx')
+    )
+  } else if (router === 'tanstack-router') {
+    const tanstackSrc = isTailwind
+      ? path.join(routerSrc, 'tanstackRouter', 'with-tailwind')
+      : path.join(routerSrc, 'tanstackRouter', 'base')
+    logger.info(`tanstackSrc PATH: ${tanstackSrc}`)
 
-  // TODO: fix typing
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const updateMap: any = {
-    'tanstack-router-none-none-none': ({
-      final = true,
-    }: {
-      final?: boolean
-    } = {}) => {
-      // TANSTACK ROUTER ######################################################
-      fs.copySync(
-        path.join(srcDir, 'extras', 'tanstackRouter', 'base', 'routes'),
-        path.join(config.project_dir, 'src', 'routes')
-      )
-
-      // STYLES ###############################################################
-      fs.copySync(
-        path.join(srcDir, 'configs', 'styles', 'index.css'),
-        path.join(config.project_dir, 'index.css')
-      )
-
-      // VITE #################################################################
-      fs.copySync(
-        path.join(
-          srcDir,
-          'configs',
-          'vite',
-          'vite.config.withTanstackRouter.ts'
-        ),
-        path.join(config.project_dir, 'vite.config.ts')
-      )
-
-      // MAKEFILE #############################################################
-      fs.copySync(
-        path.join(srcDir, 'configs', 'makefiles', 'makefile.withTanstack.sh'),
-        path.join(config.project_dir, 'makefile')
-      )
-
-      // overwrite / specify how we are fetching data
-      if (final) {
-        fs.renameSync(
-          path.join(config.project_dir, 'src', 'routes', 'resources-api.tsx'),
-          path.join(config.project_dir, 'src', 'routes', 'resources.tsx')
-        )
-
-        fs.removeSync(
-          path.join(config.project_dir, 'src', 'routes', 'resources-db.tsx')
-        )
-      }
-    },
-    'tanstack-router-tailwind-none-none': ({
-      final = true,
-    }: {
-      final?: boolean
-    } = {}) => {
-      // TANSTACK ROUTER ######################################################
-      fs.copySync(
-        path.join(
-          srcDir,
-          'extras',
-          'tanstackRouter',
-          'with-tailwind',
-          'routes'
-        ),
-        path.join(config.project_dir, 'src', 'routes')
-      )
-
-      // STYLES ###############################################################
-      fs.copySync(
-        path.join(srcDir, 'configs', 'tailwind', 'tailwind-index.css'),
-        path.join(config.project_dir, 'index.css')
-      )
-
-      fs.copySync(
-        path.join(srcDir, 'configs', 'tailwind', 'tailwind.config.ts'),
-        path.join(config.project_dir, 'tailwind.config.ts')
-      )
-
-      // VITE #################################################################
-      fs.copySync(
-        path.join(
-          srcDir,
-          'configs',
-          'vite',
-          'vite.config.withTanstackRouter.withTailwind.ts'
-        ),
-        path.join(config.project_dir, 'vite.config.ts')
-      )
-
-      // MAKEFILE ##############################################################
-      fs.copySync(
-        path.join(srcDir, 'configs', 'makefiles', 'makefile.withTanstack.sh'),
-        path.join(config.project_dir, 'makefile')
-      )
-
-      // overwrite / specify how we are fetching data
-      if (final) {
-        fs.renameSync(
-          path.join(config.project_dir, 'src', 'routes', 'resources-api.tsx'),
-          path.join(config.project_dir, 'src', 'routes', 'resources.tsx')
-        )
-        fs.removeSync(
-          path.join(config.project_dir, 'src', 'routes', 'resources-db.tsx')
-        )
-      }
-    },
-    'tanstack-router-tailwind-sqlite-drizzle': () => {
-      updateMap['tanstack-router-tailwind-none-none']({ final: false })
-
-      // DATABASE #############################################################
-      selectBoilerplateElectronDatabase(config)
-
-      // DRIZZLE ##############################################################
-      selectBoilerplateDrizzle(config)
-
-      // MAKEFILE ##############################################################
-      fs.copySync(
-        path.join(
-          srcDir,
-          'configs',
-          'makefiles',
-          'makefile.withTanstack.withDatabase.sh'
-        ),
-        path.join(config.project_dir, 'makefile')
-      )
-
-      // overwrite / specify how we are fetching data
-      fs.renameSync(
-        path.join(config.project_dir, 'src', 'routes', 'resources-db.tsx'),
-        path.join(config.project_dir, 'src', 'routes', 'resources.tsx')
-      )
-
-      fs.removeSync(
-        path.join(config.project_dir, 'src', 'routes', 'resources-api.tsx')
-      )
-    },
-    'tanstack-router-none-sqlite-drizzle': () => {
-      updateMap['tanstack-router-none-none-none']({ final: false })
-
-      // DATABASE #############################################################
-      selectBoilerplateElectronDatabase(config)
-
-      // DRIZZLE ##############################################################
-      selectBoilerplateDrizzle(config)
-
-      // MAKEFILE ##############################################################
-      fs.copySync(
-        path.join(
-          srcDir,
-          'configs',
-          'makefiles',
-          'makefile.withTanstack.withDatabase.sh'
-        ),
-        path.join(config.project_dir, 'makefile')
-      )
-
-      // overwrite / specify how we are fetching data
-      fs.renameSync(
-        path.join(config.project_dir, 'src', 'routes', 'resources-db.tsx'),
-        path.join(config.project_dir, 'src', 'routes', 'resources.tsx')
-      )
-
-      fs.removeSync(
-        path.join(config.project_dir, 'src', 'routes', 'resources-api.tsx')
-      )
-    },
-    'react-router-none-none-none': ({
-      final = true,
-    }: {
-      final?: boolean
-    } = {}) => {
-      // REACT ROUTER #########################################################
-      fs.copySync(
-        path.join(srcDir, 'extras', 'reactRouter', 'base', 'routes'),
-        path.join(config.project_dir, 'src', 'routes')
-      )
-
-      fs.copySync(
-        path.join(srcDir, 'extras', 'reactRouter', 'base', 'App.tsx'),
-        path.join(config.project_dir, 'src', 'App.tsx')
-      )
-      fs.copySync(
-        path.join(srcDir, 'extras', 'reactRouter', 'base', 'main.tsx'),
-        path.join(config.project_dir, 'src', 'main.tsx')
-      )
-
-      // STYLES ###############################################################
-      fs.copySync(
-        path.join(srcDir, 'configs', 'styles', 'index.css'),
-        path.join(config.project_dir, 'index.css')
-      )
-
-      // VITE #################################################################
-      fs.copySync(
-        path.join(srcDir, 'configs', 'vite', 'vite.config.withReactRouter.ts'),
-        path.join(config.project_dir, 'vite.config.ts')
-      )
-
-      // MAKEFILE #############################################################
-      fs.copySync(
-        path.join(
-          srcDir,
-          'configs',
-          'makefiles',
-          'makefile.withReactRouter.sh'
-        ),
-        path.join(config.project_dir, 'makefile')
-      )
-
-      if (final) {
-        fs.renameSync(
-          path.join(config.project_dir, 'src', 'routes', 'resources-api.tsx'),
-          path.join(config.project_dir, 'src', 'routes', 'resources.tsx')
-        )
-        fs.removeSync(
-          path.join(config.project_dir, 'src', 'routes', 'resources-db.tsx')
-        )
-      }
-    },
-    'react-router-tailwind-none-none': ({
-      final = true,
-    }: {
-      final?: boolean
-    } = {}) => {
-      // REACT ROUTER #########################################################
-      fs.copySync(
-        path.join(srcDir, 'extras', 'reactRouter', 'with-tailwind', 'routes'),
-        path.join(config.project_dir, 'src', 'routes')
-      )
-
-      fs.copySync(
-        path.join(srcDir, 'extras', 'reactRouter', 'with-tailwind', 'App.tsx'),
-        path.join(config.project_dir, 'src', 'App.tsx')
-      )
-      fs.copySync(
-        path.join(srcDir, 'extras', 'reactRouter', 'with-tailwind', 'main.tsx'),
-        path.join(config.project_dir, 'src', 'main.tsx')
-      )
-
-      // STYLES ###############################################################
-      fs.copySync(
-        path.join(srcDir, 'configs', 'tailwind', 'tailwind-index.css'),
-        path.join(config.project_dir, 'index.css')
-      )
-
-      fs.copySync(
-        path.join(srcDir, 'configs', 'tailwind', 'tailwind.config.ts'),
-        path.join(config.project_dir, 'tailwind.config.ts')
-      )
-
-      // VITE #################################################################
-      fs.copySync(
-        path.join(
-          srcDir,
-          'configs',
-          'vite',
-          'vite.config.withReactRouter.withTailwind.ts'
-        ),
-        path.join(config.project_dir, 'vite.config.ts')
-      )
-
-      // MAKEFILE #############################################################
-      fs.copySync(
-        path.join(
-          srcDir,
-          'configs',
-          'makefiles',
-          'makefile.withReactRouter.sh'
-        ),
-        path.join(config.project_dir, 'makefile')
-      )
-
-      if (final) {
-        fs.renameSync(
-          path.join(config.project_dir, 'src', 'routes', 'resources-api.tsx'),
-          path.join(config.project_dir, 'src', 'routes', 'resources.tsx')
-        )
-        fs.removeSync(
-          path.join(config.project_dir, 'src', 'routes', 'resources-db.tsx')
-        )
-      }
-    },
-    'react-router-tailwind-sqlite-drizzle': () => {
-      updateMap['react-router-tailwind-none-none']({ final: false })
-
-      // DATABASE #############################################################
-      selectBoilerplateElectronDatabase(config)
-
-      // DRIZZLE ##############################################################
-      selectBoilerplateDrizzle(config)
-
-      // MAKEFILE #############################################################
-      fs.copySync(
-        path.join(
-          srcDir,
-          'configs',
-          'makefiles',
-          'makefile.withReactRouter.withDatabase.sh'
-        ),
-        path.join(config.project_dir, 'makefile')
-      )
-      fs.renameSync(
-        path.join(config.project_dir, 'src', 'routes', 'resources-db.tsx'),
-        path.join(config.project_dir, 'src', 'routes', 'resources.tsx')
-      )
-      fs.removeSync(
-        path.join(config.project_dir, 'src', 'routes', 'resources-api.tsx')
-      )
-    },
-    'react-router-none-sqlite-drizzle': () => {
-      updateMap['react-router-none-none-none']({ final: false })
-
-      // DATABASE #############################################################
-      selectBoilerplateElectronDatabase(config)
-
-      // DRIZZLE ##############################################################
-      selectBoilerplateDrizzle(config)
-
-      // MAKEFILE #############################################################
-      fs.copySync(
-        path.join(
-          srcDir,
-          'configs',
-          'makefiles',
-          'makefile.withReactRouter.withDatabase.sh'
-        ),
-        path.join(config.project_dir, 'makefile')
-      )
-      fs.renameSync(
-        path.join(config.project_dir, 'src', 'routes', 'resources-db.tsx'),
-        path.join(config.project_dir, 'src', 'routes', 'resources.tsx')
-      )
-      fs.removeSync(
-        path.join(config.project_dir, 'src', 'routes', 'resources-api.tsx')
-      )
-    },
+    safeCopy(path.join(tanstackSrc, 'routes'), path.join(routerDest, 'routes'))
   }
+}
+
+const handleStyles = (config: Readonly<CLIResults>) => {
+  if (config.packages.styles === 'tailwind') {
+    safeCopy(
+      path.join(srcDir, 'configs', 'tailwind', 'tailwind-index.css'),
+      path.join(config.project_dir, 'index.css')
+    )
+    safeCopy(
+      path.join(srcDir, 'configs', 'tailwind', 'tailwind.config.ts'),
+      path.join(config.project_dir, 'tailwind.config.ts')
+    )
+  } else {
+    safeCopy(
+      path.join(srcDir, 'configs', 'styles', 'index.css'),
+      path.join(config.project_dir, 'index.css')
+    )
+  }
+}
+
+const handleViteConfig = (config: Readonly<CLIResults>) => {
+  const { router, styles, database, orm } = config.packages
+  let viteConfig = 'vite.config'
+  if (router) {
+    if (router === 'react-router') {
+      viteConfig += `.withReactRouter`
+    }
+    if (router === 'tanstack-router') {
+      viteConfig += `.withTanstackRouter`
+    }
+  }
+  if (styles) viteConfig += `.withTailwind`
+  if (database && orm) viteConfig += `.withDrizzle`
+  viteConfig += '.ts'
+
+  const viteConfigPath = path.join(srcDir, 'configs', 'vite', viteConfig)
+  logger.info(`viteConfigPath: ${viteConfigPath}`)
+
+  if (fs.existsSync(viteConfigPath)) {
+    safeCopy(viteConfigPath, path.join(config.project_dir, 'vite.config.ts'))
+  } else {
+    logger.warn(
+      `No specific Vite config found for: ${viteConfig}, using default.`
+    )
+    safeCopy(
+      path.join(srcDir, 'configs', 'vite', 'vite.config.withTanstackRouter.ts'),
+      path.join(config.project_dir, 'vite.config.ts')
+    )
+  }
+}
+
+const handleMakefile = (config: Readonly<CLIResults>) => {
+  const { router, database } = config.packages
+
+  let makefile = 'makefile'
+
+  if (router === 'react-router') {
+    makefile += '.withReactRouter'
+  } else if (router === 'tanstack-router') {
+    makefile += '.withTanstack'
+  }
+
+  if (database) makefile += '.withDatabase'
+
+  makefile += '.sh'
+
+  const makefilePath = path.join(srcDir, 'configs', 'makefiles', makefile)
+
+  if (fs.existsSync(makefilePath)) {
+    safeCopy(makefilePath, path.join(config.project_dir, 'makefile'))
+  } else {
+    logger.warn(`No specific Makefile found for: ${makefile}, using default.`)
+    safeCopy(
+      path.join(srcDir, 'configs', 'makefiles', 'makefile.withTanstack.sh'),
+      path.join(config.project_dir, 'makefile')
+    )
+  }
+}
+
+const handleDatabase = (config: Readonly<CLIResults>) => {
+  if (!config.packages.database) return
+
+  selectBoilerplateElectronDatabase(config)
+  if (config.packages.orm === 'drizzle') {
+    selectBoilerplateDrizzle(config)
+  }
+
+  // Copy preload script
+  safeCopy(
+    path.join(srcDir, 'extras', 'electron', 'preload', 'index-with-db.ts'),
+    path.join(config.project_dir, 'electron', 'preload', 'index.ts')
+  )
+}
+
+const finalizeResourceRoute = (config: Readonly<CLIResults>) => {
+  const useDb = !!config.packages.database
+  const resourcesFile = useDb ? 'resources-db.tsx' : 'resources-api.tsx'
+  const finalPath = path.join(
+    config.project_dir,
+    'src',
+    'routes',
+    'resources.tsx'
+  )
 
   try {
-    updateMap[config.config_key]()
-
-    spinner.succeed(
-      `${chalk.blue(config.project_name)} ${chalk.bold.green('Boilerplate selected')} successfully for ${chalk.green(
-        config.config_key
-      )}`
+    fs.renameSync(
+      path.join(config.project_dir, 'src', 'routes', resourcesFile),
+      finalPath
     )
-  } catch (e) {
-    spinner.fail(
-      `${chalk.blue(config.project_name)} ${chalk.red('Error selecting boilerplate')}`
+    fs.removeSync(
+      path.join(
+        config.project_dir,
+        'src',
+        'routes',
+        useDb ? 'resources-api.tsx' : 'resources-db.tsx'
+      )
     )
-    logger.error('🚨🚨 Error selecting boilerplate', e)
-    process.exit(1)
+  } catch (err) {
+    throw new FileSystemError(
+      'Failed to finalize routes configuration',
+      config.project_dir,
+      err as Error
+    )
   }
+}
+
+export const selectBoilerplate = (config: Readonly<CLIResults>): void => {
+  const spinner = ora(
+    `${chalk.blue(config.project_name)} ${chalk.green.bold(
+      `Selecting Boilerplate`
+    )} for ${chalk.bold.green(config.config_key)}...`
+  ).start()
+
+  handleRouter(config)
+  handleStyles(config)
+  handleViteConfig(config)
+  handleMakefile(config)
+  handleDatabase(config)
+
+  finalizeResourceRoute(config)
+
+  spinner.succeed(
+    `${chalk.blue(config.project_name)} ${chalk.green.bold(
+      'Boilerplate selected'
+    )} for ${chalk.bold.green(config.config_key)}`
+  )
 }

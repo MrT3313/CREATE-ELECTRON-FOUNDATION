@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import React from 'react'
+import { createFileRoute } from '@tanstack/react-router'
 import cx from 'classnames'
-import log from '../lib/logger'
 
 export const Route = createFileRoute('/')({
   component: Index,

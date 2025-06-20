@@ -1,13 +1,12 @@
 import React from 'react'
 import cx from 'classnames'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/settings')({
   component: Settings,
 })
 
 export function Settings() {
-  const router = useRouter()
   return (
     <div className="page">
       <div className={cx('hero', 'glass')}>

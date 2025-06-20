@@ -1,5 +1,6 @@
 import path from 'path'
 import fs from 'fs'
+import * as p from '@clack/prompts'
 
 // TERMINAL
 import ora from 'ora'
@@ -8,11 +9,12 @@ import chalk from 'chalk'
 // UTILS
 import { logger } from '../utils/logger.js'
 import { PKG_ROOT } from '../consts.js'
+import { FileSystemError } from '../utils/errors.js'
 
 // TYPES
 import type { CLIResults } from '../types/CLI.js'
 
-export const scaffoldProject = (config: CLIResults): void => {
+export const scaffoldProject = async (config: CLIResults): Promise<void> => {
   /**
    * Copies configuration agnostic Electron base template files into the
    * users new project directory
@@ -25,10 +27,30 @@ export const scaffoldProject = (config: CLIResults): void => {
 
   // CHECK: if the project directory already exists
   if (fs.existsSync(config.project_dir)) {
-    logger.error(`Directory ${config.project_dir} already exists`)
-    // TODO: improve options
-    //       - query user to delete/wipe & continue or exit
-    process.exit(1)
+    const shouldOverwrite = await p.confirm({
+      message: `Directory ${config.project_dir} already exists. Overwrite?`,
+      initialValue: false,
+    })
+
+    if (!shouldOverwrite) {
+      throw new FileSystemError(
+        `Directory ${config.project_dir} already exists and user chose not to overwrite`,
+        config.project_dir
+      )
+    }
+
+    // Backup existing directory
+    const backupPath = `${config.project_dir}.backup.${Date.now()}`
+    try {
+      fs.renameSync(config.project_dir, backupPath)
+      logger.info(`📦 Existing directory backed up to: ${backupPath}`)
+    } catch (error) {
+      throw new FileSystemError(
+        `Failed to backup existing directory: ${config.project_dir}`,
+        config.project_dir,
+        error as Error
+      )
+    }
   }
 
   // COPY: base template files into the users new project directory

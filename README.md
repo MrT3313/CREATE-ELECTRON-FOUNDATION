@@ -92,21 +92,21 @@ npx create-electron-foundation -y
 
 You can also customize your project setup directly via command-line arguments.
 
-| Argument             | Alias   | Description                        | Options                               | Default   |
-| -------------------- | ------- | ---------------------------------- | ------------------------------------- | --------- |
-| `[project_name]`     |         | Name of the project (positional)   | string                                | -         |
-| `--project_name`     |         | Name of the project (option)       | string                                | -         |
-| `--router`           |         | Router to use                      | `'tanstack-router'`, `'react-router'` | -         |
-| `--styles`           |         | Styles to use                      | `'tailwind'`, `'false'`               | -         |
-| `--database`         |         | Database to use                    | `'sqlite'`, `'false'`                 | -         |
-| `--orm`              |         | ORM to use                         | `'drizzle'`, `'false'`                | -         |
-| `--ide`              |         | IDE to use                         | `'cursor'`, `'vscode'`, `'false'`     | -         |
-| `--pkg_manager`      |         | Package manager to use             | `'npm'`                               | `'npm'`   |
-| `--initialize_git`   | `--git` | Initialize Git repository          | `'true'`, `'false'`                   | `'true'`  |
-| `--install_packages` |         | Install packages after scaffolding | `'true'`, `'false'`                   | `'false'` |
-| `--ci`               |         | Run in CI mode (non-interactive)   | boolean                               | `false`   |
-| `-y`, `--yes`        |         | Skip prompts and use defaults      | boolean                               | `false`   |
-| `-h`, `--help`       |         | Show help                          | -                                     | -         |
+| Argument             | Alias   | Description                        | Options                               | Default |
+| -------------------- | ------- | ---------------------------------- | ------------------------------------- | ------- |
+| `[project_name]`     |         | Name of the project (positional)   | string                                | -       |
+| `--project_name`     |         | Name of the project (option)       | string                                | -       |
+| `--router`           |         | Router to use                      | `'tanstack-router'`, `'react-router'` | -       |
+| `--styles`           |         | Styles to use                      | `'tailwind'`, `'none'`                | -       |
+| `--database`         |         | Database to use                    | `'sqlite'`, `'none'`                  | -       |
+| `--orm`              |         | ORM to use                         | `'drizzle'`, `'none'`                 | -       |
+| `--ide`              |         | IDE to use                         | `'cursor'`, `'vscode'`, `'none'`      | -       |
+| `--pkg_manager`      |         | Package manager to use             | `'npm'`                               | `'npm'` |
+| `--initialize_git`   | `--git` | Initialize Git repository          | boolean                               | -       |
+| `--install_packages` |         | Install packages after scaffolding | boolean                               | -       |
+| `--ci`               |         | Run in CI mode (non-interactive)   | boolean                               | `false` |
+| `-y`, `--yes`        |         | Skip prompts and use defaults      | boolean                               | `false` |
+| `-h`, `--help`       |         | Show help                          | -                                     | -       |
 
 ## Examples
 
