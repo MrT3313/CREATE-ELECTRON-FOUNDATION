@@ -8,7 +8,6 @@ import pkg from './package.json'
 // https://vite.dev/config/
 export default defineConfig(async ({ command }) => {
   const tailwindcss = (await import('@tailwindcss/vite')).default
-
   if (fs.existsSync('dist-electron')) {
     fs.rmSync('dist-electron', { recursive: true, force: true })
   }
@@ -90,7 +89,39 @@ export default defineConfig(async ({ command }) => {
           },
         },
       ]),
+      copyMigrationsPlugin(),
     ],
     clearScreen: false,
   }
 })
+
+// Plugin to copy migrations folder to dist
+function copyMigrationsPlugin() {
+  return {
+    name: 'copy-migrations',
+    writeBundle() {
+      const migrationsSource = path.resolve(
+        __dirname,
+        'electron/main/db/migrations'
+      )
+      const migrationsTarget = path.resolve(
+        __dirname,
+        'dist-electron/main/db/migrations'
+      )
+
+      if (fs.existsSync(migrationsSource)) {
+        // Ensure the db directory exists
+        const dbDir = path.dirname(migrationsTarget)
+        if (!fs.existsSync(dbDir)) {
+          fs.mkdirSync(dbDir, { recursive: true })
+        }
+
+        if (fs.existsSync(migrationsTarget)) {
+          fs.rmSync(migrationsTarget, { recursive: true, force: true })
+        }
+        fs.cpSync(migrationsSource, migrationsTarget, { recursive: true })
+        console.log('✅ Migrations copied to dist/db directory')
+      }
+    },
+  }
+}

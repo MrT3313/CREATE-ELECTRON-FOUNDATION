@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import cx from 'classnames'
 
 // REACT QUERY
-import { useGetAPIResourceList } from '../api/index'
+import { useGetDBResourceList } from '../api/index'
+import { NewDBResourceForm } from '../components/NewDBResourceForm'
 
 export function Resources() {
   const {
@@ -10,7 +11,7 @@ export function Resources() {
     isLoading,
     isError,
     error: fetchError,
-  } = useGetAPIResourceList({
+  } = useGetDBResourceList({
     enabled: true,
   })
   const [error, setError] = useState<string | null>(null)
@@ -27,22 +28,16 @@ export function Resources() {
       {error && <div className="error-message">{error}</div>}
 
       <div className={cx('hero', 'glass')}>
-        <h1>API Resource List</h1>
+        <h1>DB Resource List</h1>
+        <span>This is fetching from the SQLite database.</span>
         <span>
-          This is using the{' '}
-          <a
-            href="https://jsonplaceholder.typicode.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              fontStyle: 'italic',
-              textDecoration: 'underline',
-            }}
-          >
-            JSON Placeholder API
-          </a>
+          The api to fetch data from an external API is still in the code.
         </span>
       </div>
+
+      <br />
+
+      <NewDBResourceForm />
 
       <br />
 
@@ -58,7 +53,7 @@ export function Resources() {
         {isLoading ? (
           <div className="loading-message">Loading resources...</div>
         ) : isError ? (
-          <p className="text-gray-500">Error loading resources</p>
+          <p>Error loading resources</p>
         ) : resources ? (
           resources?.length > 0 ? (
             resources?.map((resource) => (

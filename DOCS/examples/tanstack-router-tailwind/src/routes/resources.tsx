@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import cx from 'classnames'
 import log from '../lib/logger'
 const homepageLogger = log.scope('homepage')
-import { useGetAPIResourceList } from '../api/index'
+import { useGetDBResourceList } from '../api/index'
+import { NewDBResourceForm } from '../components/NewDBResourceForm'
 
 export const Route = createFileRoute('/resources')({
   component: Resources,
@@ -11,12 +12,11 @@ export const Route = createFileRoute('/resources')({
 
 export function Resources() {
   // HOOKS
-  const router = useRouter()
   const {
     data: resources,
     isLoading,
     error: fetchError,
-  } = useGetAPIResourceList({
+  } = useGetDBResourceList({
     enabled: true,
   })
   // STATE
@@ -39,22 +39,16 @@ export function Resources() {
       )}
 
       <div className={cx('hero', 'glass')}>
-        <h1>API Resource List</h1>
+        <h1>DB Resource List</h1>
+        <span>This is fetching from the SQLite database.</span>
         <span>
-          This is using the{' '}
-          <a
-            href="https://jsonplaceholder.typicode.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              fontStyle: 'italic',
-              textDecoration: 'underline',
-            }}
-          >
-            JSON Placeholder API
-          </a>
+          The api to fetch data from an external API is still in the code.
         </span>
       </div>
+
+      <br />
+
+      <NewDBResourceForm />
 
       <br />
 

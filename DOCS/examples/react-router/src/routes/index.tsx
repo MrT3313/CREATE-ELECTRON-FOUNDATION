@@ -11,14 +11,13 @@ function ConfigCard() {
           <p className={cx('card-subtitle')}>Environment Settings</p>
         </div>
       </div>
-
       <div
         className={cx('card-content')}
         style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: '1rem',
-          fontSize: '1.2rem',
+          gap: '0.5rem',
+          fontSize: '1rem',
         }}
       >
         <span>{`Framework: ${window.env.CEF_FRAMEWORK}`}</span>
@@ -31,9 +30,9 @@ function ConfigCard() {
   )
 }
 
-const Index = () => {
+export function Index() {
   return (
-    <div className="page">
+    <div className={cx('page')}>
       <div className={cx('hero', 'glass')}>
         <h1>
           Welcome to <span className={cx('italic')}>your</span>

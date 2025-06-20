@@ -1,4 +1,4 @@
-interface NewDBResource {
+export interface NewDBResource {
   title: string
   body: string
   user_id: number

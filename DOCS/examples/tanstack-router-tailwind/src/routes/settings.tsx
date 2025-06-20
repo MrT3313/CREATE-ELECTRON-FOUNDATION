@@ -1,16 +1,12 @@
-import React, { useState } from 'react'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import React from 'react'
+import { createFileRoute } from '@tanstack/react-router'
 import cx from 'classnames'
-import log from 'electron-log/renderer'
-
-const utilityProcessLogger = log.scope('settings')
 
 export const Route = createFileRoute('/settings')({
   component: Settings,
 })
 
 export function Settings() {
-  const router = useRouter()
   return (
     <div className={cx('page')}>
       <div className={cx('hero', 'glass')}>

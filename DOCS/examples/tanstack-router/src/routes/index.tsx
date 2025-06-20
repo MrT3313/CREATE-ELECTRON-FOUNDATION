@@ -1,6 +1,6 @@
 import React from 'react'
-import cx from 'classnames'
 import { createFileRoute } from '@tanstack/react-router'
+import cx from 'classnames'
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -17,15 +17,7 @@ function ConfigCard() {
         </div>
       </div>
 
-      <div
-        className={cx('card-content')}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem',
-          fontSize: '1.2rem',
-        }}
-      >
+      <div className={cx('card-content', 'flex flex-col gap-2 text-lg')}>
         <span>{`Framework: ${window.env.CEF_FRAMEWORK}`}</span>
         <span>{`Router: ${window.env.CEF_ROUTER}`}</span>
         <span>{`Styles: ${window.env.CEF_STYLES}`}</span>
@@ -38,7 +30,7 @@ function ConfigCard() {
 
 export function Index() {
   return (
-    <div className="page">
+    <div className={cx('page')}>
       <div className={cx('hero', 'glass')}>
         <h1>
           Welcome to <span className={cx('italic')}>your</span>
