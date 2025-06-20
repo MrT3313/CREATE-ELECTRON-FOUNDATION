@@ -394,9 +394,9 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
           ...mutableConfig,
         }
 
-        logger.info(`
-          Run User Prompt CLI config:${JSON.stringify(config, null, 2)}
-        `)
+        // logger.info(`
+        //   Run User Prompt CLI config:${JSON.stringify(config, null, 2)}
+        // `)
 
         return config
       } catch (err) {

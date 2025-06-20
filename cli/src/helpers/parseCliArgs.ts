@@ -118,8 +118,6 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     }
   }
 
-  console.error('AFTER PROCESSING:', args)
-
   // CONFIGURE: project name ##################################################
   const project_name_arg =
     (args.project_name as string) || (args._[0] as string)
@@ -159,6 +157,5 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     ide: args.ide === 'none' ? false : (args.ide as IDE | undefined),
   }
 
-  console.error('FINAL RESULT:', result)
   return result
 }
