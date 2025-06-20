@@ -144,11 +144,17 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Show initial state of examples
+        run: |
+          echo "Initial contents of DOCS/examples:"
+          ls -R DOCS/examples
+
       # 2. Clean the examples directory before downloading new artifacts.
-      # This ensures that any removed or renamed examples are no longer present.
       - name: Clean Examples Directory
         run: |
           rm -rf DOCS/examples && mkdir -p DOCS/examples
+          echo "Contents of DOCS/examples after cleaning:"
+          ls -R DOCS/examples
 
       # 3. Download all artifacts from the triggering 'e2e-test' workflow job.
       - name: Download Example Artifacts
@@ -160,14 +166,17 @@ jobs:
 
       - name: Display Downloaded Examples
         run: |
-          echo "Listing downloaded examples..."
-          ls -R DOCS/examples
+          echo "Downloaded artifact contents:"
+          ls -RF DOCS/examples
 
       # 4. Configure Git with credentials for the github-actions bot.
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Check Git Status Before Commit
+        run: git status
 
       # 5. Commit and push the updated examples to the repository.
       - name: Commit Updated Examples
@@ -177,6 +186,7 @@ jobs:
           if git diff-index --quiet HEAD; then
             echo "No changes to commit."
           else
+            echo "Changes detected, committing now..."
             git commit -m "chore(examples): update /DOCS/examples from e2e tests" -m "[skip ci]"
             git push
           fi
