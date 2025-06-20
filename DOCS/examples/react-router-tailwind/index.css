@@ -1,0 +1,193 @@
+@import 'tailwindcss';
+
+@layer components {
+  .app-layout {
+    @apply flex flex-col 
+      justify-start items-center
+      min-w-screen min-h-screen 
+      bg-gradient-to-br from-indigo-400 to-purple-600;
+  }
+
+  .header {
+    @apply flex
+      w-full
+      justify-end
+      rounded-b-lg
+      bg-white
+      h-[40px];
+  }
+
+  .page {
+    @apply flex flex-col 
+      items-center justify-center
+      w-full max-w-[800px] h-full;
+  }
+
+  .container {
+    @apply flex flex-col 
+      items-center justify-center
+      w-full
+      rounded-lg
+      max-w-[90%];
+  }
+
+  .scrollable {
+    @apply overflow-y-auto;
+  }
+
+  .glass {
+    @apply relative border border-white/80 rounded-[2rem] p-5;
+    background: rgba(255, 255, 255, 0.15);
+    -webkit-backdrop-filter: blur(2px) saturate(180%);
+    backdrop-filter: blur(2px) saturate(180%);
+    box-shadow:
+      0 8px 32px rgba(31, 38, 135, 0.2),
+      inset 0 4px 20px rgba(255, 255, 255, 0.3);
+  }
+
+  .glass::after {
+    content: '';
+    @apply pointer-events-none absolute inset-0 -z-10 rounded-[2rem] opacity-60;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(1px);
+    box-shadow:
+      inset -10px -8px 0px -11px rgb(255 255 255),
+      inset 0px -9px 0px -8px rgb(255 255 255);
+    filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
+  }
+
+  .hero {
+    @apply flex w-full max-w-[90%] flex-col items-center justify-center;
+  }
+
+  .reminders {
+    @apply flex
+      flex-col 
+      items-start justify-start 
+      w-full max-w-[90%] 
+      text-white
+      gap-4;
+  }
+
+  .card-header {
+    @apply flex items-center gap-4;
+  }
+
+  .icon {
+    @apply relative flex h-10 w-10 items-center justify-center rounded-xl text-2xl;
+  }
+
+  .icon::after {
+    @apply rounded-xl;
+  }
+
+  .card-title {
+    @apply m-0 text-2xl font-semibold text-white;
+  }
+
+  .card-subtitle {
+    @apply m-0 mt-1 text-lg text-white;
+  }
+
+  .card-content {
+    @apply text-white;
+  }
+
+  .item {
+    @apply flex flex-col w-full items-center justify-center gap-1 border-b-2 border-gray-200 p-2 last:border-b-0;
+  }
+
+  .env-vars {
+    @apply flex flex-col
+      items-center justify-center
+      rounded-lg
+      text-[#9333ea]
+      bg-white
+      p-4;
+  }
+
+  .input {
+    @apply w-full px-3 py-3 border border-gray-300 rounded-lg bg-white text-gray-700 text-base transition-colors duration-200 ease-in-out;
+  }
+
+  .input:focus {
+    @apply outline-none border-purple-600 ring-4 ring-purple-600/10;
+  }
+
+  /* Base button with CSS custom properties */
+  .btn {
+    --btn-padding: 6px 3px;
+    --btn-border: 2px solid rgb(255 255 255 / 0.8);
+    --btn-radius: 0.5rem;
+    --btn-bg: transparent;
+    --btn-hover-bg: rgb(255 255 255 / 0.1);
+    --btn-transition: all 300ms ease-in-out;
+    --btn-color: white;
+
+    padding: var(--btn-padding);
+    border: var(--btn-border);
+    border-radius: var(--btn-radius);
+    background: var(--btn-bg);
+    color: var(--btn-color);
+    transition: var(--btn-transition);
+  }
+
+  .btn:hover {
+    /* background: var(--btn-hover-bg);
+    border-color: white; */
+    transform: translateY(-2px);
+    cursor: pointer;
+  }
+
+  /* Gradient button - just override the background */
+  .btn-gradient {
+    --btn-bg: linear-gradient(
+      to bottom right,
+      rgb(129 140 248),
+      rgb(147 51 234)
+    );
+  }
+
+  /* Header menu button - override background and radius */
+  .btn-gradient-header-menu {
+    --btn-bg: linear-gradient(
+      to bottom right,
+      rgb(129 140 248),
+      rgb(147 51 234)
+    );
+    --btn-radius: 0 0 0.5rem 0.5rem;
+  }
+  .btn-gradient-header-menu:hover {
+    transform: translateY(2px);
+  }
+
+  /* Active state for current route */
+  .btn-gradient-header-menu.active {
+    --btn-bg: white;
+    --btn-color: #9333ea;
+    --btn-border: 2px solid #e5e7eb;
+  }
+}
+
+@layer typography {
+  h1 {
+    @apply text-center
+      text-white
+      text-[2rem]
+      font-bold
+      m-0 p-0;
+  }
+
+  h2 {
+    @apply text-2xl 
+      font-bold 
+      text-center
+      m-0 p-0;
+  }
+
+  p {
+    @apply text-sm
+      p-0
+      m-0;
+  }
+}
