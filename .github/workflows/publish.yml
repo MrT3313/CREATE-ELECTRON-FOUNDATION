@@ -61,8 +61,8 @@ jobs:
   publish:
     name: Publish to NPM
     runs-on: ubuntu-latest
-    needs: [wait-for-core-ci]
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && needs.wait-for-core-ci.outputs.conclusion == 'success')
+    needs: [update-examples]
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && needs.update-examples.conclusion == 'success')
     permissions:
       contents: write
     steps:
@@ -90,6 +90,7 @@ jobs:
       - name: Bump Version and Publish (Automated Alpha)
         if: github.event_name == 'workflow_run'
         run: |
+          git pull --rebase
           npm version prepatch --preid=alpha --git-tag-version=false
           VERSION=$(node -p "require('./package.json').version")
           git commit -am "chore(release): bump version to $VERSION [alpha] [skip ci]"
@@ -134,31 +135,37 @@ jobs:
     runs-on: ubuntu-latest
     needs: [wait-for-core-ci]
     # Only run for automated workflow_run triggers, not manual dispatches.
-    if: github.event_name == 'workflow_run' && needs.wait-for-core-ci.outputs.conclusion == 'success'
+    if: always() # This job must always run to satisfy the dependency from the 'publish' job.
     permissions:
       contents: write # Required to push changes to the repository.
       actions: read # Required to read artifacts from other workflows.
     steps:
       # 1. Check out the repository code.
+      - name: Early exit for manual dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: echo "Skipping example update for manual dispatch."
+
       - name: Checkout Repository
+        if: github.event_name != 'workflow_dispatch'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Show initial state of examples
+        if: github.event_name != 'workflow_dispatch'
         run: |
           echo "Initial contents of DOCS/examples:"
           ls -R DOCS/examples || echo "DOCS/examples does not exist, which is normal on a clean checkout."
-
       # 2. Clean the examples directory before downloading new artifacts.
       - name: Clean Examples Directory
+        if: github.event_name != 'workflow_dispatch'
         run: |
           rm -rf DOCS/examples && mkdir -p DOCS/examples
           echo "Contents of DOCS/examples after cleaning:"
           ls -R DOCS/examples
-
       # 3. Download all artifacts from the triggering 'e2e-test' workflow job.
       - name: Download Example Artifacts
+        if: github.event_name != 'workflow_dispatch'
         uses: actions/download-artifact@v4
         with:
           path: DOCS/examples
@@ -167,6 +174,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify Downloaded Artifacts
+        if: github.event_name != 'workflow_dispatch'
         run: |
           echo "Verifying downloaded artifact contents:"
           ls -RF DOCS/examples
@@ -175,18 +183,19 @@ jobs:
             exit 1
           fi
           echo "✅ Downloaded examples are present. Proceeding."
-
       # 4. Configure Git with credentials for the github-actions bot.
       - name: Configure Git
+        if: github.event_name != 'workflow_dispatch'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Check Git Status Before Commit
+        if: github.event_name != 'workflow_dispatch'
         run: git status
-
       # 5. Commit and push the updated examples to the repository.
       - name: Commit Updated Examples
+        if: github.event_name != 'workflow_dispatch'
         run: |
           git add -f DOCS/examples
           # Check if there are any changes to commit
