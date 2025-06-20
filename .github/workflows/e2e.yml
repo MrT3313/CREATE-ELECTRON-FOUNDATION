@@ -288,45 +288,18 @@ jobs:
             exit 1
           fi
 
-      #########################################################
-      # Step 6: Update the examples directory with the generated project (only when merged to main)
-      #########################################################
-      - name: Update Examples Directory
+      # ------------------------------------------------------------------------------------------
+      # UPLOAD ARTIFACT
+      # ------------------------------------------------------------------------------------------
+      # On pushes to main, upload the generated example directory as an artifact.
+      # This allows a separate job to collect all examples and commit them at once,
+      # avoiding race conditions from multiple jobs pushing to the same branch.
+      - name: Upload Example Artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          set -x
-
-          # Reconstruct the project name (same logic as scaffolding step)
-          project_name="test-proj-${{ matrix.config.router }}"
-          if [[ "${{ matrix.config.styles }}" != "none" ]]; then
-            project_name+="-${{ matrix.config.styles }}"
-          fi
-          if [[ "${{ matrix.config.db }}" != "none" ]]; then
-            project_name+="-db"
-          fi
-          if [[ "${{ matrix.config.orm }}" != "none" ]]; then
-            project_name+="-orm"
-          fi
-
-          EXAMPLE_DIR="DOCS/examples/${{ matrix.config.example_dir }}"
-          GENERATED_PROJECT="temp-scaffolded-project/$project_name"
-
-          echo "Updating $EXAMPLE_DIR with generated project from $GENERATED_PROJECT"
-
-          # Remove existing example directory if it exists
-          if [ -d "$EXAMPLE_DIR" ]; then
-            rm -rf "$EXAMPLE_DIR"
-          fi
-
-          # Create the example directory structure
-          mkdir -p "$(dirname "$EXAMPLE_DIR")"
-
-          # Copy the generated project to the examples directory
-          cp -r "$GENERATED_PROJECT" "$EXAMPLE_DIR"
-
-          # List the contents for verification
-          echo "Contents of updated example:"
-          ls -la "$EXAMPLE_DIR"
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.config.example_dir }}
+          path: temp-scaffolded-project/${{ env.PROJECT_NAME }}
 
       #########################################################
       # Step 7: Validate the scaffolded project.
@@ -413,16 +386,3 @@ jobs:
           fi
 
           echo "✅ Project structure validation passed for ${{ matrix.config.name }}"
-
-      # ------------------------------------------------------------------------------------------
-      # UPLOAD ARTIFACT
-      # ------------------------------------------------------------------------------------------
-      # On pushes to main, upload the generated example directory as an artifact.
-      # This allows a separate job to collect all examples and commit them at once,
-      # avoiding race conditions from multiple jobs pushing to the same branch.
-      - name: Upload Example Artifact
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.config.example_dir }}
-          path: DOCS/examples/${{ matrix.config.example_dir }}/
