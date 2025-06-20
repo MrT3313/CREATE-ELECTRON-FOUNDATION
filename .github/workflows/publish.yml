@@ -165,6 +165,15 @@ jobs:
           # Explicitly specify the triggering workflow run ID to get its artifacts.
           run-id: ${{ github.event.workflow_run.id }}
 
+       - name: Manually List Artifacts via API
+        id: list_artifacts
+        run: |
+          gh api \
+            --method GET \
+            /repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Verify Downloaded Artifacts
         run: |
           echo "Verifying downloaded artifact contents:"

@@ -312,6 +312,22 @@ jobs:
           name: ${{ matrix.config.example_dir }}
           path: temp-scaffolded-project/${{ env.PROJECT_NAME }}
 
+      - name: Validate Artifact Upload
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "Validating that artifact '${{ matrix.config.example_dir }}' was uploaded successfully..."
+          gh api \
+            /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts \
+            | jq -e '.artifacts[] | select(.name == "${{ matrix.config.example_dir }}")'
+
+          if [ $? -ne 0 ]; then
+            echo "::error::Validation failed. Artifact '${{ matrix.config.example_dir }}' not found via API after upload."
+            exit 1
+          fi
+          echo "✅ Artifact '${{ matrix.config.example_dir }}' successfully validated via API."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       #########################################################
       # Step 7: Validate the scaffolded project.
       #########################################################
