@@ -34,28 +34,6 @@ declare global {
 
 export type ElectronResponse<T> = T | { error: { msg: string } }
 
-// Enhanced response types
-export interface ElectronApiResponse<T> {
-  success: boolean
-  data?: T
-  error?: {
-    code: number
-    message: string
-    details?: unknown
-  }
-}
-
-// IPC channel types for type safety
-export type IpcChannels =
-  | 'api/resource/getAPIResourceById'
-  | 'api/resource/getAPIResourceList'
-  | 'api/resource/insertAPIResource'
-  | 'api/resource/deleteAPIResourceById'
-  | 'db/resource/getDBResourceById'
-  | 'db/resource/getDBResourceList'
-  | 'db/resource/insertDBResource'
-  | 'db/resource/deleteDBResourceById'
-
 // Minimal IPC event interface to avoid electron dependency
 export interface IpcMainInvokeEvent {
   frameId: number
@@ -63,12 +41,4 @@ export interface IpcMainInvokeEvent {
   sender: {
     id: number
   }
-}
-
-// Type-safe IPC handler
-export interface IpcHandler<T = unknown> {
-  (
-    event: IpcMainInvokeEvent,
-    ...args: unknown[]
-  ): Promise<ElectronApiResponse<T>>
 }
