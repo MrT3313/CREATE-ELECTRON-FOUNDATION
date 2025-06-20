@@ -98,25 +98,24 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     .parse()
 
   // Process database and ORM dependencies
-  const dbIsSet = args.database && args.database !== 'none'
-  console.error('dbIsSet', dbIsSet)
-  const ormIsSet = args.orm && args.orm !== 'none'
-  console.error('ormIsSet', ormIsSet)
-
-  if (dbIsSet && !ormIsSet) {
-    console.error('Setting orm to drizzle')
-    args.orm = 'drizzle'
+  if (args.database) {
+    if (args.database === 'none') {
+      args.orm = 'none'
+    } else {
+      if (!args.orm || args.orm === 'none') {
+        args.orm = 'drizzle'
+      }
+    }
   }
 
-  if (ormIsSet && !dbIsSet) {
-    console.error('Setting database to sqlite')
-    args.database = 'sqlite'
-  }
-
-  if (!dbIsSet && !ormIsSet) {
-    console.error('Setting database and orm to false')
-    args.database = 'none'
-    args.orm = 'none'
+  if (args.orm) {
+    if (args.orm === 'none') {
+      args.database = 'none'
+    } else {
+      if (!args.database || args.database === 'none') {
+        args.database = 'sqlite'
+      }
+    }
   }
 
   console.error('AFTER PROCESSING:', args)

@@ -253,13 +253,15 @@ describe('parseCliArgs', () => {
           it(testName, async () => {
             const argv = createArgv(['--database', database, '--orm', orm])
             const result = await parseCliArgs(argv)
-            
+
             // Special case: When database is sqlite, orm should always be drizzle
             if (database === 'sqlite') {
               expect(result.database).toBe('sqlite')
               expect(result.orm).toBe('drizzle')
             } else {
-              expect(result.database).toBe(database === 'none' ? false : database)
+              expect(result.database).toBe(
+                database === 'none' ? false : database
+              )
               expect(result.orm).toBe(orm === 'none' ? false : orm)
             }
           })
