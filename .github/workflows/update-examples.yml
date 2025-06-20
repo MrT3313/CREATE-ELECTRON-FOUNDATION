@@ -27,11 +27,51 @@ on:
       - main
 
 jobs:
+  # This job waits for the 'Core CI' workflow to complete for the same commit.
+  # It is necessary because 'Core CI' and 'E2E Tests' run in parallel, and we need both to succeed.
+  wait-for-core-ci:
+    name: Wait for Core CI
+    runs-on: ubuntu-latest
+    # Only run this job if the triggering 'E2E Tests' workflow was successful.
+    if: github.event.workflow_run.conclusion == 'success'
+    outputs:
+      conclusion: ${{ steps.check.outputs.conclusion }}
+    steps:
+      - name: 'Wait for "Core CI" workflow to complete'
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          echo "Waiting for 'Core CI' workflow to complete for commit $HEAD_SHA..."
+          # Poll for up to 5 minutes
+          for i in {1..30}; do
+            # Get the conclusion of the latest 'Core CI' run for the specific commit on the main branch
+            conclusion=$(gh run list --workflow "Core CI" --commit "$HEAD_SHA" --branch main --status completed --limit 1 --json conclusion --jq '.[0].conclusion // "pending"')
+
+            if [[ "$conclusion" == "success" ]]; then
+              echo "✅ 'Core CI' workflow completed successfully."
+              echo "::set-output name=conclusion::success"
+              exit 0
+            elif [[ "$conclusion" != "pending" ]]; then
+              echo "❌ 'Core CI' workflow did not succeed. Conclusion: $conclusion"
+              echo "::set-output name=conclusion::$conclusion"
+              exit 0
+            fi
+
+            echo "($i/30) 'Core CI' workflow is pending or in progress. Waiting 10 seconds..."
+            sleep 10
+          done
+
+          echo "❌ Timed out waiting for 'Core CI' workflow to complete."
+          echo "::set-output name=conclusion::timed_out"
+
   update-examples:
     name: Update Examples
     runs-on: ubuntu-latest
-    # This job only runs when the triggering E2E test workflow was successful.
-    if: github.event.workflow_run.conclusion == 'success'
+    needs: [wait-for-core-ci]
+    # Only run if the 'wait-for-core-ci' job reports a 'success' conclusion.
+    if: needs.wait-for-core-ci.outputs.conclusion == 'success'
     permissions:
       contents: write # Required to push changes to the repository.
     steps:
@@ -48,12 +88,13 @@ jobs:
           fi
           mkdir -p DOCS/examples/tmp
 
-      # 3. Download all artifacts from the 'e2e-test' jobs.
-      # Each artifact will be placed in its own directory inside 'DOCS/examples'.
+      # 3. Download all artifacts from the triggering 'e2e-test' workflow job.
       - name: Download Example Artifacts
         uses: actions/download-artifact@v4
         with:
           path: DOCS/examples
+          # Explicitly specify the triggering workflow run ID to get its artifacts.
+          run-id: ${{ github.event.workflow_run.id }}
 
       - name: Display Downloaded Examples
         run: |
@@ -69,16 +110,11 @@ jobs:
       # 5. Commit and push the updated examples to the repository.
       - name: Commit Updated Examples
         run: |
-          set -x
-          # Stage all changes within the 'DOCS/examples' directory.
-          git add DOCS/examples
-
-          # Check if there are any staged changes to commit.
-          # 'git diff --cached --quiet' exits with 0 if no changes, 1 if changes.
-          if ! git diff --cached --quiet; then
-            echo "Committing updated examples..."
-            git commit -m "chore(examples): update examples from e2e tests" -m "[skip ci]"
-            git push
+          git add -f DOCS/examples
+          # Check if there are any changes to commit
+          if git diff-index --quiet HEAD; then
+            echo "No changes to commit."
           else
-            echo "No changes to commit in examples."
+            git commit -m "chore(examples): update /DOCS/examples from e2e tests" -m "[skip ci]"
+            git push
           fi
