@@ -47,7 +47,7 @@ NODE_MANAGE = \
 
 # Kit and Caboodle ############################################################
 # ^^ ?? 👉 https://www.youtube.com/watch?v=xvFZjo5PgG0
-kac: ri setup dev
+kac: ri setup laf dev
 
 # Package Management ###########################################################
 i:

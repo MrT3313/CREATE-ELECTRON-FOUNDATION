@@ -26,7 +26,8 @@ export function getDatabaseDir(): string {
         return path.join(homeDir, 'Library', 'Application Support', APP_NAME)
       case 'win32':
         return path.join(homeDir, 'AppData', 'Roaming', APP_NAME)
-      default: // Linux and others
+      case 'linux':
+      default:
         return path.join(homeDir, '.config', APP_NAME)
     }
   }

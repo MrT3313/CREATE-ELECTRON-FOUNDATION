@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'fs-extra'
 import path from 'path'
+import * as p from '@clack/prompts'
 
 // FUNCTIONS
 import { renderTitle } from './utils/renderTitle.js'
@@ -50,6 +51,21 @@ const main = async () => {
 
   // 2. PROMPT: user to fill configurations ###################################
   const config: CLIResults = await runUserPromptCli(cliArgs)
+
+  // Display summary to ensure it's visible to the user
+  p.note(
+    `
+    Project Name: ${chalk.blue.bold(config.project_name)}
+    Router: ${chalk.green.bold(config?.packages?.router)}
+    Styles: ${chalk.green.bold(config?.packages?.styles || 'Vanilla CSS')}
+    Database: ${config?.packages?.database ? chalk.green.bold(config?.packages?.database) : chalk.red.bold('false')}
+    ORM: ${config?.packages?.orm ? chalk.green.bold(config?.packages?.orm) : chalk.red.bold('false')}
+    Initialize Git: ${config.initialize_git ? chalk.green.bold('true') : chalk.red.bold('false')}
+    Install Packages: ${config.install_packages ? chalk.green.bold('true') : chalk.red.bold('false')}
+    IDE: ${config.ide ? chalk.green.bold(config.ide) : chalk.red.bold('false')}
+    `,
+    'Summary of your choices:'
+  )
 
   // INJECT ENV VARIABLES ######################################################
   if (cliArgs.project_name) {
@@ -207,7 +223,7 @@ const main = async () => {
   logger.success(
     `${chalk.blue(config.project_name)} ${chalk.bold.green(
       'Project Scaffolded Successfully'
-    )} with ${chalk.blue('create-electron-foundation!')}`
+    )} ${chalk.white('with')} ${chalk.blue('create-electron-foundation!')}`
   )
 }
 

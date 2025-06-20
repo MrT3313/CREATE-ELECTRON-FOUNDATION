@@ -47,7 +47,7 @@ NODE_MANAGE = \
 
 # Kit and Caboodle ############################################################
 # ^^ ?? 👉 https://www.youtube.com/watch?v=xvFZjo5PgG0
-kac: ri setup dev
+kac: ri laf dev
 
 # Package Management ###########################################################
 i:
@@ -58,9 +58,6 @@ ri:
 	$(MAKE) i
 
 # Workflows ###################################################################
-setup:
-	@$(NODE_MANAGE) && npm run db:setup
-
 dev:
 	@if [ -d "node_modules" ]; then \
 		echo "Starting development server..."; \

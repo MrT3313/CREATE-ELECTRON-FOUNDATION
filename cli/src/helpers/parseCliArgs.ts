@@ -26,6 +26,14 @@ import type {
 } from '../types/index.js'
 
 export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
+  /**
+   * boolean : any string is treated as true
+   *    --ci === true
+   *    --ci=random === true
+   *    --ci=false === false
+   *
+   * choices : will reject the CLI call if the value is not in the choices
+   */
   const args = await yargs(hideBin(argv))
     .option('ci', {
       type: 'boolean',
@@ -81,25 +89,34 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
       description: `IDE to use.`,
       choices: [...validIDEs, 'none'],
     })
-    .check((argv) => {
-      const dbIsSet = argv.database && argv.database !== 'none'
-      const ormIsSet = argv.orm && argv.orm !== 'none'
-
-      if (ormIsSet && !dbIsSet) {
-        throw new Error('Cannot use an ORM without a database.')
-      }
-
-      if (dbIsSet && !ormIsSet) {
-        argv.orm = 'drizzle'
-      }
-
-      return true
-    })
     .help()
     .alias('help', 'h')
     .version(false)
+    .exitProcess(false)
     .parse()
 
+  // Process database and ORM dependencies
+  if (args.database) {
+    if (args.database === 'none') {
+      args.orm = 'none'
+    } else {
+      if (!args.orm || args.orm === 'none') {
+        args.orm = 'drizzle'
+      }
+    }
+  }
+
+  if (args.orm) {
+    if (args.orm === 'none') {
+      args.database = 'none'
+    } else {
+      if (!args.database || args.database === 'none') {
+        args.database = 'sqlite'
+      }
+    }
+  }
+
+  // CONFIGURE: project name ##################################################
   const project_name_arg =
     (args.project_name as string) || (args._[0] as string)
   let project_name: string | undefined = project_name_arg
@@ -114,9 +131,10 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     }
   }
 
+  // CONFIGURE: result ########################################################
   const result: Yargs = {
-    ci: args.ci,
-    y: args.y,
+    ci: args.ci || false,
+    y: args.y || false,
     project_name: project_name,
     project_dir: project_name
       ? path.resolve(process.cwd(), project_name)
@@ -137,5 +155,6 @@ export const parseCliArgs = async (argv: string[]): Promise<Yargs> => {
     ide: args.ide === 'none' ? false : (args.ide as IDE | undefined),
   }
 
+  // logger.debug('result', JSON.stringify(result, null, 2))
   return result
 }

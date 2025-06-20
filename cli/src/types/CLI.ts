@@ -16,8 +16,8 @@ export type CLIResult<T> =
   | { success: false; error: CLIError }
 
 export interface Yargs {
-  ci: undefined | boolean
-  y: undefined | boolean
+  ci: false | boolean
+  y: false | boolean
   project_name: undefined | string
   project_dir: undefined | string
   router: undefined | RouterPackage
@@ -50,8 +50,8 @@ export const defaultCLIConfig: CLIDefaults = {
   packages: {
     router: 'tanstack-router',
     styles: 'tailwind',
-    database: 'sqlite',
-    orm: 'drizzle',
+    database: false,
+    orm: false,
   },
   install_packages: false,
 }
