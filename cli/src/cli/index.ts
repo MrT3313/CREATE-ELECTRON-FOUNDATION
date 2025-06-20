@@ -34,59 +34,46 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
   try {
     let config: CLIResults
 
-    if (cliArgs.y || cliArgs.ci) {
-      /**
-        If --yes | -y | ci is passed in the CLI, we can skip the prompts and use 
-        the passed cliArgs or fallback on the default values
+    // DEFINE: initial config with default values ###########################
+    const config_key: ConfigKey = `${cliArgs.router as RouterPackage}-${
+      (cliArgs.styles as StylePackage) || 'none'
+    }-${(cliArgs.database as DatabasePackage) || 'none'}-${
+      (cliArgs.orm as ORMPackage) || 'none'
+    }`
+    config = {
+      config_key,
+      ...defaultCLIConfig,
+      project_name: cliArgs.project_name || DEFAULT_APP_NAME,
+      project_dir:
+        cliArgs.project_dir || `./${cliArgs.project_name || DEFAULT_APP_NAME}`,
+    }
 
-        There is no user prompting in this flow
-      ######################################################################## */
+    // UPDATE: config with passed cliArgs #################################
+    if (cliArgs.router) {
+      config.packages.router = cliArgs.router as RouterPackage
+    }
 
-      try {
-        // DEFINE: initial config with default values ###########################
-        const config_key: ConfigKey = `${cliArgs.router as RouterPackage}-${
-          (cliArgs.styles as StylePackage) || 'none'
-        }-${(cliArgs.database as DatabasePackage) || 'none'}-${
-          (cliArgs.orm as ORMPackage) || 'none'
-        }`
-        config = {
-          config_key,
-          ...defaultCLIConfig,
-          project_name: cliArgs.project_name || DEFAULT_APP_NAME,
-          project_dir:
-            cliArgs.project_dir ||
-            `./${cliArgs.project_name || DEFAULT_APP_NAME}`,
-        }
+    if (cliArgs.styles !== undefined) {
+      config.packages.styles = cliArgs.styles as StylePackage
+    }
 
-        // UPDATE: config with passed cliArgs #################################
-        if (cliArgs.router) {
-          config.packages.router = cliArgs.router as RouterPackage
-        }
+    if (cliArgs.database !== undefined) {
+      config.packages.database = cliArgs.database as DatabasePackage
+    }
 
-        if (cliArgs.styles !== undefined) {
-          config.packages.styles = cliArgs.styles as StylePackage
-        }
+    if (cliArgs.orm !== undefined) {
+      config.packages.orm = cliArgs.orm as ORMPackage
+    }
 
-        if (cliArgs.database !== undefined) {
-          config.packages.database = cliArgs.database as DatabasePackage
-        }
+    if (cliArgs.initialize_git) {
+      config.initialize_git = cliArgs.initialize_git
+    }
 
-        if (cliArgs.orm !== undefined) {
-          config.packages.orm = cliArgs.orm as ORMPackage
-        }
+    if (cliArgs.ide !== undefined) {
+      config.ide = cliArgs.ide as IDE
+    }
 
-        if (cliArgs.initialize_git) {
-          config.initialize_git = cliArgs.initialize_git
-        }
-
-        if (cliArgs.ide !== undefined) {
-          config.ide = cliArgs.ide as IDE
-        }
-      } catch (err) {
-        logger.error('🚨🚨 Error running prompt cli --yes', err)
-        process.exit(1)
-      }
-    } else {
+    if (!cliArgs.y && !cliArgs.ci) {
       /**
         prompt the user for their desired configuration - skipping values entered
         directly through the CLI
@@ -135,18 +122,32 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         // DATABASE ###########################################################
         if (cliArgs.database === undefined) {
           prompts.initialize_database = () =>
-            p.confirm({
-              message: 'Should we initialize an SQLite database?',
-              initialValue: true,
+            p.select({
+              message: 'Which database would you like to use?',
+              options: [
+                { value: 'sqlite', label: 'SQLite' },
+                { value: 'none', label: 'Skip' },
+              ],
+              initialValue: 'sqlite',
             })
         }
 
         // STYLES #############################################################
         if (cliArgs.styles === undefined) {
           prompts.styles = () =>
-            p.confirm({
-              message: 'Will you be using Tailwind CSS for styling?',
-              initialValue: true,
+            p.select({
+              message: 'Which styles would you like to use?',
+              options: [
+                {
+                  value: 'tailwind',
+                  label: 'Tailwind CSS',
+                },
+                {
+                  value: 'css',
+                  label: 'Vanilla CSS',
+                },
+              ],
+              initialValue: 'tailwind',
             })
         }
 
@@ -203,49 +204,42 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }
 
         // DEFINE: config with user prompts ###################################
-        const project_name = group.project_name || cliArgs.project_name
+        /**
+         * The 'p.select' prompt returns a generic 'string'. A type assertion (as) is
+         * needed to ensure TypeScript recognizes it.
+         */
+        if (group.project_name) config.project_name = group.project_name
 
-        // The 'p.select' prompt returns a generic 'string'. A type assertion is
-        // needed to ensure TypeScript recognizes it as a 'RouterPackage'.
-        const router = (group.router || cliArgs.router) as RouterPackage
+        if (group.router) config.packages.router = group.router as RouterPackage
 
-        const styles = group.styles ?? cliArgs.styles
+        if (group.styles)
+          config.packages.styles =
+            // @ts-expect-error - 'css' is a valid StylePackage
+            group.styles === 'css' ? false : (group.styles as StylePackage)
 
-        const database = group.database ?? cliArgs.database
+        if (group.database)
+          config.packages.database = group.database as DatabasePackage
 
-        const orm = group.orm ?? cliArgs.orm
+        if (group.orm) config.packages.orm = group.orm as ORMPackage
 
-        const initialize_git = group.initialize_git ?? cliArgs.initialize_git
+        if (group.initialize_git !== undefined)
+          config.initialize_git = group.initialize_git
 
-        const install_packages =
-          group.install_packages ?? cliArgs.install_packages
+        if (group.install_packages !== undefined)
+          config.install_packages = group.install_packages
 
-        // The 'p.select' prompt returns a generic 'string'. A type assertion is
-        // needed to ensure TypeScript recognizes it as an 'IDE'.
-        const ide = (group.ide || cliArgs.ide) as IDE
+        if (group.ide) config.ide = group.ide as IDE
 
-        const config_key: ConfigKey = `${router as RouterPackage}-${
-          (styles as StylePackage) || 'none'
-        }-${(database as DatabasePackage) || 'none'}-${
-          (orm as ORMPackage) || 'none'
+        const config_key: ConfigKey = `${config.packages.router as RouterPackage}-${
+          (config.packages.styles as StylePackage) || 'none'
+        }-${(config.packages.database as DatabasePackage) || 'none'}-${
+          (config.packages.orm as ORMPackage) || 'none'
         }`
+        config.config_key = config_key
 
-        config = {
-          config_key,
-          project_name: project_name || DEFAULT_APP_NAME,
-          project_dir:
-            cliArgs.project_dir || `./${project_name || DEFAULT_APP_NAME}`,
-          pkg_manager: 'npm',
-          ide,
-          initialize_git: initialize_git ?? false,
-          packages: {
-            router,
-            styles: (styles as StylePackage) || false,
-            database: (database as DatabasePackage) || false,
-            orm: (orm as ORMPackage) || false,
-          },
-          install_packages: install_packages ?? false,
-        }
+        logger.info(`
+          Run User Prompt CLI config:${JSON.stringify(config, null, 2)}
+        `)
       } catch (err) {
         logger.error('🚨🚨 Error running prompt cli', err)
         process.exit(1)

@@ -1,57 +1,38 @@
 import path from 'path'
 import fs from 'fs'
-import * as p from '@clack/prompts'
 
 // TERMINAL
 import ora from 'ora'
 import chalk from 'chalk'
 
 // UTILS
-import { logger } from '../utils/logger.js'
 import { PKG_ROOT } from '../consts.js'
-import { FileSystemError } from '../utils/errors.js'
 
 // TYPES
 import type { CLIResults } from '../types/CLI.js'
+
+// FUNCTIONS
+import { validateElectronUserDataPath } from '../utils/validateElectronUserDataPath.js'
+import { validateProjectDirectory } from '../utils/validateProjectDirectory.js'
 
 export const scaffoldProject = async (config: CLIResults): Promise<void> => {
   /**
    * Copies configuration agnostic Electron base template files into the
    * users new project directory
    * ####################################################################### */
-  const spinner = ora(
-    `${chalk.blue(config.project_name)} ${chalk.bold('Scaffolding')} in: ${config.project_dir}...`
-  ).start()
+  const spinnerText = `${chalk.blue(config.project_name)} ${chalk.bold('Scaffolding')} in: ${config.project_dir}...`
+  const spinner = ora(spinnerText).start()
 
   const srcDir = path.join(PKG_ROOT, 'template/base')
+  const timestamp = new Date().getTime().toString()
 
   // CHECK: if the project directory already exists
-  if (fs.existsSync(config.project_dir)) {
-    const shouldOverwrite = await p.confirm({
-      message: `${chalk.bold.red('Directory already exists: ')}${chalk.red('Backup this directory and continue? > ')}${chalk.red(config.project_dir)}`,
-      initialValue: false,
-    })
+  await validateProjectDirectory(config, timestamp, spinner)
+  spinner.text = spinnerText
 
-    if (!shouldOverwrite) {
-      throw new FileSystemError(
-        `Directory ${config.project_dir} already exists and user chose not to overwrite`,
-        config.project_dir
-      )
-    }
-
-    // Backup existing directory
-    const backupPath = `${config.project_dir}.backup.${Date.now()}`
-    try {
-      fs.renameSync(config.project_dir, backupPath)
-      logger.info(`📦 Existing directory backed up to: ${backupPath}`)
-    } catch (error) {
-      throw new FileSystemError(
-        `Failed to backup existing directory: ${config.project_dir}`,
-        config.project_dir,
-        error as Error
-      )
-    }
-  }
+  // CHECK: Electron userData directory conflicts
+  await validateElectronUserDataPath(config, timestamp, spinner)
+  spinner.text = spinnerText
 
   // COPY: base template files into the users new project directory
   fs.cpSync(srcDir, config.project_dir, { recursive: true })
