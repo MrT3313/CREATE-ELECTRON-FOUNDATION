@@ -1,7 +1,7 @@
 # Create Electron Foundation
 
 > [!IMPORTANT]
-> This project is best managed through its [makefile](./makefile), which automates many of the complex steps described below.
+> This project is best managed through its [makefile](./makefile), which automates many of the complex steps described below
 
 This template provides a robust foundation for Electron applications that require native Node.js modules, featuring `better-sqlite3` for database operations and `Drizzle ORM` for type-safe queries.
 
