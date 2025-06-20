@@ -23,7 +23,7 @@ export const installPackages = (options: InstallerOptions) => {
       ).start()
       pkgOpts.installer(options)
       spinner.succeed(
-        `${chalk.blue(options.project_name)} ${chalk.green(`setup boilerplate for`)} ${chalk.bold.green(name)}`
+        `${chalk.blue(options.project_name)} ${chalk.green(`setup boilerplate`)} for ${chalk.bold.green(name)}`
       )
     }
   }

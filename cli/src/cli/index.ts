@@ -84,7 +84,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         > = {}
 
         // PROJECT NAME #########################################################
-        if (!cliArgs.project_name) {
+        if (!config.project_name) {
           prompts.project_name = () =>
             p.text({
               message: 'What is the name of your project?',
@@ -205,27 +205,43 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
          * The 'p.select' prompt returns a generic 'string'. A type assertion (as) is
          * needed to ensure TypeScript recognizes it.
          */
+        logger.debug('group.project_name', group.project_name)
         if (group.project_name) config.project_name = group.project_name
 
+        logger.debug('group.router', group.router)
         if (group.router) config.packages.router = group.router as RouterPackage
 
+        logger.debug('group.styles', group.styles)
         if (group.styles)
           config.packages.styles =
             // @ts-expect-error - 'css' is a valid StylePackage
             group.styles === 'css' ? false : (group.styles as StylePackage)
 
-        if (group.database)
-          config.packages.database = group.database as DatabasePackage
+        logger.debug('group.database', group.database)
+        if (group.database !== undefined)
+          config.packages.database =
+            // @ts-expect-error - 'none' is a valid DatabasePackage
+            group.database === 'none'
+              ? false
+              : (group.database as DatabasePackage)
 
-        if (group.orm) config.packages.orm = group.orm as ORMPackage
+        logger.debug('group.orm', group.orm)
+        if (group.orm !== undefined)
+          config.packages.orm = group.orm as ORMPackage
 
+        logger.debug('group.initialize_git', group.initialize_git)
         if (group.initialize_git !== undefined)
           config.initialize_git = group.initialize_git
 
+        logger.debug('group.install_packages', group.install_packages)
         if (group.install_packages !== undefined)
           config.install_packages = group.install_packages
 
-        if (group.ide) config.ide = group.ide as IDE
+        logger.debug('group.ide', group.ide)
+        if (group.ide !== undefined)
+          config.ide =
+            // @ts-expect-error - 'none' is a valid IDE
+            group.ide === 'none' ? false : (group.ide as IDE)
 
         const config_key: ConfigKey = `${config.packages.router as RouterPackage}-${
           (config.packages.styles as StylePackage) || 'none'
@@ -234,9 +250,9 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
         }`
         config.config_key = config_key
 
-        // logger.info(`
-        //   Run User Prompt CLI config:${JSON.stringify(config, null, 2)}
-        // `)
+        logger.info(`
+          Run User Prompt CLI config:${JSON.stringify(config, null, 2)}
+        `)
       } catch (err) {
         logger.error('🚨🚨 Error running prompt cli', err)
         process.exit(1)

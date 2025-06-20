@@ -50,8 +50,8 @@ export const defaultCLIConfig: CLIDefaults = {
   packages: {
     router: 'tanstack-router',
     styles: 'tailwind',
-    database: 'sqlite',
-    orm: 'drizzle',
+    database: false,
+    orm: false,
   },
   install_packages: false,
 }
