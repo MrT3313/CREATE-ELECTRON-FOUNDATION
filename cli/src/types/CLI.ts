@@ -16,8 +16,8 @@ export type CLIResult<T> =
   | { success: false; error: CLIError }
 
 export interface Yargs {
-  ci: undefined | boolean
-  y: undefined | boolean
+  ci: false | boolean
+  y: false | boolean
   project_name: undefined | string
   project_dir: undefined | string
   router: undefined | RouterPackage
