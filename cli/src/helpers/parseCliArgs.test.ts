@@ -1,3 +1,35 @@
+/**
+ * Test Case Summary:
+ *
+ * Project Name Parsing:
+ * - Parse valid project name from first argument
+ * - Parse valid project name from --project_name flag
+ * - Reject invalid project name with special characters
+ * - Reject project name starting with number
+ * - Reject project name that is a reserved keyword
+ *
+ * Option Validation:
+ * - Valid router options (react-router, tanstack-router)
+ * - Valid style options (tailwind) + none
+ * - Valid database options (sqlite) + none
+ * - Valid ORM options (drizzle) + none
+ * - Valid package manager options (npm, yarn, pnpm)
+ * - Valid IDE options (vscode, cursor) + none
+ * - Boolean flags (initialize_git, install_packages)
+ *
+ * Dependency Logic:
+ * - When database is provided without orm, default orm to drizzle
+ * - When orm is provided without database, default database to sqlite
+ * - When database=none, orm should be false
+ * - When orm=none, database should be false
+ * - Special case: sqlite + none should return sqlite + drizzle (orm gets forced to drizzle)
+ *
+ * Matrix Combinations:
+ * - All routers with all styles
+ * - All valid database/ORM combinations
+ * - Mixed valid and invalid arguments
+ */
+
 import { describe, it, expect, vi } from 'vitest'
 import { parseCliArgs } from './parseCliArgs.js'
 import {

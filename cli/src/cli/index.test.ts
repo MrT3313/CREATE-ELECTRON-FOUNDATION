@@ -1,3 +1,29 @@
+/**
+ * Test Case Summary:
+ *
+ * Matrix-based Testing Approach:
+ * - Tests all combinations of router, styles, database, orm options
+ * - Tests git initialization and package installation options
+ * - Tests IDE selection options
+ *
+ * Primary Matrix Tests:
+ * - All router options with all style options, database options, and orm options
+ * - Skip invalid combinations (database=false requires orm=false)
+ * - Tests special case: orm without database should set database to sqlite
+ *
+ * Secondary Matrix Tests:
+ * - Test initialization options (git, package installation)
+ * - Test IDE options (vscode, cursor, none)
+ *
+ * Prompt Behavior:
+ * - Test prompting when ci and y flags are false
+ *
+ * Edge Cases:
+ * - orm=drizzle without database should set database=sqlite
+ * - database=false with orm=undefined should set orm=false
+ * - All configuration options undefined should use defaults
+ */
+
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import * as p from '@clack/prompts'
 import type { Yargs } from '../types/CLI.js'
