@@ -72,6 +72,11 @@ dev:
 	fi
 
 # LINTING & FORMATTING ########################################################
+lint:
+	@$(NODE_MANAGE) && npm run lint
+format:
+	@$(NODE_MANAGE) && npm run format
+
 laf:
-	npm run lint
-	npm run format
+	$(MAKE) lint
+	$(MAKE) format
