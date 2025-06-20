@@ -58,10 +58,46 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  update-examples:
+    name: Update Examples
+    runs-on: ubuntu-latest
+    needs: [wait-for-core-ci]
+    if: github.event_name == 'workflow_run' && needs.wait-for-core-ci.outputs.conclusion == 'success'
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Clean Examples Directory
+        run: rm -rf DOCS/examples && mkdir -p DOCS/examples
+      - name: Download Example Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: DOCS/examples
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Commit Updated Examples
+        run: |
+          git add -f DOCS/examples
+          if git diff-index --quiet HEAD; then
+            echo "No changes to commit."
+          else
+            echo "Changes detected, committing now..."
+            git commit -m "chore(examples): update /DOCS/examples from e2e tests" -m "[skip ci]"
+            git push
+          fi
+
   publish:
     name: Publish to NPM
     runs-on: ubuntu-latest
-    needs: [update-examples]
+    needs: [wait-for-core-ci, update-examples]
     if: always()
     permissions:
       contents: write
@@ -71,6 +107,9 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
+      - name: Pull changes from example update
+        if: needs.update-examples.conclusion == 'success'
+        run: git pull --rebase
       - name: Read .nvmrc
         id: nvm
         run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_OUTPUT
@@ -90,7 +129,6 @@ jobs:
       - name: Bump Version and Publish (Automated Alpha)
         if: github.event_name == 'workflow_run' && needs.update-examples.conclusion == 'success'
         run: |
-          git pull --rebase
           npm version prepatch --preid=alpha --git-tag-version=false
           VERSION=$(node -p "require('./package.json').version")
           git commit -am "chore(release): bump version to $VERSION [alpha] [skip ci]"
@@ -104,7 +142,6 @@ jobs:
           BUMP_TYPE=${{ github.event.inputs.version_bump }}
           NPM_TAG=${{ github.event.inputs.tag }}
           VERSION_ARG="$BUMP_TYPE"
-
           if [ "$BUMP_TYPE" = "custom" ]; then
             VERSION_ARG="${{ github.event.inputs.specific_version }}"
             if [ -z "$VERSION_ARG" ]; then
@@ -112,9 +149,7 @@ jobs:
               exit 1
             fi
           fi
-
           COMMIT_MESSAGE="chore(release): bump version to %s [$NPM_TAG]"
-
           if [ "$NPM_TAG" = "beta" ]; then
             if [ "$BUMP_TYPE" != "custom" ]; then
               npm version "pre$BUMP_TYPE" --preid=beta -m "$COMMIT_MESSAGE"
@@ -124,65 +159,7 @@ jobs:
           else
             npm version "$VERSION_ARG" -m "$COMMIT_MESSAGE"
           fi
-
           git push --follow-tags
           npm publish --tag "$NPM_TAG"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_REGISTRY_ACCESS_TOKEN }}
-
-  update-examples:
-    name: Update Examples
-    runs-on: ubuntu-latest
-    needs: [wait-for-core-ci]
-    if: github.event_name == 'workflow_run' && needs.wait-for-core-ci.outputs.conclusion == 'success'
-    permissions:
-      contents: write # Required to push changes to the repository.
-      actions: read # Required to read artifacts from other workflows.
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Show initial state of examples
-        run: |
-          echo "Initial contents of DOCS/examples:"
-          ls -R DOCS/examples || echo "DOCS/examples does not exist, which is normal on a clean checkout."
-      - name: Clean Examples Directory
-        run: |
-          rm -rf DOCS/examples && mkdir -p DOCS/examples
-          echo "Contents of DOCS/examples after cleaning:"
-          ls -R DOCS/examples
-      - name: Download Example Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: DOCS/examples
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Verify Downloaded Artifacts
-        run: |
-          echo "Verifying downloaded artifact contents:"
-          ls -RF DOCS/examples
-          if [ -z "$(ls -A DOCS/examples)" ]; then
-            echo "::error::Downloaded examples directory is empty. Artifacts may not have been found or downloaded correctly. Halting workflow."
-            exit 1
-          fi
-          echo "✅ Downloaded examples are present. Proceeding."
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Check Git Status Before Commit
-        run: git status
-      - name: Commit Updated Examples
-        run: |
-          git add -f DOCS/examples
-          if git diff-index --quiet HEAD; then
-            echo "No changes to commit."
-          else
-            echo "Changes detected, committing now..."
-            git commit -m "chore(examples): update /DOCS/examples from e2e tests" -m "[skip ci]"
-            git push
-          fi

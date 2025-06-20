@@ -1,46 +1,62 @@
 # GitHub Actions Workflow
 
-This diagram illustrates the CI/CD pipeline for this project.
+This document illustrates the three distinct CI/CD pipelines for this project.
 
-## On Pull Request to `main`
+---
 
-When a pull request is opened targeting the `main` branch, two workflows are triggered in parallel. Both must pass for the PR to be considered safe to merge.
+## 1. On Pull Request
+
+This flow triggers when a pull request is opened targeting the `main` branch. Its purpose is to run checks and tests against the proposed changes. Both jobs must pass for the PR to be considered safe to merge.
 
 ```mermaid
 graph TD;
-    subgraph "On Pull Request to 'main'";
-        direction LR
-        A[PR Event] --> B["Core CI (ci.yml)"];
-        A --> C["E2E Tests (e2e.yml)"];
-    end
+    A[PR Event] --> B[Core CI];
+    A --> C[E2E Tests];
 ```
 
-## On Push to `main`
+---
 
-When a commit is pushed to `main` (e.g., after a PR is merged), a sequence is initiated.
+## 2. On Push to `main` (Automated Alpha Release)
 
-1.  `Core CI` and `E2E Tests` run in parallel.
-2.  A gate (`reusable-wait-for-core-ci.yml`) ensures both must complete successfully before proceeding.
-3.  The `Publish Package` workflow (`publish.yml`) is then triggered.
-4.  Inside `publish.yml`, the `update-examples` job runs first, committing any new examples to the repository.
-5.  If that succeeds, the `publish` job runs, bumping the version and publishing the package to NPM. This sequential order prevents race conditions.
+This flow triggers automatically when a pull request is merged into the `main` branch. Its purpose is to update the examples in the repository and publish a new alpha version of the package to NPM.
+
+**Sequence of Events:**
+
+1.  A push to `main` triggers `Core CI` and `E2E Tests` in parallel.
+2.  The completion of `E2E Tests` triggers the `publish.yml` workflow.
+3.  A "Gate" job (`wait-for-core-ci`) pauses the workflow until `Core CI` also succeeds.
+4.  The `update-examples` job runs, committing new examples to the repository.
+5.  The `publish` job runs last, publishing the new alpha version to NPM.
 
 ```mermaid
-graph TD;
-    subgraph "Logical Flow on Push to 'main'";
-        A[Push/Merge Event] --> B["Core CI"];
-        A --> C["E2E Tests"];
+graph TD
+    PushToMain["Push to main"] --> CoreCI["Core CI"]
+    PushToMain --> E2ETests["E2E Tests"]
+    E2ETests -- triggers --> Gate["publish.yml: Gate"]
+    CoreCI -- "is awaited by" --> Gate
+    Gate --> UpdateExamples["publish.yml: update-examples"]
+    UpdateExamples --> PublishAlpha["publish.yml: publish (alpha)"]
+```
 
-        subgraph "Gate";
-            direction LR
-            B --> G{Both<br/>Successful?};
-            C --> G;
-        end
+---
 
-        subgraph "publish.yml";
-            E["update-examples job"] --> D["publish job"];
-        end
+## 3. On Manual Trigger (Manual Release)
 
-        G --> E;
-    end
+This flow is triggered manually from the GitHub Actions UI to publish a new `beta` or `latest` version of the package.
+
+**Sequence of Events:**
+
+1.  A user manually triggers the `publish.yml` workflow.
+2.  The `wait-for-core-ci` and `update-examples` jobs are **skipped**.
+3.  The `publish` job runs because its `if: always()` condition allows it to proceed.
+4.  Inside the `publish` job, only the "Manual Release" step executes.
+
+```mermaid
+graph TD
+    ManualTrigger["Manual Trigger"] --> PublishYmlStarts["publish.yml starts"]
+    PublishYmlStarts --> Gate["wait-for-core-ci"]:::skipped
+    Gate --> UpdateExamples["update-examples"]:::skipped
+    UpdateExamples --> PublishManual["publish (manual)"]
+
+    classDef skipped style fill:#666,stroke:#333,color:#fff
 ```
