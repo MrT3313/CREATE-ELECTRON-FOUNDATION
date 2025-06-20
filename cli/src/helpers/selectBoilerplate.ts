@@ -81,7 +81,6 @@ const handleViteConfig = (config: Readonly<CLIResults>) => {
   viteConfig += '.ts'
 
   const viteConfigPath = path.join(srcDir, 'configs', 'vite', viteConfig)
-  logger.info(`viteConfigPath: ${viteConfigPath}`)
 
   if (fs.existsSync(viteConfigPath)) {
     safeCopy(viteConfigPath, path.join(config.project_dir, 'vite.config.ts'))

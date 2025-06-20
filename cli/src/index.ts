@@ -207,7 +207,7 @@ const main = async () => {
   logger.success(
     `${chalk.blue(config.project_name)} ${chalk.bold.green(
       'Project Scaffolded Successfully'
-    )} with ${chalk.blue('create-electron-foundation!')}`
+    )} ${chalk.white('with')} ${chalk.blue('create-electron-foundation!')}`
   )
 }
 
