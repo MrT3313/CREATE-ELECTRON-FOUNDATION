@@ -53,8 +53,10 @@ on:
   push:
     branches:
       - main
-  # # Trigger on any pull request, regardless of the target branch.
-  # pull_request:
+  # Trigger on any pull request, regardless of the target branch.
+  pull_request:
+    branches:
+      - main
 
 # Defines a collection of jobs that run as part of this workflow.
 jobs:

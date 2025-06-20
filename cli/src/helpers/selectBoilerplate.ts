@@ -25,7 +25,6 @@ const handleRouter = (config: Readonly<CLIResults>) => {
     const reactRouterSrc = isTailwind
       ? path.join(routerSrc, 'reactRouter', 'with-tailwind')
       : path.join(routerSrc, 'reactRouter', 'base')
-    logger.info(`reactRouterSrc PATH: ${reactRouterSrc}`)
 
     safeCopy(
       path.join(reactRouterSrc, 'routes'),
@@ -43,7 +42,6 @@ const handleRouter = (config: Readonly<CLIResults>) => {
     const tanstackSrc = isTailwind
       ? path.join(routerSrc, 'tanstackRouter', 'with-tailwind')
       : path.join(routerSrc, 'tanstackRouter', 'base')
-    logger.info(`tanstackSrc PATH: ${tanstackSrc}`)
 
     safeCopy(path.join(tanstackSrc, 'routes'), path.join(routerDest, 'routes'))
   }

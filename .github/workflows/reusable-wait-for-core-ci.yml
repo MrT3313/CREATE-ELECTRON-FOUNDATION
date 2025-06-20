@@ -1,0 +1,50 @@
+name: Reusable - Wait for Core CI
+
+on:
+  workflow_call:
+    inputs:
+      head_sha:
+        description: 'The SHA of the commit to check for.'
+        required: true
+        type: string
+    outputs:
+      conclusion:
+        description: "The conclusion of the 'Core CI' workflow."
+        value: ${{ jobs.wait-for-core-ci.outputs.conclusion }}
+    secrets:
+      GH_TOKEN:
+        required: true
+
+jobs:
+  wait-for-core-ci:
+    name: Wait for Core CI
+    runs-on: ubuntu-latest
+    outputs:
+      conclusion: ${{ steps.check.outputs.conclusion }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 'Wait for "Core CI" workflow to complete'
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+        run: |
+          echo "Waiting for 'Core CI' workflow to complete for commit $HEAD_SHA..."
+          for i in {1..30}; do
+            conclusion=$(gh run list --workflow "Core CI" --commit "$HEAD_SHA" --branch main --status completed --limit 1 --json conclusion --jq '.[0].conclusion // "pending"')
+            if [[ "$conclusion" == "success" ]]; then
+              echo "✅ 'Core CI' workflow completed successfully."
+              echo "conclusion=success" >> $GITHUB_OUTPUT
+              exit 0
+            elif [[ "$conclusion" != "pending" ]]; then
+              echo "❌ 'Core CI' workflow did not succeed. Conclusion: $conclusion"
+              echo "conclusion=$conclusion" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            echo "($i/30) 'Core CI' workflow is pending or in progress. Waiting 10 seconds..."
+            sleep 10
+          done
+          echo "❌ Timed out waiting for 'Core CI' workflow to complete."
+          echo "conclusion=timed_out" >> $GITHUB_OUTPUT

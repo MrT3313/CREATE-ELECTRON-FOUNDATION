@@ -3,6 +3,8 @@ import { resources } from '../schema'
 import { response } from '../../utils/response'
 import { eq } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
+import type { NewDBResource } from '../../types'
+
 export class resourceServices {
   static async getDBResourceList() {
     try {
@@ -34,8 +36,7 @@ export class resourceServices {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static async insertDBResource(data: any) {
+  static async insertDBResource(data: NewDBResource) {
     try {
       const insertData = {
         ...data,

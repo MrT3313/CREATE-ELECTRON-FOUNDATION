@@ -12,7 +12,3 @@ export const resources = sqliteTable('resources', {
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
 })
-
-// TODO: incorporate this in higher types instead of building h-coded mimic interface
-// export type Resource = typeof resources.$inferSelect
-// export type NewResource = typeof resources.$inferInsert

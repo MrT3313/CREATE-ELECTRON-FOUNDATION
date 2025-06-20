@@ -288,45 +288,45 @@ jobs:
             exit 1
           fi
 
-      #########################################################
-      # Step 6: Update the examples directory with the generated project (only when merged to main)
-      #########################################################
-      - name: Update Examples Directory
+      - name: Verify Contents Before Upload
+        run: |
+          ARTIFACT_DIR="temp-scaffolded-project/${{ env.PROJECT_NAME }}"
+          echo "Verifying contents of $ARTIFACT_DIR before upload:"
+          ls -R "$ARTIFACT_DIR"
+          if [ -z "$(ls -A "$ARTIFACT_DIR")" ]; then
+            echo "::error::Artifact directory is empty. Halting workflow."
+            exit 1
+          fi
+          echo "✅ Artifact directory is not empty. Proceeding with upload."
+
+      # ------------------------------------------------------------------------------------------
+      # UPLOAD ARTIFACT
+      # ------------------------------------------------------------------------------------------
+      # On pushes to main, upload the generated example directory as an artifact.
+      # This allows a separate job to collect all examples and commit them at once,
+      # avoiding race conditions from multiple jobs pushing to the same branch.
+      - name: Upload Example Artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.config.example_dir }}
+          path: temp-scaffolded-project/${{ env.PROJECT_NAME }}
+
+      - name: Validate Artifact Upload
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          set -x
+          echo "Validating that artifact '${{ matrix.config.example_dir }}' was uploaded successfully..."
+          gh api \
+            /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts \
+            | jq -e '.artifacts[] | select(.name == "${{ matrix.config.example_dir }}")'
 
-          # Reconstruct the project name (same logic as scaffolding step)
-          project_name="test-proj-${{ matrix.config.router }}"
-          if [[ "${{ matrix.config.styles }}" != "none" ]]; then
-            project_name+="-${{ matrix.config.styles }}"
+          if [ $? -ne 0 ]; then
+            echo "::error::Validation failed. Artifact '${{ matrix.config.example_dir }}' not found via API after upload."
+            exit 1
           fi
-          if [[ "${{ matrix.config.db }}" != "none" ]]; then
-            project_name+="-db"
-          fi
-          if [[ "${{ matrix.config.orm }}" != "none" ]]; then
-            project_name+="-orm"
-          fi
-
-          EXAMPLE_DIR="DOCS/examples/${{ matrix.config.example_dir }}"
-          GENERATED_PROJECT="temp-scaffolded-project/$project_name"
-
-          echo "Updating $EXAMPLE_DIR with generated project from $GENERATED_PROJECT"
-
-          # Remove existing example directory if it exists
-          if [ -d "$EXAMPLE_DIR" ]; then
-            rm -rf "$EXAMPLE_DIR"
-          fi
-
-          # Create the example directory structure
-          mkdir -p "$(dirname "$EXAMPLE_DIR")"
-
-          # Copy the generated project to the examples directory
-          cp -r "$GENERATED_PROJECT" "$EXAMPLE_DIR"
-
-          # List the contents for verification
-          echo "Contents of updated example:"
-          ls -la "$EXAMPLE_DIR"
+          echo "✅ Artifact '${{ matrix.config.example_dir }}' successfully validated via API."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       #########################################################
       # Step 7: Validate the scaffolded project.
@@ -335,23 +335,11 @@ jobs:
         run: |
           set -x
 
-          # Reconstruct the project name (same logic as scaffolding step)
-          project_name="test-proj-${{ matrix.config.router }}"
-          if [[ "${{ matrix.config.styles }}" != "none" ]]; then
-            project_name+="-${{ matrix.config.styles }}"
-          fi
-          if [[ "${{ matrix.config.db }}" != "none" ]]; then
-            project_name+="-db"
-          fi
-          if [[ "${{ matrix.config.orm }}" != "none" ]]; then
-            project_name+="-orm"
-          fi
-
-          GENERATED_PROJECT="temp-scaffolded-project/$project_name"
+          GENERATED_PROJECT="temp-scaffolded-project/${{ env.PROJECT_NAME }}"
 
           echo "Verifying project structure for ${{ matrix.config.name }}..."
           echo "Generated project path: $GENERATED_PROJECT"
-          echo "Project name: $project_name"
+          echo "Project name: ${{ env.PROJECT_NAME }}"
 
           # Debug: List what's actually in the temp directory
           echo "Contents of temp-scaffolded-project:"
@@ -413,47 +401,3 @@ jobs:
           fi
 
           echo "✅ Project structure validation passed for ${{ matrix.config.name }}"
-
-      #########################################################
-      # Step 8: Commit and push changes to examples (only when merged to main)
-      #########################################################
-      - name: Configure Git
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Commit Updated Examples
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          set -x
-
-          # Reconstruct the project name (same logic as scaffolding step)
-          project_name="test-proj-${{ matrix.config.router }}"
-          if [[ "${{ matrix.config.styles }}" != "none" ]]; then
-            project_name+="-${{ matrix.config.styles }}"
-          fi
-          if [[ "${{ matrix.config.db }}" != "none" ]]; then
-            project_name+="-db"
-          fi
-          if [[ "${{ matrix.config.orm }}" != "none" ]]; then
-            project_name+="-orm"
-          fi
-
-          EXAMPLE_DIR="DOCS/examples/${{ matrix.config.example_dir }}"
-
-          # Check if there are changes to commit
-          if git diff --quiet HEAD -- "$EXAMPLE_DIR"; then
-            echo "No changes to commit for $EXAMPLE_DIR"
-          else
-            echo "Committing changes to $EXAMPLE_DIR"
-            git add "$EXAMPLE_DIR"
-            git commit -m "chore(examples): update ${{ matrix.config.example_dir }} from e2e test" \
-                       -m "Generated from CLI with configuration:" \
-                       -m "- Router: ${{ matrix.config.router }}" \
-                       -m "- Styles: ${{ matrix.config.styles }}" \
-                       -m "- Database: ${{ matrix.config.db }}" \
-                       -m "- ORM: ${{ matrix.config.orm }}" \
-                       -m "[skip ci]"
-            git push
-          fi

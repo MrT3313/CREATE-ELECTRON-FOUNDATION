@@ -49,7 +49,7 @@ NODE_MANAGE = \
 # ^^ ?? 👉 https://www.youtube.com/watch?v=xvFZjo5PgG0
 kac: ri gen-tsr-routes setup dev
 
-# Package Management ###########################################################
+# Package Management ##########################################################
 i:
 	@$(NODE_MANAGE) && npm install
 

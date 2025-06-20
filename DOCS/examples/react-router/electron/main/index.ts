@@ -15,6 +15,9 @@ import dotenv from 'dotenv'
 import log from './logger/index'
 const mainLogger = log.scope('main/index.ts')
 
+// DATABASE
+import { dbInit } from './db/dbInit'
+
 // REGISTER: controllers ######################################################
 // this is where the .handle() function pairings for the render process
 // .invoke() function calls
@@ -24,7 +27,6 @@ import './api/controller'
 const isProd = app?.isPackaged
 const envPath = isProd ? `.env.production` : `.env.development`
 
-// CONFIGURE: environment variables ###########################################
 try {
   if (fs.existsSync(envPath)) {
     dotenv.config({ path: envPath, override: true })
@@ -139,6 +141,9 @@ async function createWindow() {
 app.whenReady().then(async () => {
   mainLogger.info('🎉🎉 App is ready')
   try {
+    // INITIALIZE: database ###################################################
+    await dbInit()
+
     // Creates the main application window after the database is initialized.
     await createWindow()
   } catch (error) {
