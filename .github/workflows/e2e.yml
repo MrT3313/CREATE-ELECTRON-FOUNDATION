@@ -288,6 +288,17 @@ jobs:
             exit 1
           fi
 
+      - name: Verify Contents Before Upload
+        run: |
+          ARTIFACT_DIR="temp-scaffolded-project/${{ env.PROJECT_NAME }}"
+          echo "Verifying contents of $ARTIFACT_DIR before upload:"
+          ls -R "$ARTIFACT_DIR"
+          if [ -z "$(ls -A "$ARTIFACT_DIR")" ]; then
+            echo "::error::Artifact directory is empty. Halting workflow."
+            exit 1
+          fi
+          echo "✅ Artifact directory is not empty. Proceeding with upload."
+
       # ------------------------------------------------------------------------------------------
       # UPLOAD ARTIFACT
       # ------------------------------------------------------------------------------------------
@@ -308,23 +319,11 @@ jobs:
         run: |
           set -x
 
-          # Reconstruct the project name (same logic as scaffolding step)
-          project_name="test-proj-${{ matrix.config.router }}"
-          if [[ "${{ matrix.config.styles }}" != "none" ]]; then
-            project_name+="-${{ matrix.config.styles }}"
-          fi
-          if [[ "${{ matrix.config.db }}" != "none" ]]; then
-            project_name+="-db"
-          fi
-          if [[ "${{ matrix.config.orm }}" != "none" ]]; then
-            project_name+="-orm"
-          fi
-
-          GENERATED_PROJECT="temp-scaffolded-project/$project_name"
+          GENERATED_PROJECT="temp-scaffolded-project/${{ env.PROJECT_NAME }}"
 
           echo "Verifying project structure for ${{ matrix.config.name }}..."
           echo "Generated project path: $GENERATED_PROJECT"
-          echo "Project name: $project_name"
+          echo "Project name: ${{ env.PROJECT_NAME }}"
 
           # Debug: List what's actually in the temp directory
           echo "Contents of temp-scaffolded-project:"

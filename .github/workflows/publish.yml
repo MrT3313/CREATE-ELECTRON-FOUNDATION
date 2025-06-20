@@ -147,7 +147,7 @@ jobs:
       - name: Show initial state of examples
         run: |
           echo "Initial contents of DOCS/examples:"
-          ls -R DOCS/examples
+          ls -R DOCS/examples || echo "DOCS/examples does not exist, which is normal on a clean checkout."
 
       # 2. Clean the examples directory before downloading new artifacts.
       - name: Clean Examples Directory
@@ -164,10 +164,15 @@ jobs:
           # Explicitly specify the triggering workflow run ID to get its artifacts.
           run-id: ${{ github.event.workflow_run.id }}
 
-      - name: Display Downloaded Examples
+      - name: Verify Downloaded Artifacts
         run: |
-          echo "Downloaded artifact contents:"
+          echo "Verifying downloaded artifact contents:"
           ls -RF DOCS/examples
+          if [ -z "$(ls -A DOCS/examples)" ]; then
+            echo "::error::Downloaded examples directory is empty. Artifacts may not have been found or downloaded correctly. Halting workflow."
+            exit 1
+          fi
+          echo "✅ Downloaded examples are present. Proceeding."
 
       # 4. Configure Git with credentials for the github-actions bot.
       - name: Configure Git
