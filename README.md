@@ -19,34 +19,32 @@
 
 > [!WARNING]
 >
-> This project is in its early stages.  
-> While it's ready for you to try out, expect breaking changes and incomplete features.  
-> The best way to get these features implemented or improved is to participate 🙂
+> This project was started as a learning exercise and you should use it accordingly.
+>
+> The best way to implement new features / improve existing functionality is to participate 🙂
+
+> [!IMPORTANT]
+>
+> This project was developed and tested **entirely on macOS**.
 
 > [!NOTE]
 >
 > [Known Issues](https://github.com/MrT3313/CREATE-ELECTRON-FOUNDATION/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen+%28label%3Abug+OR+type%3ABug%29)
-
-**Platform Support:**
-
-- `create-electron-foundation` was developed and tested on **macOS**.
-- **I have not done nearly enough testing on the final Electron production assets as I have been building towards local scaffolding first.**
-- Windows _(and Linux if I can get pewdiepie on the line...)_ support is planned for the future, but full functionality is not **guaranteed** on those platforms.
 
 ## 👀 Prerequisites 👀
 
 - `nvm`  
   To ensure compatibility and smooth development, it's generally recommended to use a Node.js version manager. These help you easily switch between Node.js versions as needed for different projects.
 
-  This project management is strongly integrated with [**nvm**](https://github.com/nvm-sh/nvm) and it is recommended that you have it installed on your machine when using create-electron-foundation or its scaffolded assets.
+  This project management is integrated with [**nvm**](https://github.com/nvm-sh/nvm) and it is recommended that you have it installed on your machine when using create-electron-foundation or its scaffolded assets.
 
 - `make`  
   This project uses a [makefile](https://opensource.com/article/18/8/what-how-makefile) to build & manage the project. There can be issues with Node.JS installs vs NVM depending on when each were installed.
 
-  > [!IMPORTANT]
-  >
-  > Please investigate your own system to confirm you have the ability to run a makefile command.  
-  > If you are unsure please do not attempt to automatically install packages after scaffolding.
+> [!IMPORTANT]
+>
+> Please investigate your own system to confirm you have the ability to run a makefile command.  
+> If you are unsure **please do not attempt to automatically install packages after scaffolding**.
 
 ## What's Included?
 
