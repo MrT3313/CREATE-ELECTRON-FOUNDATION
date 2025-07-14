@@ -14,8 +14,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@tanstack/react-query": "~5.80.7",
-    "@tanstack/react-form": "^1.12.3",
+    "@tanstack/react-query": "~5.83.0",
+    "@tanstack/react-form": "^1.14.1",
     "dayjs": "~1.11.13",
     "react": "~19.1.0",
     "react-dom": "~19.1.0",
@@ -25,16 +25,16 @@
     "react-toastify": "~11.0.5"
   },
   "devDependencies": {
-    "@tanstack/react-query-devtools": "~5.80.7",
+    "@tanstack/react-query-devtools": "~5.83.0",
     "electron": "36.4.0",
     "@electron/rebuild": "4.0.1",
     "electron-log": "5.4.1",
-    "@vitejs/plugin-react": "~4.5.2",
+    "@vitejs/plugin-react": "~4.6.0",
     "vite-plugin-electron": "~0.29.0",
     "typescript": "^5.8.3",
-    "eslint": "^9.8.0",
-    "prettier": "^3.3.3",
-    "eslint-plugin-prettier": "^5.2.1",
+    "eslint": "^9.31.0",
+    "prettier": "^3.6.2",
+    "eslint-plugin-prettier": "^5.5.1",
     "typescript-eslint": "^8.0.0-alpha.54"
   }
 }
