@@ -22,9 +22,10 @@ import './api/controller'
 
 // CONFIGURE: environment variables ###########################################
 const isProd = app?.isPackaged
-const envPath = isProd ? `.env.production` : `.env.development`
+const envPath = isProd
+  ? path.join(process.resourcesPath, '.env.production')
+  : `.env.development`
 
-// CONFIGURE: environment variables ###########################################
 try {
   if (fs.existsSync(envPath)) {
     dotenv.config({ path: envPath, override: true })

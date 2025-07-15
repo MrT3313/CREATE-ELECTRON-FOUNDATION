@@ -21,6 +21,15 @@ import type {
 // UTILS
 import { logger } from '../utils/logger.js'
 
+const validateProjectName = (value: string): string | undefined => {
+  if (value.length === 0) return `Project name is required!`
+  if (value.length > 27)
+    return `Project name must be 27 characters or less. ${value} is ${value.length} characters.`
+  if (!/^[a-z0-9_.-]+$/.test(value))
+    return 'Project name can only contain lowercase letters, numbers, underscores, hyphens, and periods.'
+  if (/^[0-9]/.test(value)) return 'Project name cannot start with a number.'
+}
+
 export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
   /**
     Interactive prompts for their configuration preferences
@@ -30,6 +39,15 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
   ########################################################################## */
 
   p.intro(`${color.bgCyan(color.black('create-electron-foundation'))}`)
+
+  if (cliArgs.project_name) {
+    const validationError = validateProjectName(cliArgs.project_name)
+    if (validationError) {
+      p.cancel(validationError)
+      throw new Error(validationError)
+    }
+  }
+
   try {
     // DEFINE: initial config with default values #############################
     const config_key: ConfigKey = `${cliArgs.router as RouterPackage}-${
@@ -120,13 +138,7 @@ export const runUserPromptCli = async (cliArgs: Yargs): Promise<CLIResults> => {
             p.text({
               message: 'What is the name of your project?',
               placeholder: DEFAULT_APP_NAME,
-              validate(value) {
-                if (value.length === 0) return `Project name is required!`
-                if (!/^[a-z0-9_.-]+$/.test(value))
-                  return 'Project name can only contain lowercase letters, numbers, underscores, hyphens, and periods.'
-                if (/^[0-9]/.test(value))
-                  return 'Project name cannot start with a number.'
-              },
+              validate: validateProjectName,
             })
         }
 
