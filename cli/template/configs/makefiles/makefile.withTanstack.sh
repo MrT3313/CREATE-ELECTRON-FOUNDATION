@@ -47,7 +47,7 @@ NODE_MANAGE = \
 
 # Kit and Caboodle ############################################################
 # ^^ ?? 👉 https://www.youtube.com/watch?v=xvFZjo5PgG0
-kac: ri gen-tsr-routes laf dev
+kac: ri gen-tsr-routes laf build dev
 
 # Package Management ###########################################################
 i:
@@ -80,3 +80,19 @@ format:
 laf:
 	$(MAKE) lint
 	$(MAKE) format
+
+# PRODUCTION ASSETS ###########################################################
+build:
+	@$(NODE_MANAGE) && $(MAKE) build-mac
+
+build-mac-arm64:
+	@$(NODE_MANAGE) && npm run build:mac:arm64 # Apple Silicon
+
+build-mac-x64:
+	@$(NODE_MANAGE) && npm run build:mac:x64 # Intel
+
+build-mac:
+	@echo "Building macOS assets for both arm64 and x64..."
+	@$(MAKE) build-mac-arm64
+	@$(MAKE) build-mac-x64
+	@echo "✅ macOS builds complete."

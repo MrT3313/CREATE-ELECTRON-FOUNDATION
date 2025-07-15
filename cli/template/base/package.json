@@ -11,7 +11,11 @@
     "dev": "vite",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier . --write",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "package": "electron-forge package",
+    "build": "vite build && electron-forge package",
+    "build:mac:arm64": "vite build && electron-forge make --platform=darwin --arch=arm64 --verbose",
+    "build:mac:x64": "vite build && electron-forge make --platform=darwin --arch=x64"
   },
   "dependencies": {
     "@tanstack/react-query": "~5.83.0",
@@ -25,6 +29,8 @@
     "react-toastify": "~11.0.5"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^7.8.1",
+    "@electron-forge/maker-dmg": "^7.8.1",
     "@tanstack/react-query-devtools": "~5.83.0",
     "electron": "36.4.0",
     "@electron/rebuild": "4.0.1",
@@ -35,6 +41,7 @@
     "eslint": "^9.31.0",
     "prettier": "^3.6.2",
     "eslint-plugin-prettier": "^5.5.1",
+    "eslint-config-prettier": "^10.1.5",
     "typescript-eslint": "^8.0.0-alpha.54"
   }
 }

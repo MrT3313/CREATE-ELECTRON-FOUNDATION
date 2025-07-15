@@ -7,6 +7,7 @@ import { getDbConfig } from '../utils/consts'
 import path from 'path'
 export let db: BetterSQLite3Database<typeof schema>
 import log from '../logger/index'
+import { app } from 'electron'
 
 // CONNECT TO DATABASE ########################################################
 const dbConnectLogger = log.scope('db/dbConnect.ts')
@@ -31,10 +32,7 @@ export const dbConnect = async ({
     db = drizzle(sqlite, { schema })
 
     // PRODUCTION MIGRATIONS ##################################################
-    if (
-      process.env.NODE_ENV === 'production' ||
-      process.env.RUN_MIGRATIONS === 'true'
-    ) {
+    if (app.isPackaged) {
       try {
         const migrationsDirectoryPath = path.join(__dirname, './db/migrations')
         if (debug)
