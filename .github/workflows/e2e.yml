@@ -227,15 +227,23 @@ jobs:
           mkdir temp-scaffolded-project
 
           # Construct the project name for uniqueness.
-          project_name="test-proj-${{ matrix.config.router }}"
-          if [[ "${{ matrix.config.styles }}" != "none" ]]; then
-            project_name+="-${{ matrix.config.styles }}"
+          project_name="tp" # test-project
+          if [[ "${{ matrix.config.router }}" == "tanstack-router" ]]; then
+            project_name+="-tanstk"
+          elif [[ "${{ matrix.config.router }}" == "react-router" ]]; then
+            project_name+="-reactr"
           fi
-          if [[ "${{ matrix.config.db }}" != "none" ]]; then
-            project_name+="-db"
+
+          if [[ "${{ matrix.config.styles }}" == "tailwind" ]]; then
+            project_name+="-tw"
           fi
-          if [[ "${{ matrix.config.orm }}" != "none" ]]; then
-            project_name+="-orm"
+
+          if [[ "${{ matrix.config.db }}" == "sqlite" ]]; then
+            project_name+="-sql"
+          fi
+
+          if [[ "${{ matrix.config.orm }}" == "drizzle" ]]; then
+            project_name+="-driz"
           fi
 
           echo "PROJECT_NAME=$project_name" >> $GITHUB_ENV

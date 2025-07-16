@@ -22,10 +22,13 @@ import { dbInit } from './db/dbInit'
 // this is where the .handle() function pairings for the render process
 // .invoke() function calls
 import './api/controller'
+import './db/controller'
 
 // CONFIGURE: environment variables ###########################################
 const isProd = app?.isPackaged
-const envPath = isProd ? `.env.production` : `.env.development`
+const envPath = isProd
+  ? path.join(process.resourcesPath, '.env.production')
+  : `.env.development`
 
 try {
   if (fs.existsSync(envPath)) {

@@ -73,3 +73,19 @@ dev:
 		$(MAKE) ri; \
 		$(MAKE) dev; \
 	fi
+
+# PRODUCTION ASSETS ###########################################################
+build:
+	@$(NODE_MANAGE) && $(MAKE) build-mac
+
+build-mac-arm64:
+	@$(NODE_MANAGE) && npm run build:mac:arm64 # Apple Silicon
+
+build-mac-x64:
+	@$(NODE_MANAGE) && npm run build:mac:x64 # Intel
+
+build-mac:
+	@echo "Building macOS assets for both arm64 and x64..."
+	@$(MAKE) build-mac-arm64
+	@$(MAKE) build-mac-x64
+	@echo "✅ macOS builds complete."

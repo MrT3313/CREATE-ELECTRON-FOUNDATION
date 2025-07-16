@@ -11,11 +11,15 @@
     "dev": "vite",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier . --write",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "package": "electron-forge package",
+    "build": "vite build && electron-forge package",
+    "build:mac:arm64": "vite build && electron-forge make --platform=darwin --arch=arm64 --verbose",
+    "build:mac:x64": "vite build && electron-forge make --platform=darwin --arch=x64"
   },
   "dependencies": {
-    "@tanstack/react-query": "~5.80.7",
-    "@tanstack/react-form": "^1.12.3",
+    "@tanstack/react-query": "~5.83.0",
+    "@tanstack/react-form": "^1.14.1",
     "dayjs": "~1.11.13",
     "react": "~19.1.0",
     "react-dom": "~19.1.0",
@@ -25,16 +29,21 @@
     "react-toastify": "~11.0.5"
   },
   "devDependencies": {
-    "@tanstack/react-query-devtools": "~5.80.7",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@electron-forge/cli": "^7.8.1",
+    "@electron-forge/maker-dmg": "^7.8.1",
+    "@tanstack/react-query-devtools": "~5.83.0",
     "electron": "36.4.0",
     "@electron/rebuild": "4.0.1",
     "electron-log": "5.4.1",
-    "@vitejs/plugin-react": "~4.5.2",
+    "@vitejs/plugin-react": "~4.6.0",
     "vite-plugin-electron": "~0.29.0",
     "typescript": "^5.8.3",
-    "eslint": "^9.8.0",
-    "prettier": "^3.3.3",
-    "eslint-plugin-prettier": "^5.2.1",
+    "eslint": "^9.31.0",
+    "prettier": "^3.6.2",
+    "eslint-plugin-prettier": "^5.5.1",
+    "eslint-config-prettier": "^10.1.5",
     "typescript-eslint": "^8.0.0-alpha.54"
   }
 }

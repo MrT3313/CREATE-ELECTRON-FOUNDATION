@@ -38,11 +38,30 @@ export const scaffoldProject = async (config: CLIResults): Promise<void> => {
   fs.cpSync(srcDir, config.project_dir, { recursive: true })
 
   // UPDATE: .env.production & .env.development
-  const devEnvContent = `CUSTOM_ENV_VAR=my-custom-env-var\nAPP_NAME=${config.project_name}\nCEF_FRAMEWORK=Electron\nCEF_ROUTER=${config.packages.router}\nCEF_STYLES=${config.packages.styles || 'Vanilla CSS'}\nCEF_DATABASE=${config.packages.database || 'false'}\nCEF_ORM=${config.packages.orm || 'false'}`
+  const devEnvContent = `
+    CUSTOM_ENV_VAR=my-custom-env-var\n
+    NODE_ENV=development\n
+    APP_NAME=${config.project_name}\n
+    CEF_FRAMEWORK=Electron\n
+    CEF_ROUTER=${config.packages.router}\n
+    CEF_STYLES=${config.packages.styles || 'Vanilla CSS'}\n
+    CEF_DATABASE=${config.packages.database || 'false'}\n
+    CEF_ORM=${config.packages.orm || 'false'}
+  `
+
   const devEnvFilePath = path.join(config.project_dir, '.env.development')
   fs.writeFileSync(devEnvFilePath, devEnvContent)
 
-  const prodEnvContent = `CUSTOM_ENV_VAR=my-custom-env-var\nAPP_NAME=${config.project_name}\nCEF_FRAMEWORK=Electron\nCEF_ROUTER=${config.packages.router}\nCEF_STYLES=${config.packages.styles || 'Vanilla CSS'}\nCEF_DATABASE=${config.packages.database || 'false'}\nCEF_ORM=${config.packages.orm || 'false'}`
+  const prodEnvContent = `
+    CUSTOM_ENV_VAR=my-custom-env-var\n
+    NODE_ENV=production\n
+    APP_NAME=${config.project_name}\n
+    CEF_FRAMEWORK=Electron\n
+    CEF_ROUTER=${config.packages.router}\n
+    CEF_STYLES=${config.packages.styles || 'Vanilla CSS'}\n
+    CEF_DATABASE=${config.packages.database || 'false'}\n
+    CEF_ORM=${config.packages.orm || 'false'}
+  `
   const prodEnvFilePath = path.join(config.project_dir, '.env.production')
   fs.writeFileSync(prodEnvFilePath, prodEnvContent)
 
